@@ -163,7 +163,7 @@ func BenchmarkCollector_Collect(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Collect()
+		_, _ = c.Collect()
 	}
 }
 
@@ -173,7 +173,7 @@ func BenchmarkCollector_GetProcess(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.GetProcess(pid)
+		_, _ = c.GetProcess(pid)
 	}
 }
 
@@ -182,6 +182,6 @@ func BenchmarkCollector_GetTopProcesses(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.GetTopProcesses(10, "memory")
+		_, _ = c.GetTopProcesses(10, "memory")
 	}
 }

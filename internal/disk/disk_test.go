@@ -207,7 +207,7 @@ func BenchmarkCollector_Collect(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Collect()
+		_, _ = c.Collect()
 	}
 }
 
@@ -216,6 +216,6 @@ func BenchmarkCollector_GetIOCounters(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.GetIOCounters()
+		_, _ = c.GetIOCounters()
 	}
 }

@@ -217,12 +217,12 @@ func BenchmarkCollector_Collect(b *testing.B) {
 	c := NewCollector()
 
 	// Warmup
-	c.Collect(false)
+	_, _ = c.Collect(false)
 	time.Sleep(10 * time.Millisecond)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Collect(false)
+		_, _ = c.Collect(false)
 	}
 }
 
@@ -230,11 +230,11 @@ func BenchmarkCollector_Collect_PerCPU(b *testing.B) {
 	c := NewCollector()
 
 	// Warmup
-	c.Collect(true)
+	_, _ = c.Collect(true)
 	time.Sleep(10 * time.Millisecond)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Collect(true)
+		_, _ = c.Collect(true)
 	}
 }
