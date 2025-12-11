@@ -4,6 +4,87 @@ A summary of feature support across Linux, macOS, and Windows.
 
 ---
 
+## Phase Summary
+
+```
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         MCP SYSTEM INFO - PHASE OVERVIEW                     ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                              ║
+║  Phase              Description                              Queries  Status ║
+║  ─────────────────────────────────────────────────────────────────────────   ║
+║  Phase 1 (MVP)      Core system metrics                           7   ✅ Done║
+║  Phase 1.5 (Logs)   System & app log access for diagnostics       6   📋 Next║
+║  Phase 2            Enhanced (GPU, Battery, Containers, etc.)     6   📋 Plan║
+║  Phase 3            Analytics (Historical, Trends, Anomaly)       4   📋 Plan║
+║  Phase 4            Automation (Alerts, Remediation)              4   📋 Plan║
+║  Phase 5            Security (Scan, Compliance, Forensics)        4   📋 Plan║
+║  Phase 6            Integration (Cloud, Plugins, Multi-host)      4   📋 Plan║
+║  Phase 7            LLM Features (NL Queries, Auto-diagnostics)   3   📋 Plan║
+║  ─────────────────────────────────────────────────────────────────────────   ║
+║  TOTAL PLANNED QUERIES: 38                                                   ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## Phase 1 - MVP (Complete)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|-------|-------|---------|
+| `get_cpu_info` | Usage, frequency, load average, cores | ✅ | ✅ | ✅ |
+| `get_memory_info` | Total, used, available, swap | ✅ | ✅ | ✅ |
+| `get_disk_info` | Partitions, usage, I/O stats | ✅ | ✅ | ✅ |
+| `get_network_info` | Interfaces, I/O, connections | ✅ | ✅ | ✅ |
+| `get_processes` | Process list, top by CPU/memory | ✅ | ✅ | ✅ |
+| `get_uptime` | Boot time, uptime duration | ✅ | ✅ | ✅ |
+| `get_temperature` | Hardware temperature sensors | ✅ | ⚠️ | ⚠️ |
+
+**Status: 7/7 queries implemented**
+
+---
+
+## Phase 1.5 - Log Access (Critical for Diagnostics)
+
+Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|-------|-------|---------|
+| `get_journal_logs` | Systemd journal (services, boot) | ✅ journalctl | N/A | N/A |
+| `get_syslog` | Traditional syslog messages | ✅ /var/log/syslog | ✅ log show | N/A |
+| `get_app_logs` | Application-specific logs | ✅ /var/log/{app}/ | ✅ ~/Library/Logs | ✅ %AppData% |
+| `get_kernel_logs` | dmesg, boot, hardware errors | ✅ dmesg | ✅ dmesg | ✅ Event Log |
+| `get_auth_logs` | Login, sudo, SSH attempts | ✅ auth.log | ✅ secure.log | ✅ Security Log |
+| `get_event_log` | Windows Event Viewer | N/A | N/A | ✅ Get-WinEvent |
+
+**Impact Example:**
+
+| Without Logs | With Logs |
+|--------------|-----------|
+| "CPU at 100%" | "CPU at 100% - OOM killer triggered, java process killed at 14:32" |
+| "Service down" | "nginx down - 'Too many open files' in error.log, restart loop 5x" |
+| "Disk full" | "/var/log/app.log is 45GB, growing 100MB/min due to debug enabled" |
+
+**Status: 0/6 queries implemented**
+
+---
+
+## Phase 2 - Enhanced Monitoring
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|-------|-------|---------|
+| `get_gpu_info` | GPU utilization, memory, temp | ✅ | ⚠️ | ✅ |
+| `get_battery_info` | Battery status, health, cycles | ✅ | ✅ | ✅ |
+| `get_services` | Service status, control | ✅ systemd | ✅ launchd | ✅ services |
+| `get_containers` | Docker/Podman metrics | ✅ | ✅ | ✅ |
+| `get_users` | Logged-in users, sessions | ✅ | ✅ | ✅ |
+| `get_boot_events` | Boot history, failures | ✅ | ✅ | ✅ |
+
+**Status: 0/6 queries implemented**
+
+---
+
 ## Overview
 
 ```

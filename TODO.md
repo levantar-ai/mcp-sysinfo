@@ -10,12 +10,12 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-## Phase 1: MVP - Core Monitoring
+## Phase 1: MVP - Core Monitoring ✅ COMPLETE
 
-### 1.1 CPU Information
+### 1.1 CPU Information ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/stat` for CPU usage
+- [x] 🐧 Linux: Read `/proc/stat` for CPU usage
 - [ ] 🐧 Linux: Read `/proc/loadavg` for load average
 - [ ] 🐧 Linux: Read `/proc/cpuinfo` for CPU details
 - [ ] 🐧 Linux: Read `/sys/devices/system/cpu/` for frequency
@@ -185,6 +185,140 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 - [ ] 🔬 🐧 Linux: Verify against `sensors`
 - [ ] 🔬 🍎 macOS: Verify against iStats
 - [ ] 🔬 🪟 Windows: Verify against HWMonitor
+
+---
+
+## Phase 1.5: Log Access (Critical for Diagnostics) 📋 NEXT
+
+Log access transforms the system from monitoring to actual diagnostics. Without logs, AI can only see symptoms ("CPU is high") but not causes.
+
+### 1.5.1 Journald Logs (Linux)
+
+#### Implementation
+- [ ] 🐧 Linux: `journalctl -o json` for structured output
+- [ ] 🐧 Linux: Filter by unit (`-u nginx`)
+- [ ] 🐧 Linux: Filter by priority (`-p err..emerg`)
+- [ ] 🐧 Linux: Filter by time (`--since`, `--until`)
+- [ ] 🐧 Linux: Filter by executable (`_COMM=sshd`)
+- [ ] 🐧 Linux: Kernel messages (`-k`)
+
+#### Unit Tests
+- [ ] 🧪 Test JSON parsing of journalctl output
+- [ ] 🧪 Test time range filtering
+- [ ] 🧪 Test priority filtering
+- [ ] 🧪 Test log entry struct parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify service logs match `journalctl -u`
+- [ ] 🔬 🐧 Linux: Verify kernel messages match `dmesg`
+
+---
+
+### 1.5.2 Syslog
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/var/log/syslog` or `/var/log/messages`
+- [ ] 🐧 Linux: Parse RFC 5424 syslog format
+- [ ] 🍎 macOS: Use `log show` command with predicates
+- [ ] 🍎 macOS: Read `/var/log/system.log` (legacy)
+
+#### Unit Tests
+- [ ] 🧪 Test syslog line parsing
+- [ ] 🧪 Test facility/severity extraction
+- [ ] 🧪 Test timestamp parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `tail /var/log/syslog`
+- [ ] 🔬 🍎 macOS: Verify against `log show`
+
+---
+
+### 1.5.3 Application Logs
+
+#### Implementation
+- [ ] 🐧 Linux: Scan `/var/log/{app}/` directories
+- [ ] 🐧 Linux: Common paths: nginx, apache2, mysql, postgresql
+- [ ] 🐧 Linux: Docker logs via `docker logs` or container log files
+- [ ] 🍎 macOS: Read `~/Library/Logs/` and `/Library/Logs/`
+- [ ] 🍎 macOS: Use `log show --predicate` for app subsystems
+- [ ] 🪟 Windows: Read `%AppData%\Local\{App}\Logs\`
+- [ ] 🪟 Windows: Read `%ProgramData%\{App}\Logs\`
+
+#### Unit Tests
+- [ ] 🧪 Test log file discovery
+- [ ] 🧪 Test common log format parsing
+- [ ] 🧪 Test JSON log parsing
+- [ ] 🧪 Test log rotation handling
+
+#### Integration Tests
+- [ ] 🔬 All: Verify known app logs are discoverable
+- [ ] 🔬 🐧 Linux: Test Docker container log reading
+
+---
+
+### 1.5.4 Kernel/Boot Logs
+
+#### Implementation
+- [ ] 🐧 Linux: Read `dmesg` ring buffer
+- [ ] 🐧 Linux: Read `/var/log/kern.log`
+- [ ] 🐧 Linux: Use `journalctl -k -b` for boot kernel messages
+- [ ] 🍎 macOS: Use `dmesg` command
+- [ ] 🍎 macOS: Use `log show --predicate 'sender == "kernel"'`
+- [ ] 🪟 Windows: Read System Event Log
+- [ ] 🪟 Windows: Use `Get-WinEvent -LogName System`
+
+#### Unit Tests
+- [ ] 🧪 Test dmesg parsing
+- [ ] 🧪 Test kernel log severity extraction
+- [ ] 🧪 Test boot message filtering
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `dmesg` output
+- [ ] 🔬 🪟 Windows: Verify against Event Viewer
+
+---
+
+### 1.5.5 Authentication/Security Logs
+
+#### Implementation
+- [ ] 🐧 Linux (Debian): Read `/var/log/auth.log`
+- [ ] 🐧 Linux (RHEL): Read `/var/log/secure`
+- [ ] 🐧 Linux: Parse SSH login attempts
+- [ ] 🐧 Linux: Parse sudo commands
+- [ ] 🐧 Linux: Read audit.log if auditd enabled
+- [ ] 🍎 macOS: Read `/var/log/secure.log`
+- [ ] 🍎 macOS: Use `log show --predicate 'category == "auth"'`
+- [ ] 🪟 Windows: Read Security Event Log
+- [ ] 🪟 Windows: Filter login events (4624, 4625)
+
+#### Unit Tests
+- [ ] 🧪 Test auth log parsing
+- [ ] 🧪 Test SSH attempt extraction
+- [ ] 🧪 Test Windows event ID filtering
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify failed login detection
+- [ ] 🔬 🪟 Windows: Verify against Security Event Log
+
+---
+
+### 1.5.6 Windows Event Log
+
+#### Implementation
+- [ ] 🪟 Windows: Use `Get-WinEvent` PowerShell
+- [ ] 🪟 Windows: Query System log
+- [ ] 🪟 Windows: Query Application log
+- [ ] 🪟 Windows: Query Security log (requires admin)
+- [ ] 🪟 Windows: Query Setup log
+- [ ] 🪟 Windows: Filter by event ID, level, time range
+
+#### Unit Tests
+- [ ] 🧪 Test event log entry parsing
+- [ ] 🧪 Test event ID filtering
+- [ ] 🧪 Test time range queries
+
+#### Integration Tests
+- [ ] 🔬 🪟 Windows: Verify against Event Viewer
 
 ---
 

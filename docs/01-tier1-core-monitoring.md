@@ -1,6 +1,142 @@
 # Tier 1: Enhanced Core Monitoring
 
-Real-time metrics, storage deep dive, and network intelligence.
+Real-time metrics, storage deep dive, network intelligence, and **log access for diagnostics**.
+
+---
+
+## System Log Access (Critical for Diagnostics)
+
+Without log access, an AI can only see symptoms ("CPU is high") but not causes. Log access transforms the system from monitoring to actual diagnostics.
+
+### Journald Logs (Linux)
+Systemd journal - the primary log source on modern Linux systems.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **Linux** | `journalctl` with JSON output (`-o json`) | Built-in | systemd-based distros |
+| **Linux** | `systemd` Python bindings | pip | `pip install systemd-python` |
+| **Linux** | Direct reading `/var/log/journal/` | Built-in | None |
+| **macOS** | N/A | N/A | Uses unified logging instead |
+| **Windows** | N/A | N/A | Uses Event Viewer instead |
+
+**Key queries:**
+- `journalctl -u nginx --since "1 hour ago"` - Service logs
+- `journalctl -k` - Kernel messages (OOM, hardware errors)
+- `journalctl -p err..emerg` - Errors and above
+- `journalctl _COMM=sshd` - By executable name
+- `journalctl --disk-usage` - Log storage stats
+
+---
+
+### Syslog (Cross-platform)
+Traditional Unix logging, still used by many applications.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **Linux** | `/var/log/syslog` or `/var/log/messages` | Built-in | rsyslog/syslog-ng |
+| **Linux** | Parse with Python `re` or `syslog-rfc5424-parser` | pip | `pip install syslog-rfc5424-parser` |
+| **macOS** | `/var/log/system.log` (legacy) | Built-in | Deprecated, use `log` command |
+| **macOS** | `log show --predicate 'process == "kernel"'` | Built-in | None |
+| **Windows** | N/A (use Event Log) | N/A | N/A |
+
+---
+
+### Application Logs
+Application-specific log files in standard locations.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **Linux** | `/var/log/{app}/` directory scanning | Built-in | None |
+| **Linux** | Common paths: `/var/log/nginx/`, `/var/log/apache2/`, `/var/log/mysql/` | Built-in | Per-app |
+| **Linux** | Docker: `docker logs {container}` or `/var/lib/docker/containers/*/` | Built-in | Docker |
+| **macOS** | `~/Library/Logs/`, `/Library/Logs/` | Built-in | None |
+| **macOS** | `log show --predicate 'subsystem == "com.app.name"'` | Built-in | None |
+| **Windows** | `%AppData%\Local\{App}\Logs\` | Built-in | None |
+| **Windows** | `%ProgramData%\{App}\Logs\` | Built-in | None |
+| **Windows** | Event Log application channel | Built-in | None |
+
+---
+
+### Kernel/Boot Logs
+Critical for hardware issues, driver problems, and boot failures.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **Linux** | `dmesg` ring buffer | Built-in | None |
+| **Linux** | `/var/log/kern.log` | Built-in | rsyslog configured |
+| **Linux** | `journalctl -k -b` (current boot kernel msgs) | Built-in | systemd |
+| **Linux** | `/var/log/boot.log` | Built-in | Some distros |
+| **macOS** | `dmesg` | Built-in | None |
+| **macOS** | `log show --predicate 'sender == "kernel"'` | Built-in | None |
+| **macOS** | `/var/log/DiagnosticMessages/` | Built-in | None |
+| **Windows** | Event Viewer System channel | Built-in | None |
+| **Windows** | `Get-WinEvent -LogName System` PowerShell | Built-in | None |
+| **Windows** | Boot log: `bcdedit /set bootlog yes` then `%SystemRoot%\ntbtlog.txt` | Built-in | Needs enable |
+
+---
+
+### Authentication/Security Logs
+Login attempts, sudo usage, SSH access - critical for security diagnostics.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **Linux** | `/var/log/auth.log` (Debian) or `/var/log/secure` (RHEL) | Built-in | None |
+| **Linux** | `journalctl _SYSTEMD_UNIT=sshd.service` | Built-in | systemd |
+| **Linux** | `lastlog`, `last`, `lastb` commands | Built-in | None |
+| **Linux** | `/var/log/audit/audit.log` (if auditd) | Built-in | `apt install auditd` |
+| **macOS** | `/var/log/secure.log` | Built-in | None |
+| **macOS** | `log show --predicate 'category == "auth"'` | Built-in | None |
+| **macOS** | `/var/log/opendirectoryd.log` | Built-in | None |
+| **Windows** | Security Event Log (Event ID 4624=login, 4625=failed) | Built-in | None |
+| **Windows** | `Get-WinEvent -LogName Security -MaxEvents 100` | Built-in | Admin required |
+| **Windows** | Audit policies via `auditpol /get /category:*` | Built-in | None |
+
+---
+
+### Windows Event Log
+The primary log source on Windows systems.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **Windows** | `Get-WinEvent` PowerShell | Built-in | None |
+| **Windows** | `wevtutil` command-line | Built-in | None |
+| **Windows** | `pywin32` Python bindings | pip | `pip install pywin32` |
+| **Windows** | `winevt` package | pip | `pip install winevt` |
+| **Linux/macOS** | N/A | N/A | Windows only |
+
+**Key event logs:**
+- `System` - OS, drivers, hardware
+- `Application` - Application errors, warnings
+- `Security` - Logins, audit events
+- `Setup` - Windows updates, installations
+- Custom app logs under `Applications and Services Logs`
+
+---
+
+### Log Analysis Helpers
+Tools to make log analysis more effective.
+
+| Platform | Implementation | Availability | Install |
+|----------|----------------|--------------|---------|
+| **All** | `tail -f` / `Get-Content -Wait` for live tailing | Built-in | None |
+| **All** | Regex parsing for structured extraction | Python stdlib | None |
+| **Linux** | `journalctl --since "2 hours ago" --until "1 hour ago"` | Built-in | None |
+| **Linux** | `grep -E 'error|fail|critical' /var/log/*` | Built-in | None |
+| **Linux** | `logwatch` for summaries | apt | `apt install logwatch` |
+| **All** | Log rotation status (`logrotate -d /etc/logrotate.conf`) | Built-in | None |
+
+---
+
+### Why Log Access Matters for AI Diagnostics
+
+| Scenario | Without Logs | With Logs |
+|----------|--------------|-----------|
+| High CPU | "CPU at 100%" | "CPU at 100% - journald shows OOM killer invoked at 14:32, killing java process" |
+| Service down | "nginx not responding" | "nginx down - error.log shows 'Too many open files', systemd restart loop 5 times" |
+| Disk full | "/ at 99%" | "/ at 99% - /var/log/app.log is 45GB, growing 100MB/min due to debug logging enabled" |
+| Network issues | "Connection refused" | "Connection refused - auth.log shows IP banned by fail2ban after 5 failed SSH attempts" |
+| Boot failure | "System won't start" | "Boot fails - dmesg shows 'ata1: COMRESET failed', disk not detected" |
+| Memory leak | "RAM usage climbing" | "RAM climbing - journald shows repeated 'malloc failed' from app, core dump at /var/crash/" |
 
 ---
 
