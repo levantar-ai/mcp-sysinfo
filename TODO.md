@@ -322,6 +322,314 @@ Log access transforms the system from monitoring to actual diagnostics. Without 
 
 ---
 
+## Phase 1.6: System Hooks (37 Queries) 📋 PLANNED
+
+Zero-dependency deep system introspection. See [docs/08-system-hooks.md](docs/08-system-hooks.md) for full details.
+
+### 1.6.1 Scheduled Tasks & Startup (4 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/var/spool/cron/crontabs/*` for user crons
+- [ ] 🐧 Linux: Read `/etc/crontab`, `/etc/cron.d/*` for system crons
+- [ ] 🐧 Linux: List `systemctl list-timers` for systemd timers
+- [ ] 🍎 macOS: Read `/Library/LaunchDaemons/*.plist`
+- [ ] 🍎 macOS: Read `/Library/LaunchAgents/*.plist`
+- [ ] 🍎 macOS: Read `~/Library/LaunchAgents/*.plist`
+- [ ] 🪟 Windows: Read `C:\Windows\System32\Tasks\*` XML files
+- [ ] 🐧 Linux: Read `/etc/systemd/system/*.wants/` for startup services
+- [ ] 🍎 macOS: Read Login Items from LaunchAgents
+- [ ] 🪟 Windows: Read `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
+
+#### Unit Tests
+- [ ] 🧪 Test crontab parsing
+- [ ] 🧪 Test plist parsing
+- [ ] 🧪 Test Windows Task XML parsing
+- [ ] 🧪 Test systemd timer parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `crontab -l`
+- [ ] 🔬 🍎 macOS: Verify against `launchctl list`
+- [ ] 🔬 🪟 Windows: Verify against Task Scheduler
+
+---
+
+### 1.6.2 Kernel & Drivers (2 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/proc/modules` for loaded modules
+- [ ] 🐧 Linux: Read `/sys/module/*/parameters/` for module params
+- [ ] 🐧 Linux: Read `/proc/sys/` for kernel parameters
+- [ ] 🍎 macOS: Parse `kextstat` output for kernel extensions
+- [ ] 🍎 macOS: Read `sysctl -a` for kernel parameters
+- [ ] 🪟 Windows: Use `EnumDeviceDrivers()` API
+- [ ] 🪟 Windows: Read registry for driver parameters
+
+#### Unit Tests
+- [ ] 🧪 Test /proc/modules parsing
+- [ ] 🧪 Test kextstat output parsing
+- [ ] 🧪 Test sysctl parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `lsmod`
+- [ ] 🔬 🍎 macOS: Verify against `kextstat`
+- [ ] 🔬 🪟 Windows: Verify against `driverquery`
+
+---
+
+### 1.6.3 Network Configuration (6 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/proc/net/tcp`, `/proc/net/udp` for listening ports
+- [ ] 🐧 Linux: Map ports to processes via `/proc/[pid]/fd`
+- [ ] 🍎 macOS: Parse `lsof -i -P` for listening ports
+- [ ] 🪟 Windows: Use `GetExtendedTcpTable()` / `GetExtendedUdpTable()`
+- [ ] 🐧 Linux: Read `/etc/resolv.conf` for DNS config
+- [ ] 🍎 macOS: Parse `scutil --dns` for DNS config
+- [ ] 🪟 Windows: Read `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters`
+- [ ] All: Read `/etc/hosts` (or Windows equivalent)
+- [ ] 🐧 Linux: Read `/proc/net/route` for routing table
+- [ ] 🐧 Linux: Read `/proc/net/arp` for ARP cache
+- [ ] 🐧 Linux: Parse `iptables -L -n` or `nft list ruleset`
+- [ ] 🍎 macOS: Parse `pfctl -sr` for firewall rules
+- [ ] 🪟 Windows: Use `Get-NetFirewallRule` via PowerShell
+
+#### Unit Tests
+- [ ] 🧪 Test /proc/net/tcp parsing
+- [ ] 🧪 Test resolv.conf parsing
+- [ ] 🧪 Test hosts file parsing
+- [ ] 🧪 Test route table parsing
+- [ ] 🧪 Test iptables/nft rule parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `ss -tulpn`
+- [ ] 🔬 🐧 Linux: Verify against `ip route`
+- [ ] 🔬 🐧 Linux: Verify against `iptables -L`
+
+---
+
+### 1.6.4 File System (4 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/proc/[pid]/fd/` for open files (targeted by PID)
+- [ ] 🍎 macOS: Parse `lsof -p [pid]` for open files
+- [ ] 🪟 Windows: Use `NtQuerySystemInformation()` for handles
+- [ ] 🐧 Linux: Read `/proc/sys/fs/file-nr` for FD limits
+- [ ] 🐧 Linux: Use `statfs()` for inode usage
+- [ ] 🐧 Linux: Read `/proc/mounts` for mount options
+
+#### Unit Tests
+- [ ] 🧪 Test /proc/[pid]/fd parsing
+- [ ] 🧪 Test file-nr parsing
+- [ ] 🧪 Test mount options parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `lsof -p`
+- [ ] 🔬 🐧 Linux: Verify against `df -i`
+
+---
+
+### 1.6.5 Security Configuration (6 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/etc/passwd`, `/etc/group` for users/groups
+- [ ] 🍎 macOS: Use `dscl . -list /Users` for users
+- [ ] 🪟 Windows: Use `NetUserEnum()` API
+- [ ] 🐧 Linux: Read `/etc/sudoers`, `/etc/sudoers.d/*`
+- [ ] 🐧 Linux: Read `/etc/ssh/sshd_config`
+- [ ] 🐧 Linux: Scan `/etc/ssl/certs/` for certificate expiry
+- [ ] 🍎 macOS: Query Keychain for certificates
+- [ ] 🪟 Windows: Query Certificate Store
+- [ ] 🐧 Linux: Read `/sys/fs/selinux/enforce` for SELinux status
+- [ ] 🐧 Linux: Read `/sys/kernel/security/apparmor/profiles`
+
+#### Unit Tests
+- [ ] 🧪 Test /etc/passwd parsing
+- [ ] 🧪 Test sudoers parsing
+- [ ] 🧪 Test sshd_config parsing
+- [ ] 🧪 Test X.509 certificate parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `getent passwd`
+- [ ] 🔬 🐧 Linux: Verify against `sestatus`
+
+---
+
+### 1.6.6 Hardware Information (4 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/sys/class/dmi/id/*` for hardware info
+- [ ] 🍎 macOS: Parse `system_profiler SPHardwareDataType -json`
+- [ ] 🪟 Windows: Use WMI `Win32_ComputerSystem`, `Win32_BaseBoard`
+- [ ] 🐧 Linux: Read `/sys/bus/usb/devices/*/` for USB devices
+- [ ] 🐧 Linux: Read `/sys/bus/pci/devices/*/` for PCI devices
+- [ ] 🐧 Linux: Read `/sys/block/*/` for block device topology
+
+#### Unit Tests
+- [ ] 🧪 Test DMI sysfs parsing
+- [ ] 🧪 Test USB device parsing
+- [ ] 🧪 Test PCI device parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `lsusb`
+- [ ] 🔬 🐧 Linux: Verify against `lspci`
+
+---
+
+### 1.6.7 Process & Resources (5 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/proc/[pid]/environ` for environment variables
+- [ ] 🐧 Linux: Read `/proc/sysvipc/*` for IPC resources
+- [ ] 🐧 Linux: Read `/proc/[pid]/ns/` for namespaces
+- [ ] 🐧 Linux: Read `/sys/fs/cgroup/` for cgroup limits
+- [ ] 🐧 Linux: Read `/proc/[pid]/status` for capabilities
+
+#### Unit Tests
+- [ ] 🧪 Test environ parsing
+- [ ] 🧪 Test sysvipc parsing
+- [ ] 🧪 Test namespace detection
+- [ ] 🧪 Test cgroup parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `ipcs`
+- [ ] 🔬 🐧 Linux: Verify against `lsns`
+
+---
+
+### 1.6.8 System State (6 queries)
+
+#### Implementation
+- [ ] 🐧 Linux: Read `/sys/class/dmi/id/product_name` for VM detection
+- [ ] 🐧 Linux: Check `/proc/cpuinfo` hypervisor flag
+- [ ] 🍎 macOS: Check `sysctl kern.hv_support`
+- [ ] 🪟 Windows: Check WMI for hypervisor
+- [ ] All: Read `/etc/timezone` or equivalent for locale
+- [ ] 🐧 Linux: Parse `timedatectl status` for NTP status
+- [ ] 🐧 Linux: Scan `/var/crash/` for core dumps
+- [ ] 🐧 Linux: Read `/sys/class/power_supply/` for power state
+- [ ] 🐧 Linux: Read `/sys/devices/system/node/` for NUMA topology
+
+#### Unit Tests
+- [ ] 🧪 Test VM detection heuristics
+- [ ] 🧪 Test timedatectl parsing
+- [ ] 🧪 Test power supply sysfs parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `systemd-detect-virt`
+- [ ] 🔬 🐧 Linux: Verify against `numactl -H`
+
+---
+
+## Phase 1.7: SBOM & Software Inventory (31 Queries) 📋 PLANNED
+
+Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
+
+### 1.7.1 System Package Managers (6 queries)
+
+#### Implementation
+- [ ] 🐧 Linux (Debian): Parse `/var/lib/dpkg/status` directly
+- [ ] 🐧 Linux (RHEL): Use `rpm -qa --queryformat`
+- [ ] 🐧 Linux (Alpine): Read `/lib/apk/db/installed`
+- [ ] 🐧 Linux (Arch): Read `/var/lib/pacman/local/*/desc`
+- [ ] 🍎 macOS: Scan `/usr/local/Cellar/` or `/opt/homebrew/Cellar/`
+- [ ] 🍎 macOS: Read `INSTALL_RECEIPT.json` for package info
+- [ ] 🍎 macOS: Scan `/Applications/`, read `Info.plist`
+- [ ] 🪟 Windows: Read `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*`
+- [ ] 🪟 Windows: Also check `Wow6432Node` for 32-bit apps
+- [ ] 🪟 Windows: Use `Get-HotFix` for Windows updates
+
+#### Unit Tests
+- [ ] 🧪 Test dpkg/status file parsing
+- [ ] 🧪 Test rpm queryformat parsing
+- [ ] 🧪 Test Homebrew receipt JSON parsing
+- [ ] 🧪 Test Info.plist parsing
+- [ ] 🧪 Test Windows registry parsing
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `dpkg -l`
+- [ ] 🔬 🐧 Linux: Verify against `rpm -qa`
+- [ ] 🔬 🍎 macOS: Verify against `brew list`
+- [ ] 🔬 🪟 Windows: Verify against Programs and Features
+
+---
+
+### 1.7.2 Language Package Managers (8 queries)
+
+#### Implementation
+- [ ] All: Scan `site-packages/*/METADATA` for Python packages
+- [ ] All: Read `node_modules/*/package.json` for npm (global + project)
+- [ ] All: Read `package-lock.json` for full dependency tree
+- [ ] All: Read `go.sum` for Go modules
+- [ ] All: Read `Cargo.lock` for Rust crates
+- [ ] All: Scan `specifications/*.gemspec` for Ruby gems
+- [ ] All: Scan `~/.m2/repository/` for Maven dependencies
+- [ ] All: Read `composer.lock` for PHP packages
+- [ ] All: Scan NuGet packages folder for .NET packages
+
+#### Unit Tests
+- [ ] 🧪 Test Python METADATA parsing
+- [ ] 🧪 Test package.json parsing
+- [ ] 🧪 Test go.sum parsing
+- [ ] 🧪 Test Cargo.lock parsing
+- [ ] 🧪 Test gemspec parsing
+- [ ] 🧪 Test composer.lock parsing
+
+#### Integration Tests
+- [ ] 🔬 All: Verify against `pip list`
+- [ ] 🔬 All: Verify against `npm list`
+- [ ] 🔬 All: Verify against `go list -m all`
+
+---
+
+### 1.7.3 Container Images (3 queries)
+
+#### Implementation
+- [ ] All: Call Docker API `/images/json` for image list
+- [ ] All: Call Docker API `/images/[id]/history` for layers
+- [ ] All: Call Docker API `/images/[id]/json` for inspect
+- [ ] All: `docker exec` to read container package state
+
+#### Unit Tests
+- [ ] 🧪 Test Docker API response parsing
+- [ ] 🧪 Test image layer parsing
+
+#### Integration Tests
+- [ ] 🔬 All: Verify against `docker images`
+- [ ] 🔬 All: Verify against `docker history`
+
+---
+
+### 1.7.4 SBOM Export (2 queries)
+
+#### Implementation
+- [ ] All: Generate CycloneDX 1.4 JSON format
+- [ ] All: Generate SPDX 2.3 JSON format
+- [ ] All: Include Package URLs (purl) for all packages
+
+#### Unit Tests
+- [ ] 🧪 Test CycloneDX schema compliance
+- [ ] 🧪 Test SPDX schema compliance
+- [ ] 🧪 Test purl generation
+
+---
+
+### 1.7.5 Vulnerability Lookup (3 queries)
+
+#### Implementation
+- [ ] 🐧 Linux (Debian): Correlate with apt security lists
+- [ ] All: Query OSV API (`api.osv.dev/v1/query`)
+- [ ] All: Query NVD data feeds (cached)
+
+#### Unit Tests
+- [ ] 🧪 Test vulnerability correlation logic
+- [ ] 🧪 Test OSV response parsing
+- [ ] 🧪 Test NVD feed parsing
+
+#### Integration Tests
+- [ ] 🔬 All: Verify known CVE detection
+
+---
+
 ## Phase 2: Enhanced Monitoring
 
 ### 2.1 GPU Monitoring
@@ -959,17 +1267,23 @@ Log access transforms the system from monitoring to actual diagnostics. Without 
 
 ## Summary
 
-| Category | Total Tasks | Linux | macOS | Windows |
-|----------|-------------|-------|-------|---------|
-| MVP (Phase 1) | ~70 | ~25 | ~20 | ~25 |
-| Enhanced (Phase 2) | ~30 | ~12 | ~8 | ~10 |
-| Storage (Phase 3) | ~35 | ~15 | ~10 | ~10 |
-| Network (Phase 4) | ~40 | ~15 | ~12 | ~13 |
-| Analytics (Phase 5) | ~20 | All | All | All |
-| Automation (Phase 6) | ~35 | ~12 | ~10 | ~13 |
-| Security (Phase 7) | ~30 | ~12 | ~8 | ~10 |
-| Integration (Phase 8) | ~20 | All | All | All |
-| LLM (Phase 9) | ~15 | All | All | All |
-| **Total** | **~295** | - | - | - |
+| Category | Queries | Implementation Tasks | Test Tasks |
+|----------|:-------:|:--------------------:|:----------:|
+| **Phase 1 (MVP)** | 7 | ~70 | ~40 |
+| **Phase 1.5 (Logs)** | 6 | ~25 | ~15 |
+| **Phase 1.6 (Hooks)** | 37 | ~80 | ~50 |
+| **Phase 1.7 (SBOM)** | 31 | ~35 | ~25 |
+| Phase 2 (Enhanced) | 6 | ~30 | ~20 |
+| Phase 3 (Storage) | 5 | ~35 | ~20 |
+| Phase 4 (Network) | 5 | ~40 | ~25 |
+| Phase 5 (Analytics) | 4 | ~20 | ~15 |
+| Phase 6 (Automation) | 5 | ~35 | ~20 |
+| Phase 7 (Security) | 5 | ~30 | ~20 |
+| Phase 8 (Integration) | 4 | ~20 | ~15 |
+| Phase 9 (LLM) | 3 | ~15 | ~10 |
+| **TOTAL** | **106** | **~435** | **~275** |
 
-Plus unit tests and integration tests for each feature (~200+ additional test tasks).
+**Progress:**
+- Phase 1 (MVP): ✅ Complete (7/7 queries)
+- Phase 1.5-1.7: 📋 Documented, ready for implementation (74 queries)
+- Phase 2-9: 📋 Planned (25 queries)
