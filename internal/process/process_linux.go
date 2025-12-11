@@ -94,15 +94,35 @@ func (c *Collector) getProcess(pid int32) (*types.ProcessInfo, error) {
 	// Calculate CPU percent (snapshot - would need delta for accurate measure)
 	cpuPercent := 0.0
 
+	// Safe conversion for RSS (avoid negative values)
+	var memRSS uint64
+	if stat.rss > 0 {
+		memRSS = uint64(stat.rss) * uint64(os.Getpagesize()) //#nosec G115 -- rss is checked positive
+	}
+
+	// Safe conversion for memory percent
+	var memPercent float32
+	totalMem := getTotalMemory()
+	if stat.rss > 0 && totalMem > 0 {
+		memPercent = float32(stat.rss) * 100.0 / float32(totalMem)
+	}
+
+	// Safe conversion for start time (clkTck is always positive, starttime is uint64)
+	startTimeSec := stat.starttime / uint64(clkTck)
+	// Cap to max int64 to prevent overflow (far future date, but safe)
+	if startTimeSec > uint64(1<<62) {
+		startTimeSec = uint64(1 << 62)
+	}
+
 	return &types.ProcessInfo{
 		PID:        pid,
 		Name:       stat.name,
 		Username:   username,
 		CPUPercent: cpuPercent,
-		MemPercent: float32(stat.rss) * 100.0 / float32(getTotalMemory()),
-		MemRSS:     uint64(stat.rss) * uint64(os.Getpagesize()),
+		MemPercent: memPercent,
+		MemRSS:     memRSS,
 		Status:     stat.state,
-		CreateTime: time.Unix(int64(stat.starttime/uint64(clkTck)), 0),
+		CreateTime: time.Unix(int64(startTimeSec), 0), //#nosec G115 -- startTimeSec is capped above
 		Cmdline:    cmdline,
 	}, nil
 }
