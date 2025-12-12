@@ -125,24 +125,29 @@ jobs:
           INTEGRATION_TEST: "true"
           GOOS: windows
 
-  # Build binaries for all platforms
+  # Build binaries on native platforms
   build:
-    name: Build (${{ matrix.os }}/${{ matrix.arch }})
-    runs-on: ubuntu-latest
+    name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
     needs: [integration-linux, integration-macos, integration-windows]
     strategy:
       matrix:
         include:
-          - os: linux
-            arch: amd64
-          - os: linux
-            arch: arm64
-          - os: darwin
-            arch: amd64
-          - os: darwin
-            arch: arm64
-          - os: windows
-            arch: amd64
+          - goos: linux
+            goarch: amd64
+            runner: ubuntu-latest
+          - goos: linux
+            goarch: arm64
+            runner: ubuntu-latest
+          - goos: darwin
+            goarch: amd64
+            runner: macos-latest
+          - goos: darwin
+            goarch: arm64
+            runner: macos-latest
+          - goos: windows
+            goarch: amd64
+            runner: windows-latest
+    runs-on: ${{ matrix.runner }}
 
     steps:
       - name: Checkout code
@@ -155,17 +160,22 @@ jobs:
           cache: true
 
       - name: Build binary
+        shell: bash
         run: |
           mkdir -p dist
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build \
+          EXT=""
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            EXT=".exe"
+          fi
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
             -ldflags="-s -w" \
-            -o dist/mcp-sysinfo-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }} \
+            -o "dist/mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}${EXT}" \
             ./cmd/mcp-sysinfo
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mcp-sysinfo-${{ matrix.os }}-${{ matrix.arch }}
+          name: mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/
 
   # Lint

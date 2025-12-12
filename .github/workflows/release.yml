@@ -1,0 +1,145 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  GO_VERSION: '1.22'
+
+jobs:
+  # Get version from semantic-release dry-run
+  version:
+    name: Determine Version
+    runs-on: ubuntu-latest
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install semantic-release
+        run: npm install -g semantic-release @semantic-release/github
+
+      - name: Semantic Release (dry-run)
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx semantic-release --dry-run --no-ci | tee release-output.txt
+          if grep -q "Published release" release-output.txt || grep -q "The next release version is" release-output.txt; then
+            VERSION=$(grep -oP 'The next release version is \K[0-9]+\.[0-9]+\.[0-9]+' release-output.txt || grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' release-output.txt)
+            echo "new_release_published=true" >> $GITHUB_OUTPUT
+            echo "new_release_version=${VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "new_release_published=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Build binaries on native platforms
+  build:
+    name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
+    needs: version
+    if: needs.version.outputs.new_release_published == 'true'
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            runner: ubuntu-latest
+          - goos: linux
+            goarch: arm64
+            runner: ubuntu-latest
+          - goos: darwin
+            goarch: amd64
+            runner: macos-latest
+          - goos: darwin
+            goarch: arm64
+            runner: macos-latest
+          - goos: windows
+            goarch: amd64
+            runner: windows-latest
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build binary
+        shell: bash
+        run: |
+          mkdir -p dist
+          VERSION="${{ needs.version.outputs.new_release_version }}"
+          EXT=""
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            EXT=".exe"
+          fi
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
+            -ldflags="-s -w -X main.version=${VERSION}" \
+            -o "dist/mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}${EXT}" \
+            ./cmd/mcp-sysinfo
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/
+
+  # Create release and upload binaries
+  release:
+    name: Release
+    needs: [version, build]
+    if: needs.version.outputs.new_release_published == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -la dist/
+
+      - name: Install semantic-release
+        run: npm install -g semantic-release @semantic-release/github
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      - name: Upload Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.version.outputs.new_release_version }}"
+          for file in dist/*; do
+            echo "Uploading $file to release v${VERSION}"
+            gh release upload "v${VERSION}" "$file" --clobber
+          done
