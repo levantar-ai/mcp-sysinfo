@@ -144,6 +144,7 @@ func (c *Collector) getConnections(kind string) ([]types.ConnectionInfo, error) 
 
 // parseProcNet parses /proc/net/{tcp,udp,tcp6,udp6} files.
 func parseProcNet(path, connType string) ([]types.ConnectionInfo, error) {
+	// #nosec G304 -- path is constructed from known procfs paths
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err

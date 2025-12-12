@@ -31,6 +31,7 @@ func (c *Collector) collect() (*types.TemperatureInfo, error) {
 		devicePath := filepath.Join(hwmonPath, entry.Name())
 
 		// Get device name
+		// #nosec G304 -- reading from sysfs hwmon, entry from directory listing
 		nameBytes, err := os.ReadFile(filepath.Join(devicePath, "name"))
 		if err != nil {
 			continue
@@ -64,6 +65,7 @@ func (c *Collector) collect() (*types.TemperatureInfo, error) {
 			zonePath := filepath.Join(thermalPath, entry.Name())
 
 			// Get zone type
+			// #nosec G304 -- reading from sysfs, paths derived from directory listing
 			typeBytes, err := os.ReadFile(filepath.Join(zonePath, "type"))
 			if err != nil {
 				continue
@@ -71,6 +73,7 @@ func (c *Collector) collect() (*types.TemperatureInfo, error) {
 			zoneType := strings.TrimSpace(string(typeBytes))
 
 			// Read temperature
+			// #nosec G304 -- reading from sysfs, paths derived from directory listing
 			tempBytes, err := os.ReadFile(filepath.Join(zonePath, "temp"))
 			if err != nil {
 				continue
@@ -96,6 +99,7 @@ func (c *Collector) collect() (*types.TemperatureInfo, error) {
 // readTempSensor reads a temperature sensor from hwmon.
 func readTempSensor(tempFile, deviceName string) (*types.SensorInfo, error) {
 	// Read temperature
+	// #nosec G304 -- reading from sysfs hwmon, tempFile from directory listing
 	tempBytes, err := os.ReadFile(tempFile)
 	if err != nil {
 		return nil, err
@@ -109,6 +113,7 @@ func readTempSensor(tempFile, deviceName string) (*types.SensorInfo, error) {
 	// Get sensor label
 	labelFile := strings.Replace(tempFile, "_input", "_label", 1)
 	label := deviceName
+	// #nosec G304 -- reading from sysfs hwmon, path derived from tempFile
 	if labelBytes, err := os.ReadFile(labelFile); err == nil {
 		label = strings.TrimSpace(string(labelBytes))
 	}
@@ -120,6 +125,7 @@ func readTempSensor(tempFile, deviceName string) (*types.SensorInfo, error) {
 
 	// Try to read high/critical thresholds
 	maxFile := strings.Replace(tempFile, "_input", "_max", 1)
+	// #nosec G304 -- reading from sysfs hwmon, path derived from tempFile
 	if maxBytes, err := os.ReadFile(maxFile); err == nil {
 		if maxMilli, err := strconv.ParseFloat(strings.TrimSpace(string(maxBytes)), 64); err == nil {
 			sensor.High = maxMilli / 1000.0
@@ -127,6 +133,7 @@ func readTempSensor(tempFile, deviceName string) (*types.SensorInfo, error) {
 	}
 
 	critFile := strings.Replace(tempFile, "_input", "_crit", 1)
+	// #nosec G304 -- reading from sysfs hwmon, path derived from tempFile
 	if critBytes, err := os.ReadFile(critFile); err == nil {
 		if critMilli, err := strconv.ParseFloat(strings.TrimSpace(string(critBytes)), 64); err == nil {
 			sensor.Critical = critMilli / 1000.0

@@ -101,7 +101,7 @@ func TestCalculatePercent(t *testing.T) {
 func TestNewCollector(t *testing.T) {
 	c := NewCollector()
 	if c == nil {
-		t.Error("NewCollector returned nil")
+		t.Fatal("NewCollector returned nil")
 	}
 	if c.previousTimes != nil {
 		t.Error("previousTimes should be nil initially")

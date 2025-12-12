@@ -225,6 +225,7 @@ func (c *Collector) getFrequency() (*types.FrequencyInfo, error) {
 
 	// Try to read current frequency
 	currentPath := filepath.Join(sysCPUPath, "cpu0/cpufreq/scaling_cur_freq")
+	// #nosec G304 -- reading from sysfs, path is constant
 	if data, err := os.ReadFile(currentPath); err == nil {
 		if val, err := strconv.ParseFloat(strings.TrimSpace(string(data)), 64); err == nil {
 			freq.Current = val / 1000 // Convert kHz to MHz
@@ -233,6 +234,7 @@ func (c *Collector) getFrequency() (*types.FrequencyInfo, error) {
 
 	// Try to read min frequency
 	minPath := filepath.Join(sysCPUPath, "cpu0/cpufreq/scaling_min_freq")
+	// #nosec G304 -- reading from sysfs, path is constant
 	if data, err := os.ReadFile(minPath); err == nil {
 		if val, err := strconv.ParseFloat(strings.TrimSpace(string(data)), 64); err == nil {
 			freq.Min = val / 1000
@@ -241,6 +243,7 @@ func (c *Collector) getFrequency() (*types.FrequencyInfo, error) {
 
 	// Try to read max frequency
 	maxPath := filepath.Join(sysCPUPath, "cpu0/cpufreq/scaling_max_freq")
+	// #nosec G304 -- reading from sysfs, path is constant
 	if data, err := os.ReadFile(maxPath); err == nil {
 		if val, err := strconv.ParseFloat(strings.TrimSpace(string(data)), 64); err == nil {
 			freq.Max = val / 1000

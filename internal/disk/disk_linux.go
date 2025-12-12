@@ -61,9 +61,12 @@ func getPartitions() ([]types.PartitionInfo, error) {
 			continue // Skip if we can't stat
 		}
 
-		total := stat.Blocks * uint64(stat.Bsize)
-		free := stat.Bfree * uint64(stat.Bsize)
-		available := stat.Bavail * uint64(stat.Bsize)
+		// Bsize is always positive, but gosec flags the conversion
+		// #nosec G115 -- Bsize is filesystem block size, always positive
+		bsize := uint64(stat.Bsize)
+		total := stat.Blocks * bsize
+		free := stat.Bfree * bsize
+		available := stat.Bavail * bsize
 		used := total - free
 
 		partitions = append(partitions, types.PartitionInfo{
