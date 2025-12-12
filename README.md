@@ -250,6 +250,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | [docs/00-overview.md](docs/00-overview.md) | Architecture and design rationale |
 | [docs/08-system-hooks.md](docs/08-system-hooks.md) | Phase 1.6: 37 deep introspection queries |
 | [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) | Phase 1.7: Software inventory |
+| [docs/10-query-profiles.md](docs/10-query-profiles.md) | Query profiles for efficient investigations |
 
 ---
 
