@@ -31,7 +31,7 @@ MCP System Info is a **security product first**, diagnostics tool second. Every 
 - **Parameterized arguments only** - User input maps to structured parameters, never concatenated into commands
 - **No shell interpolation** - Commands executed directly via `exec`, not through a shell
 - **Output parsing, not passthrough** - Raw command output is parsed into structured JSON
-- **Locale hardening** - Commands run with `LC_ALL=C` to ensure consistent, predictable output across systems
+- **Locale hardening** - Commands run with `LC_ALL=C` on Unix (Windows uses invariant/English output where supported) to ensure consistent, predictable output
 - **No recursive filesystem searches** - No grep/find/recursive scan primitives exist in the API
 
 ```
@@ -630,7 +630,7 @@ JSON Lines format, one event per line:
     "ip": "10.0.1.50",
     "mtls_subject": "CN=teleport-proxy.example.com",
     "jwt_sub": "user@example.com",
-    "scopes": ["core", "logs"]
+    "scopes": ["core", "logs_system"]
   },
   "result": "success",
   "duration_ms": 12,
@@ -685,7 +685,7 @@ audit:
     enabled: false             # Enable for production
     facility: auth
     tag: mcp-sysinfo
-    network: udp
+    network: udp               # udp or tcp (use TLS-capable forwarder for tcp)
     addr: "syslog.internal:514"
 ```
 
@@ -862,7 +862,7 @@ sha256sum mcp-sysinfo
 └──────────────────────────────────────┘
 ```
 
-No network. No auth needed. Filesystem permissions protect the binary.
+No network exposure; OS-level controls apply. Auth optional.
 
 ### Model 2: SSH Tunnel (Ad-hoc Remote)
 
