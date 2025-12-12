@@ -53,6 +53,18 @@ int getCPUFrequency(uint64_t *freq) {
 
     return 0;
 }
+
+// Helper to get load average
+int getLoadAvg(double *load1, double *load5, double *load15) {
+    double loadavg[3];
+    if (getloadavg(loadavg, 3) == -1) {
+        return -1;
+    }
+    *load1 = loadavg[0];
+    *load5 = loadavg[1];
+    *load15 = loadavg[2];
+    return 0;
+}
 */
 import "C"
 
@@ -61,7 +73,6 @@ import (
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
-	"golang.org/x/sys/unix"
 )
 
 // collect gathers CPU information on macOS.
@@ -120,19 +131,17 @@ func getCPUTimesFromMach() (*cpuTimes, error) {
 
 // getLoadAverage returns load average on macOS.
 func (c *Collector) getLoadAverage() (*types.LoadAverage, error) {
-	var loadavg [3]C.double
+	var load1, load5, load15 C.double
 
-	// Use getloadavg via unix package
-	avg := make([]float64, 3)
-	err := unix.Getloadavg(avg)
-	if err != nil {
-		return nil, err
+	ret := C.getLoadAvg(&load1, &load5, &load15)
+	if ret != 0 {
+		return nil, fmt.Errorf("failed to get load average")
 	}
 
 	return &types.LoadAverage{
-		Load1:  avg[0],
-		Load5:  avg[1],
-		Load15: avg[2],
+		Load1:  float64(load1),
+		Load5:  float64(load5),
+		Load15: float64(load15),
 	}, nil
 }
 
