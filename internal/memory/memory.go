@@ -38,11 +38,12 @@ func bytesToHuman(bytes uint64) (float64, string) {
 	if bytes < unit {
 		return float64(bytes), "B"
 	}
+	units := []string{"KB", "MB", "GB", "TB", "PB", "EB"}
 	div, exp := uint64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
+	for n := bytes / unit; n >= unit && exp < len(units)-1; n /= unit {
 		div *= unit
 		exp++
 	}
-	units := []string{"KB", "MB", "GB", "TB", "PB"}
+	// #nosec G602 -- exp is bounded by loop condition exp < len(units)-1
 	return float64(bytes) / float64(div), units[exp]
 }

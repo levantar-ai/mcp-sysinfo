@@ -62,6 +62,7 @@ func (c *Collector) getProcess(pid int32) (*types.ProcessInfo, error) {
 	procPath := fmt.Sprintf("/proc/%d", pid)
 
 	// Read /proc/[pid]/stat
+	// #nosec G304 -- reading from procfs, pid from system directory listing
 	statData, err := os.ReadFile(filepath.Join(procPath, "stat"))
 	if err != nil {
 		return nil, err
@@ -73,6 +74,7 @@ func (c *Collector) getProcess(pid int32) (*types.ProcessInfo, error) {
 	}
 
 	// Read /proc/[pid]/status for memory info
+	// #nosec G304 -- reading from procfs, pid from system directory listing
 	statusData, err := os.ReadFile(filepath.Join(procPath, "status"))
 	if err != nil {
 		return nil, err
@@ -81,6 +83,7 @@ func (c *Collector) getProcess(pid int32) (*types.ProcessInfo, error) {
 	status := parseStatus(string(statusData))
 
 	// Read cmdline
+	// #nosec G304 -- reading from procfs, pid from system directory listing
 	cmdlineData, _ := os.ReadFile(filepath.Join(procPath, "cmdline"))
 	cmdline := strings.ReplaceAll(string(cmdlineData), "\x00", " ")
 	cmdline = strings.TrimSpace(cmdline)
@@ -282,7 +285,9 @@ func getTotalMemory() uint64 {
 			if len(fields) >= 2 {
 				kb, _ := strconv.ParseUint(fields[1], 10, 64)
 				// Convert KB to pages
-				return kb * 1024 / uint64(os.Getpagesize())
+				// #nosec G115 -- page size is always positive
+				pageSize := uint64(os.Getpagesize())
+				return kb * 1024 / pageSize
 			}
 		}
 	}

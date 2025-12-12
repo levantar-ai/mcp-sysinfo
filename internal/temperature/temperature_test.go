@@ -91,6 +91,6 @@ func BenchmarkCollector_Collect(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Collect()
+		_, _ = c.Collect()
 	}
 }
