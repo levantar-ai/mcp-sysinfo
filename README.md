@@ -251,6 +251,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | [docs/08-system-hooks.md](docs/08-system-hooks.md) | Phase 1.6: 37 deep introspection queries |
 | [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) | Phase 1.7: Software inventory |
 | [docs/10-query-profiles.md](docs/10-query-profiles.md) | Query profiles for efficient investigations |
+| [docs/11-platform-native-features.md](docs/11-platform-native-features.md) | Platform-specific native APIs (WMI, procfs, IOKit) |
 
 ---
 
