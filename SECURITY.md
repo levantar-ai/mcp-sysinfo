@@ -11,15 +11,34 @@ MCP System Info is a **security product first**, diagnostics tool second. Every 
 | Credential/secret exfiltration via queries | Query classification + redaction + disabled-by-default |
 | Unauthorized remote access | Localhost-only default + explicit remote enablement |
 | Resource exhaustion / DoS | Hard limits on output size, runtime, concurrency |
-| Replay attacks | JWT with short TTL + nonce + audience binding |
-| Privilege escalation | Read-only operations + no shell execution |
+| Replay attacks | JWT with short TTL + JTI cache + audience binding |
+| Privilege escalation | Read-only operations, no arbitrary command execution |
 | Data exfil via verbose output | Output size caps + field-level redaction |
+| Arbitrary command injection | Allowlisted commands only, parameterized, no raw user input |
 
 ### What This Is NOT
 
 - NOT a replacement for network segmentation
 - NOT a way to grant shell access to AI agents
-- Requires proper host-level security as foundation
+- NOT a defense against a compromised host (requires host-level security as foundation)
+- NOT a secrets manager (use Vault, AWS Secrets Manager, etc.)
+
+### Command Execution Model
+
+**We do NOT provide arbitrary shell access.** The server executes a fixed set of allowlisted system commands (`ps`, `netstat`, `df`, etc.) with:
+
+- **No raw command strings** - Commands are hardcoded, not constructed from input
+- **Parameterized arguments only** - User input maps to structured parameters, never concatenated into commands
+- **No shell interpolation** - Commands executed directly via `exec`, not through a shell
+- **Output parsing, not passthrough** - Raw command output is parsed into structured JSON
+
+```
+User Input              What Happens                      What Does NOT Happen
+─────────────────────────────────────────────────────────────────────────────────
+get_processes           exec(["ps", "aux"])               sh -c "ps aux"
+  sort_by: "cpu"        → parsed, sorted by CPU field     user input in command
+  limit: 10             → array sliced to 10              ; rm -rf / injection
+```
 
 ---
 
@@ -94,9 +113,16 @@ tls:
 
 ## Authentication
 
-### JWT Authentication
+### Authentication Requirements by Transport
 
-Required for HTTP transport. Optional but recommended for socket transport.
+| Transport | Auth Required | Default |
+|-----------|---------------|---------|
+| stdio | No | Disabled |
+| unix socket | No | Disabled (recommended: enable) |
+| named pipe | No | Disabled (recommended: enable) |
+| https | **Yes** | **Required** (server refuses to start without) |
+
+### JWT Authentication
 
 ```yaml
 auth:
@@ -120,10 +146,37 @@ auth:
     require_iat: true      # Reject tokens without issued-at
     clock_skew: 30         # Seconds of allowed clock drift
 
-    # Replay prevention
-    require_jti: true      # Require unique token ID
-    jti_cache_ttl: 600     # Cache JTI for 10 minutes
+    # Replay prevention (JTI caching)
+    require_jti: true            # Require unique token ID
+    jti_cache_ttl: 600           # Cache JTI for 10 minutes
+    jti_cache_max_entries: 10000 # Max cached JTIs (LRU eviction)
+    jti_cache_max_memory_mb: 10  # Memory cap for JTI cache
 ```
+
+### JTI Cache Considerations
+
+The JTI (JWT ID) cache prevents token replay but introduces statefulness:
+
+| Deployment | Behavior |
+|------------|----------|
+| Single instance | JTI cache is local; replay prevention works |
+| Multiple instances | Each instance has separate cache; token can replay to different instance |
+| Clustered (Redis) | Shared cache; replay prevention works across instances |
+
+```yaml
+auth:
+  jwt:
+    jti_cache:
+      backend: memory          # memory (default) or redis
+      # Redis backend for clustered deployments
+      redis:
+        addr: "redis:6379"
+        password: ${REDIS_PASSWORD}
+        db: 0
+        key_prefix: "mcp-sysinfo:jti:"
+```
+
+**DoS protection**: The cache has bounded size (`jti_cache_max_entries`) with LRU eviction. Attackers cannot bloat the cache by spamming unique JTIs.
 
 ### JWT Claims to Scopes
 
@@ -174,6 +227,56 @@ systemctl reload mcp-sysinfo
 
 ---
 
+## Rate Limiting
+
+### Rate Limit Keying
+
+Rate limits are enforced **per-identity**, not globally:
+
+```yaml
+rate_limit:
+  # Identity key (in order of precedence)
+  # 1. JWT subject claim (jwt_sub)
+  # 2. mTLS certificate subject (CN)
+  # 3. Client IP (fallback)
+  key_by: ["jwt_sub", "mtls_subject", "ip"]
+
+  # Global limits (across all identities)
+  global:
+    requests_per_second: 100
+    burst: 50
+
+  # Per-identity limits
+  per_identity:
+    requests_per_minute: 60
+    requests_per_hour: 1000
+    burst: 10
+
+  # Stricter limits for sensitive/log queries
+  sensitive_queries:
+    requests_per_minute: 10
+    requests_per_hour: 100
+
+  log_queries:
+    requests_per_minute: 20
+    requests_per_hour: 200
+```
+
+### Rate Limit Response
+
+When rate limited, the server returns:
+
+```json
+{
+  "error": "rate_limited",
+  "retry_after_seconds": 45,
+  "limit": "per_identity:requests_per_minute",
+  "identity": "user@example.com"
+}
+```
+
+---
+
 ## Query Classification & Scopes
 
 ### Query Categories
@@ -190,15 +293,39 @@ systemctl reload mcp-sysinfo
 
 These queries can expose credentials, PII, or security-relevant configuration:
 
-| Query | Risk | Data Exposed |
-|-------|------|--------------|
-| `get_env_vars` | Critical | AWS keys, DB passwords, API tokens |
-| `get_auth_logs` | High | Usernames, IPs, access patterns |
-| `get_event_log` (Security) | High | Authentication events, policy changes |
-| `get_user_accounts` | High | Local users, groups, shell paths |
-| `get_sudo_config` | High | Privilege escalation paths |
-| `get_ssh_config` | High | Auth methods, allowed keys, forwarding |
-| `get_open_files` | Medium | File paths, potential content via path |
+| Query | Risk | Data Exposed | Default |
+|-------|------|--------------|---------|
+| `get_env_vars` | Critical | AWS keys, DB passwords, API tokens | **Always denied** |
+| `get_auth_logs` | High | Usernames, IPs, access patterns | Disabled |
+| `get_event_log` (Security) | High | Authentication events, policy changes | Disabled |
+| `get_user_accounts` | High | Local users, groups, shell paths | Disabled |
+| `get_sudo_config` | High | Privilege escalation paths | Disabled |
+| `get_ssh_config` | High | Auth methods, allowed keys, forwarding | Disabled |
+| `get_open_files` | Medium | File paths, potential content via path | Requires parameters |
+
+### Parameter Requirements for Dangerous Queries
+
+Some queries require parameters to prevent bulk data extraction:
+
+```yaml
+queries:
+  parameter_requirements:
+    # get_open_files cannot list everything - must be targeted
+    get_open_files:
+      require_one_of: ["pid", "path_prefix", "user"]
+      deny_all: true  # No "list all open files"
+
+    # get_env_vars is too dangerous - always denied
+    get_env_vars:
+      always_deny: true
+      message: "Environment variables may contain secrets. Use a secrets manager."
+
+    # get_auth_logs must be time-bounded
+    get_auth_logs:
+      require: ["max_age_hours"]
+      max_values:
+        max_age_hours: 24  # Cannot request more than 24h
+```
 
 ### Enabling Sensitive Queries
 
@@ -249,60 +376,108 @@ scopes:
     - get_user_accounts
     - get_sudo_config
     - get_ssh_config
-    - get_env_vars  # Only if explicitly allowed
+    - get_open_files  # When used without required params
 ```
 
 ---
 
 ## Output Security
 
-### Automatic Redaction
+### Redaction Strategy
 
-Sensitive patterns are redacted in ALL query output:
+Redaction is **best-effort defense-in-depth**, not a guarantee. It combines multiple layers:
+
+```
+                    ┌─────────────────────────────────────┐
+                    │          Query Output               │
+                    └─────────────────────────────────────┘
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │  1. Structured Field Redaction │
+                    │     (*.password, *.token, etc) │
+                    └───────────────────────────────┘
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │  2. Regex Pattern Redaction    │
+                    │     (AWS keys, connection str) │
+                    │     Bounded: max 1MB scanned   │
+                    └───────────────────────────────┘
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │  3. Output Size Limits         │
+                    │     (Truncate if too large)    │
+                    └───────────────────────────────┘
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │       Final Output             │
+                    └───────────────────────────────┘
+```
+
+### Redaction Configuration
 
 ```yaml
 redaction:
   enabled: true
 
-  patterns:
-    # Credentials
-    - name: aws_key
-      pattern: '(?i)(AKIA[0-9A-Z]{16})'
-      replacement: "[REDACTED:AWS_KEY]"
+  # 1. Structured field redaction (fast, reliable)
+  fields:
+    - "*.password"
+    - "*.secret"
+    - "*.token"
+    - "*.api_key"
+    - "*.private_key"
+    - "env.AWS_*"
+    - "env.DATABASE_*"
+    - "env.*_PASSWORD"
+    - "env.*_SECRET"
+    - "env.*_TOKEN"
 
-    - name: password_field
-      pattern: '(?i)(password|passwd|secret|token|key)\s*[=:]\s*\S+'
+  # 2. Regex pattern redaction (slower, best-effort)
+  patterns:
+    - name: aws_access_key
+      pattern: '(?i)(AKIA[0-9A-Z]{16})'
+      replacement: "[REDACTED:AWS_ACCESS_KEY]"
+
+    - name: aws_secret_key
+      pattern: '(?i)aws_secret_access_key\s*[=:]\s*[A-Za-z0-9/+=]{40}'
+      replacement: "aws_secret_access_key=[REDACTED]"
+
+    - name: generic_secret
+      pattern: '(?i)(password|passwd|secret|token|apikey|api_key)\s*[=:]\s*\S+'
       replacement: "$1=[REDACTED]"
 
     - name: bearer_token
       pattern: '(?i)bearer\s+[a-zA-Z0-9\-._~+/]+=*'
       replacement: "Bearer [REDACTED]"
 
-    - name: private_key
+    - name: private_key_block
       pattern: '-----BEGIN [A-Z ]+ PRIVATE KEY-----[\s\S]*?-----END [A-Z ]+ PRIVATE KEY-----'
       replacement: "[REDACTED:PRIVATE_KEY]"
 
     - name: connection_string
-      pattern: '(?i)(mysql|postgres|mongodb|redis)://[^@]+@'
+      pattern: '(?i)(mysql|postgres|postgresql|mongodb|redis|amqp)://[^@\s]+@'
       replacement: "$1://[REDACTED]@"
 
-  # Field-level redaction (in structured output)
-  fields:
-    - "*.password"
-    - "*.secret"
-    - "*.token"
-    - "*.api_key"
-    - "env.AWS_*"
-    - "env.DATABASE_*"
+  # Redaction limits (prevent CPU exhaustion)
+  limits:
+    max_input_bytes: 1048576    # Only scan first 1MB
+    max_regex_time_ms: 100      # Timeout per pattern
+    fail_action: truncate       # truncate | pass | error
 ```
+
+**Important**: Redaction is best-effort. Secrets can appear in unexpected formats. Defense-in-depth means:
+1. Don't enable `get_env_vars`
+2. Use strict output limits
+3. Limit log query time windows
+4. Monitor audit logs for sensitive data access
 
 ### Output Limits
 
-Hard caps to prevent data exfiltration via verbose queries:
+Hard caps to prevent data exfiltration:
 
 ```yaml
 limits:
-  # Per-query limits
+  # Per-query limits (HARD ENFORCEMENT)
   max_output_bytes: 1048576     # 1 MB max response
   max_output_lines: 10000       # 10K lines max
   max_array_items: 1000         # Max items in any array
@@ -323,39 +498,63 @@ limits:
 
 ## Resource Limits
 
-### Per-Query Budgets
+### Enforcement Levels
+
+| Limit Type | Enforcement | How |
+|------------|-------------|-----|
+| Query timeout | **Hard** | Context cancellation |
+| Max output bytes | **Hard** | Truncation |
+| Max concurrent queries | **Hard** | Semaphore |
+| Rate limiting | **Hard** | Request rejection |
+| CPU percent | Best-effort | `nice`/priority (platform-dependent) |
+| Memory | Best-effort | Monitoring + abort (platform-dependent) |
+
+### Configuration
 
 ```yaml
 resources:
-  # Query execution limits
-  query_timeout: 5000           # 5 seconds max per query
-  query_cpu_percent: 10         # Max CPU during query
-  query_memory_mb: 50           # Max additional memory
-
-  # Concurrent execution
+  # HARD LIMITS (always enforced)
+  query_timeout_ms: 5000        # 5 seconds max per query
+  max_output_bytes: 1048576     # 1 MB max output
   max_concurrent_queries: 5     # Max parallel queries
 
-  # Rate limiting
-  rate_limit:
-    requests_per_minute: 60
-    requests_per_hour: 1000
-    burst: 10
+  # BEST-EFFORT LIMITS (platform-dependent)
+  nice_level: 10                # Unix nice value (lower priority)
+  io_priority: idle             # Linux: idle, best-effort, realtime
+  memory_limit_mb: 100          # Soft limit, monitored
+
+  # Per-impact-level timeouts
+  timeouts:
+    minimal: 100      # ms
+    low: 1000         # ms
+    medium: 5000      # ms
+    high: 0           # blocked
 ```
 
 ### Query Impact Classification
 
-| Impact | Timeout | CPU | Memory | Concurrency |
-|--------|---------|-----|--------|-------------|
-| Minimal | 100ms | 1% | 1MB | Unlimited |
-| Low | 1s | 5% | 10MB | 10 |
-| Medium | 5s | 10% | 50MB | 3 |
-| High | - | - | - | **Blocked** |
+| Impact | Timeout | Concurrency | Example Queries |
+|--------|---------|-------------|-----------------|
+| Minimal | 100ms | Unlimited | `get_uptime`, `get_cpu_info` |
+| Low | 1s | 10 | `get_memory_info`, `get_disk_info` |
+| Medium | 5s | 3 | `get_processes`, `get_journal_logs` |
+| High | - | **Blocked** | Full filesystem scans, unbounded searches |
 
 Queries self-declare their impact level. Server enforces limits.
 
 ---
 
 ## Audit Logging
+
+### Default: Enabled
+
+Audit logging is **enabled by default** (local file, low volume). This aligns with "security product first" positioning.
+
+```yaml
+audit:
+  enabled: true  # DEFAULT: true
+  path: /var/log/mcp-sysinfo/audit.jsonl
+```
 
 ### Audit Log Format
 
@@ -370,12 +569,14 @@ JSON Lines format, one event per line:
   "client": {
     "transport": "https",
     "ip": "10.0.1.50",
-    "subject": "CN=teleport-proxy.example.com",
-    "jwt_sub": "user@example.com"
+    "mtls_subject": "CN=teleport-proxy.example.com",
+    "jwt_sub": "user@example.com",
+    "scopes": ["core", "logs"]
   },
   "result": "success",
   "duration_ms": 12,
-  "output_bytes": 2048
+  "output_bytes": 2048,
+  "redactions": 0
 }
 ```
 
@@ -383,13 +584,16 @@ JSON Lines format, one event per line:
 
 | Event | Logged Data |
 |-------|-------------|
+| `startup` | Config hash, version, transport, enabled features |
 | `auth_success` | Client identity, scopes granted |
 | `auth_failure` | Reason, client IP, attempted identity |
-| `query` | Query name, params, result, duration |
-| `query_denied` | Query, reason (scope, disabled, rate limit) |
-| `redaction` | Query, field/pattern redacted (not the data) |
+| `query` | Query name, params, result, duration, output size |
+| `query_denied` | Query, reason (scope, disabled, rate limit, missing params) |
+| `redaction` | Query, count of redactions (not the values) |
+| `rate_limited` | Identity, limit exceeded, retry_after |
 | `limit_exceeded` | Limit type, query, threshold |
-| `config_reload` | Changed settings |
+| `config_reload` | Changed settings (not sensitive values) |
+| `shutdown` | Reason, uptime |
 
 ### Audit Configuration
 
@@ -407,14 +611,154 @@ audit:
   log_params: true             # Log query parameters
   log_output_size: true        # Log response size
   log_client_ip: true          # Log client IP
-  log_redactions: true         # Log what was redacted (not values)
+  log_redaction_count: true    # Log how many redactions (not values)
 
   # Syslog forwarding
   syslog:
-    enabled: true
+    enabled: false             # Enable for production
     facility: auth
     tag: mcp-sysinfo
+    network: udp
+    addr: "syslog.internal:514"
 ```
+
+---
+
+## Configuration Integrity
+
+### Config File Security
+
+```yaml
+# Required: config file must have restricted permissions
+# Server refuses to start if permissions are too open
+
+config:
+  # Linux/macOS: file must be owned by root or service user
+  # and not world-readable (max 0640)
+  required_mode: "0640"
+  required_owner: ["root", "mcp-sysinfo"]
+```
+
+The server checks config file permissions at startup:
+
+```
+ERROR: Config file /etc/mcp-sysinfo/config.yaml has mode 0644, required 0640 or stricter
+ERROR: Config file owned by nobody, required root or mcp-sysinfo
+```
+
+### Environment Variable Handling
+
+```yaml
+config:
+  # Environment variables can override SOME settings
+  env_override:
+    allowed:
+      - MCP_LOG_LEVEL
+      - MCP_BIND_ADDRESS  # Only for non-production
+    denied:
+      - MCP_JWT_SECRET    # Must be in file or JWKS
+      - MCP_DISABLE_AUTH  # Cannot disable auth via env
+```
+
+### Config Reload
+
+```yaml
+config:
+  # Hot reload behavior
+  reload:
+    enabled: true
+    signal: SIGHUP
+    # What can be reloaded without restart
+    hot_reloadable:
+      - rate_limit.*
+      - audit.*
+      - redaction.patterns
+    # What requires restart
+    requires_restart:
+      - transport
+      - auth.jwt.issuer
+      - auth.jwt.audience
+      - tls.*
+```
+
+### Fail-Closed Behavior
+
+The server refuses to start if security configuration is invalid:
+
+| Condition | Behavior |
+|-----------|----------|
+| `transport: https` but no TLS cert | **Refuse to start** |
+| `auth.enabled: true` but no keys configured | **Refuse to start** |
+| Config file world-readable | **Refuse to start** |
+| JWKS URI unreachable at startup | **Refuse to start** (or start degraded with warning) |
+| Invalid redaction regex | **Refuse to start** |
+
+```yaml
+config:
+  # Startup behavior
+  fail_closed: true  # DEFAULT: true
+  # If false, logs warnings but continues (NOT RECOMMENDED)
+```
+
+---
+
+## Supply Chain Security
+
+### Signed Releases
+
+All releases are signed:
+
+```bash
+# Verify signature (cosign)
+cosign verify-blob \
+  --signature mcp-sysinfo-linux-amd64.sig \
+  --certificate mcp-sysinfo-linux-amd64.crt \
+  mcp-sysinfo-linux-amd64
+
+# Verify signature (GPG)
+gpg --verify mcp-sysinfo-linux-amd64.asc mcp-sysinfo-linux-amd64
+```
+
+### SBOM for This Binary
+
+Each release includes an SBOM (Software Bill of Materials):
+
+```bash
+# CycloneDX format
+mcp-sysinfo-linux-amd64.cdx.json
+
+# SPDX format
+mcp-sysinfo-linux-amd64.spdx.json
+```
+
+### Reproducible Builds
+
+Builds are reproducible from source:
+
+```bash
+# Verify build
+git checkout v1.0.0
+go build -trimpath -ldflags="-s -w" -o mcp-sysinfo ./cmd/mcp-sysinfo
+sha256sum mcp-sysinfo
+# Should match published checksum
+```
+
+### Update Policy
+
+- **No auto-update**: The binary never phones home or updates itself
+- **No telemetry**: No usage data collected
+- **Explicit upgrades only**: Operators control when to upgrade
+
+```yaml
+# There is no update configuration - by design
+```
+
+### Dependency Policy
+
+- **Minimal dependencies**: Only Go standard library where possible
+- **Vendored**: All dependencies vendored in repository
+- **Audited**: Dependencies reviewed for security issues
+- **Pinned**: Exact versions, not ranges
 
 ---
 
@@ -534,15 +878,17 @@ auth:
 - [ ] Resource limits configured
 - [ ] Redaction patterns reviewed and extended
 - [ ] Bind address restricted (not 0.0.0.0 unless intended)
+- [ ] Config file permissions verified (0640 or stricter)
 
 ### Recommended
 
 - [ ] JWKS endpoint for key rotation
-- [ ] JTI (token ID) caching for replay prevention
+- [ ] JTI caching with Redis for clustered deployments
 - [ ] Syslog forwarding to SIEM
 - [ ] File integrity monitoring on config files
 - [ ] Separate service account with minimal privileges
 - [ ] Network segmentation (management VLAN)
+- [ ] Verify release signatures before deployment
 
 ### Periodic Review
 
@@ -550,6 +896,7 @@ auth:
 - [ ] Monthly: Rotate JWT signing keys
 - [ ] Quarterly: Review query allowlists
 - [ ] Quarterly: Update redaction patterns
+- [ ] On release: Verify signatures, review changelog
 
 ---
 
@@ -560,13 +907,14 @@ auth:
 | Transport | stdio | https or socket |
 | Network bind | N/A | 127.0.0.1 or internal only |
 | TLS | N/A | mTLS required |
-| JWT auth | Disabled | Required |
+| JWT auth | Disabled (stdio) | Required (https) |
 | JWT TTL | N/A | 300s max |
 | Sensitive queries | Disabled | Disabled (or explicit allow) |
 | Redaction | Enabled | Enabled + custom patterns |
-| Audit logging | Disabled | Enabled + syslog forward |
+| Audit logging | **Enabled** | Enabled + syslog forward |
 | Max output | 1MB | Per-environment |
-| Rate limit | None | 60/min |
+| Rate limit | Per-identity | Per-identity + stricter for sensitive |
+| Config file mode | 0640 required | 0640 required |
 
 ---
 
@@ -575,3 +923,5 @@ auth:
 Report security vulnerabilities to: security@example.com
 
 PGP key for encrypted reports: [link to key]
+
+We follow coordinated disclosure. Please allow 90 days for fixes before public disclosure.
