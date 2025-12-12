@@ -1,270 +1,243 @@
 # MCP System Info
 
-A comprehensive, zero-dependency system monitoring server using the Model Context Protocol (MCP). Designed for AI-powered diagnostics with a focus on being lightweight and never impacting customer workloads.
+**Read-only AI diagnostics plane for secure incident triage and evidence capture.**
 
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                         MCP SYSTEM INFO - 106 QUERIES                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║  Phase 1 (MVP)       Core system metrics                     7 queries  ✅   ║
-║  Phase 1.5 (Logs)    System & app log access                 6 queries  📋   ║
-║  Phase 1.6 (Hooks)   Deep system introspection              37 queries  📋   ║
-║  Phase 1.7 (SBOM)    Software inventory & vulnerability     31 queries  📋   ║
-║  Phases 2-7          Enhanced, Analytics, Security, etc.    25 queries  📋   ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
+A security-first MCP server that provides structured, auditable access to system state without granting shell access to AI agents. Designed for production environments where you need AI-assisted diagnostics without the risks of arbitrary command execution.
 
-## Key Principles
+## Why This Exists
 
-- **Zero Dependencies**: Uses only built-in OS tools (no third-party software required)
-- **Cross-Platform**: Linux, macOS, and Windows support
-- **Lightweight First**: Never impact customer workloads
-- **On-Demand Only**: No background polling or auto-scanning
-- **Resource Budgets**: Strict limits on CPU, memory, and time for every query
+| Traditional AI Shell Access | MCP System Info |
+|----------------------------|-----------------|
+| AI can run arbitrary commands | Constrained to vetted read-only queries |
+| Output parsing is fragile | Structured JSON with consistent schemas |
+| No audit trail | Every query logged with identity |
+| Secrets leak via env/history | Automatic redaction of credentials |
+| Resource impact unbounded | Hard limits on CPU, memory, time |
 
-## Resource Impact Guarantee
+## Security Model
 
-Every query follows strict resource budgets:
+See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
-| Impact | CPU | Memory | Time | Policy |
-|--------|-----|--------|------|--------|
-| 🟢 Minimal | <1% | <1MB | <100ms | Always allowed |
-| 🟡 Low | <5% | <10MB | <1s | Default allowed |
-| 🟠 Medium | <10% | <50MB | <5s | Requires opt-in |
-| 🔴 High | - | - | - | **BLOCKED** - We never impact workloads |
+### Key Principles
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Defense in depth** | Transport security + auth + scopes + redaction + limits |
+| **Localhost by default** | No network listener unless explicitly configured |
+| **Sensitive queries disabled** | Auth logs, env vars, user accounts require opt-in |
+| **Automatic redaction** | AWS keys, passwords, tokens stripped from output |
+| **Audit everything** | JSON Lines audit log with client identity |
+
+### Query Classification
+
+| Scope | Risk | Default |
+|-------|------|---------|
+| `core` - CPU, memory, disk, network, processes | Low | Enabled |
+| `logs` - System and application logs | Medium | Enabled |
+| `hooks` - Scheduled tasks, kernel modules, network config | Medium | Enabled |
+| `sbom` - Package inventory, container images | Medium | Enabled |
+| `sensitive` - Auth logs, env vars, SSH/sudo config | **High** | **Disabled** |
+
+### Deployment Options
+
+| Model | Use Case |
+|-------|----------|
+| **stdio** (default) | Local MCP client (Claude Desktop) |
+| **SSH tunnel** | Remote access with existing SSH infrastructure |
+| **Teleport MCP** | Enterprise SSO + RBAC + session recording |
+| **mTLS** | Service-to-service automation |
 
 ---
 
-## Phase 1: MVP (Complete)
+## What Works Today
 
-Core system metrics with full cross-platform support.
+**Status: Phase 1 MVP Complete (7/7 queries)**
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_cpu_info` | Usage, frequency, load average, cores | ✅ | ✅ | ✅ |
-| `get_memory_info` | Total, used, available, swap | ✅ | ✅ | ✅ |
-| `get_disk_info` | Partitions, usage, I/O stats | ✅ | ✅ | ✅ |
-| `get_network_info` | Interfaces, I/O, connections | ✅ | ✅ | ✅ |
-| `get_processes` | Process list, top by CPU/memory | ✅ | ✅ | ✅ |
-| `get_uptime` | Boot time, uptime duration | ✅ | ✅ | ✅ |
-| `get_temperature` | Hardware temperature sensors | ✅ | ⚠️ | ⚠️ |
+| `get_cpu_info` | Usage, frequency, load average, cores | Yes | Yes | Yes |
+| `get_memory_info` | Total, used, available, swap | Yes | Yes | Yes |
+| `get_disk_info` | Partitions, usage, I/O stats | Yes | Yes | Yes |
+| `get_network_info` | Interfaces, I/O, connections | Yes | Yes | Yes |
+| `get_processes` | Process list, top by CPU/memory | Yes | Yes | Yes |
+| `get_uptime` | Boot time, uptime duration | Yes | Yes | Yes |
+| `get_temperature` | Hardware temperature sensors | Yes | Limited | Limited |
 
-**Status: 7/7 queries implemented**
-
----
-
-## Phase 1.5: Log Access (Critical for Diagnostics)
-
-Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_journal_logs` | Systemd journal (services, boot) | ✅ | - | - |
-| `get_syslog` | Traditional syslog messages | ✅ | ✅ | - |
-| `get_app_logs` | Application-specific logs | ✅ | ✅ | ✅ |
-| `get_kernel_logs` | dmesg, boot, hardware errors | ✅ | ✅ | ✅ |
-| `get_auth_logs` | Login, sudo, SSH attempts | ✅ | ✅ | ✅ |
-| `get_event_log` | Windows Event Viewer | - | - | ✅ |
-
-**Example Diagnostic Value:**
-
-| Without Logs | With Logs |
-|--------------|-----------|
-| "CPU at 100%" | "CPU at 100% - OOM killer triggered, java killed at 14:32" |
-| "Service down" | "nginx down - 'Too many open files' in error.log" |
-| "Disk full" | "/var/log/app.log is 45GB, growing 100MB/min" |
-
----
-
-## Phase 1.6: System Hooks (37 Queries)
-
-Zero-dependency deep system introspection. See [docs/08-system-hooks.md](docs/08-system-hooks.md).
-
-### Scheduled Tasks & Startup
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_cron_jobs` | Cron/systemd timers | 🟢 |
-| `get_launchd_jobs` | macOS launchd jobs | 🟢 |
-| `get_scheduled_tasks` | Windows Task Scheduler | 🟢 |
-| `get_startup_items` | Boot/login startup items | 🟢 |
-
-### Kernel & Drivers
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_kernel_modules` | Loaded modules/drivers | 🟢 |
-| `get_kernel_params` | Sysctl parameters | 🟢 |
-
-### Network Configuration
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_listening_ports` | Open ports + process owner | 🟢-🟡 |
-| `get_dns_config` | DNS resolvers, search domains | 🟢 |
-| `get_hosts_file` | Local DNS overrides | 🟢 |
-| `get_routing_table` | Network routes | 🟢 |
-| `get_arp_cache` | MAC-IP mappings | 🟢 |
-| `get_firewall_rules` | Active firewall rules | 🟡 |
-
-### File System
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_open_files` | Files held open (targeted) | 🟡-🟠 |
-| `get_fd_limits` | File descriptor limits | 🟢 |
-| `get_inode_usage` | Inode exhaustion | 🟢 |
-| `get_mount_options` | Mount security flags | 🟢 |
-
-### Security Configuration
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_user_accounts` | Local users/groups | 🟢 |
-| `get_sudo_config` | Privilege escalation config | 🟢 |
-| `get_ssh_config` | SSH server/client config | 🟢 |
-| `get_ssl_certs` | Certificate expiry dates | 🟡 |
-| `get_selinux_status` | SELinux status (Linux) | 🟢 |
-| `get_apparmor_status` | AppArmor profiles (Linux) | 🟢 |
-
-### Hardware Information
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_hardware_info` | System inventory (DMI/SMBIOS) | 🟡 |
-| `get_usb_devices` | Connected USB devices | 🟢 |
-| `get_pci_devices` | PCI devices | 🟢 |
-| `get_block_devices` | Disk topology | 🟢 |
-
-### Process & Resources
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_env_vars` | Environment variables | 🟢 |
-| `get_ipc_resources` | Semaphores, shared memory | 🟢 |
-| `get_namespaces` | Container namespaces | 🟢 |
-| `get_cgroup_limits` | Resource limits | 🟢 |
-| `get_capabilities` | Process capabilities | 🟢 |
-
-### System State
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_vm_info` | Virtualization detection | 🟢 |
-| `get_locale` | Locale/timezone | 🟢 |
-| `get_ntp_status` | Time sync status | 🟡 |
-| `get_core_dumps` | Crash dumps | 🟡 |
-| `get_power_state` | Power/battery state | 🟢 |
-| `get_numa_topology` | NUMA nodes | 🟢 |
-
----
-
-## Phase 1.7: SBOM & Software Inventory (31 Queries)
-
-Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md).
-
-### System Package Managers
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_apt_packages` | Debian/Ubuntu packages | ✅ | - | - |
-| `get_rpm_packages` | RHEL/Fedora packages | ✅ | - | - |
-| `get_brew_packages` | Homebrew packages | - | ✅ | - |
-| `get_macos_apps` | macOS applications | - | ✅ | - |
-| `get_windows_programs` | Windows programs | - | - | ✅ |
-| `get_windows_updates` | Windows updates | - | - | ✅ |
-
-### Language Package Managers
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_pip_packages` | Python packages | 🟡 |
-| `get_npm_packages` | Node.js packages | 🟡-🟠 |
-| `get_go_modules` | Go modules | 🟢 |
-| `get_cargo_crates` | Rust crates | 🟢 |
-| `get_gem_packages` | Ruby gems | 🟡 |
-| `get_maven_deps` | Java Maven dependencies | 🟠 |
-| `get_composer_packages` | PHP packages | 🟢 |
-| `get_nuget_packages` | .NET packages | 🟡 |
-
-### Container Images
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `get_docker_images` | Docker images | 🟢 |
-| `get_container_packages` | Packages in container | 🟡 |
-| `get_image_layers` | Image layer history | 🟢 |
-
-### SBOM Export
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `export_sbom_cyclonedx` | CycloneDX format | 🟡 |
-| `export_sbom_spdx` | SPDX format | 🟡 |
-
-### Vulnerability Lookup
-
-| Query | Description | Impact |
-|-------|-------------|:------:|
-| `check_local_vulns` | Local security DB | 🟡 |
-| `check_osv_vulns` | OSV database (network) | 🟠 |
-| `check_nvd_vulns` | NVD database (network) | 🟠 |
-
----
-
-## Future Phases (25 Queries)
-
-| Phase | Description | Queries |
-|-------|-------------|:-------:|
-| Phase 2 | Enhanced (GPU, Battery, Containers, Services) | 6 |
-| Phase 3 | Analytics (Historical, Trends, Anomaly) | 4 |
-| Phase 4 | Automation (Alerts, Remediation) | 4 |
-| Phase 5 | Security (Scan, Compliance, Forensics) | 4 |
-| Phase 6 | Integration (Prometheus, Plugins, Multi-host) | 4 |
-| Phase 7 | LLM Features (NL Queries, Auto-diagnostics) | 3 |
-
----
-
-## Quick Start
+### What You Can Do Now
 
 ```bash
 # Build
 go build -o mcp-sysinfo ./cmd/mcp-sysinfo
 
-# Run
+# Run (stdio mode - for MCP clients)
 ./mcp-sysinfo
+
+# Run via SSH (remote host)
+ssh user@server "mcp-sysinfo"
 ```
 
-## Development
+### Resource Impact
+
+Every query respects strict budgets:
+
+| Impact | CPU | Memory | Time | Behavior |
+|--------|-----|--------|------|----------|
+| Minimal | <1% | <1MB | <100ms | Always allowed |
+| Low | <5% | <10MB | <1s | Default allowed |
+| Medium | <10% | <50MB | <5s | Requires opt-in |
+| High | - | - | - | **Blocked** |
+
+---
+
+## Roadmap
+
+### Phase 1.5: Log Access (Next)
+
+Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
+
+| Query | Description |
+|-------|-------------|
+| `get_journal_logs` | Systemd journal |
+| `get_syslog` | Traditional syslog |
+| `get_app_logs` | Application-specific logs |
+| `get_kernel_logs` | dmesg, boot, hardware |
+| `get_auth_logs` | Login/sudo/SSH (sensitive scope) |
+| `get_event_log` | Windows Event Viewer |
+
+### Phase 1.6: System Hooks (37 queries)
+
+Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgroups.
+
+See [docs/08-system-hooks.md](docs/08-system-hooks.md)
+
+### Phase 1.7: SBOM & Inventory (31 queries)
+
+Software Bill of Materials for vulnerability detection.
+
+See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
+
+### Future Phases
+
+| Phase | Focus |
+|-------|-------|
+| 2 | GPU, containers, services |
+| 3 | Analytics, trends, anomaly detection |
+| 4 | Compliance scoring, forensics |
+| 5 | Prometheus export, plugins |
+| 6 | Natural language queries |
+
+---
+
+## Installation
 
 ### Prerequisites
 
 - Go 1.22+
-- No external dependencies required (uses only built-in OS tools)
+- No external dependencies (uses only OS built-in tools)
 
-### Testing
+### Build
+
+```bash
+# Clone
+git clone https://github.com/yourorg/mcp-sysinfo
+cd mcp-sysinfo
+
+# Build for current platform
+go build -o mcp-sysinfo ./cmd/mcp-sysinfo
+
+# Cross-compile
+GOOS=linux GOARCH=amd64 go build -o mcp-sysinfo-linux ./cmd/mcp-sysinfo
+GOOS=darwin GOARCH=arm64 go build -o mcp-sysinfo-darwin ./cmd/mcp-sysinfo
+GOOS=windows GOARCH=amd64 go build -o mcp-sysinfo.exe ./cmd/mcp-sysinfo
+```
+
+### Configure for Remote Access
+
+See [SECURITY.md](SECURITY.md) for complete configuration reference.
+
+```yaml
+# /etc/mcp-sysinfo/config.yaml
+
+# Transport: stdio (default), unix, pipe, https
+transport: unix
+socket:
+  path: /var/run/mcp-sysinfo.sock
+  mode: 0600
+
+# Authentication (required for https)
+auth:
+  enabled: true
+  jwt:
+    issuer: "https://auth.example.com"
+    audience: "mcp-sysinfo"
+    jwks_uri: "https://auth.example.com/.well-known/jwks.json"
+
+# Scopes
+queries:
+  sensitive:
+    enabled: false  # Explicit opt-in required
+
+# Audit
+audit:
+  enabled: true
+  path: /var/log/mcp-sysinfo/audit.jsonl
+```
+
+---
+
+## Teleport Integration
+
+MCP System Info is designed to work with [Teleport's MCP support](https://goteleport.com/docs/machine-id/access-guides/mcp/):
+
+```yaml
+# Teleport role for MCP access
+kind: role
+metadata:
+  name: mcp-diagnostics
+spec:
+  allow:
+    mcp_servers:
+      - labels:
+          app: mcp-sysinfo
+        commands:
+          - get_cpu_info
+          - get_memory_info
+          - get_disk_info
+          - get_processes
+```
+
+Teleport provides:
+- SSO authentication (OIDC, SAML, GitHub)
+- Role-based access control per query
+- Session recording and audit
+- Certificate-based host identity
+
+---
+
+## SSH Access
+
+For ad-hoc remote access without additional infrastructure:
+
+```bash
+# Direct execution over SSH
+ssh user@server "mcp-sysinfo --query get_cpu_info"
+
+# Persistent session for MCP client
+ssh -tt user@server "mcp-sysinfo --transport stdio"
+```
+
+SSH provides authentication. The server runs in stdio mode with no network listener.
+
+---
+
+## Testing
 
 ```bash
 # Unit tests
 go test -v ./...
 
-# Integration tests (requires real OS)
+# Integration tests (real OS calls)
 INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
-```
-
-### Cross-Compilation
-
-```bash
-# Linux
-GOOS=linux GOARCH=amd64 go build -o mcp-sysinfo-linux ./cmd/mcp-sysinfo
-
-# macOS (Apple Silicon)
-GOOS=darwin GOARCH=arm64 go build -o mcp-sysinfo-darwin ./cmd/mcp-sysinfo
-
-# Windows
-GOOS=windows GOARCH=amd64 go build -o mcp-sysinfo.exe ./cmd/mcp-sysinfo
 ```
 
 ---
@@ -273,16 +246,10 @@ GOOS=windows GOARCH=amd64 go build -o mcp-sysinfo.exe ./cmd/mcp-sysinfo
 
 | Document | Description |
 |----------|-------------|
-| [Overview](docs/00-overview.md) | Architecture and design |
-| [Tier 1: Core Monitoring](docs/01-tier1-core-monitoring.md) | CPU, Memory, Disk, Network, Processes, Logs |
-| [Tier 2: Analytics](docs/02-tier2-analytics.md) | Time-series, trends, anomalies |
-| [Tier 3: Automation](docs/03-tier3-automation.md) | Alerts, remediation, webhooks |
-| [Tier 4: Security](docs/04-tier4-security.md) | Scanning, compliance, forensics |
-| [Tier 5: Integration](docs/05-tier5-integration.md) | Prometheus, OpenTelemetry, plugins |
-| [Tier 6: LLM Features](docs/06-tier6-llm-features.md) | Health scoring, diagnostics |
-| [Feature Support Matrix](docs/07-feature-support-matrix.md) | Complete feature breakdown |
-| [System Hooks](docs/08-system-hooks.md) | 37 deep introspection hooks |
-| [SBOM Inventory](docs/09-sbom-inventory.md) | Software inventory & vulnerabilities |
+| **[SECURITY.md](SECURITY.md)** | Security architecture, auth, deployment |
+| [docs/00-overview.md](docs/00-overview.md) | Architecture and design rationale |
+| [docs/08-system-hooks.md](docs/08-system-hooks.md) | Phase 1.6: 37 deep introspection queries |
+| [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) | Phase 1.7: Software inventory |
 
 ---
 
@@ -293,12 +260,9 @@ Phase 1 (MVP)       ████████████████████
 Phase 1.5 (Logs)    ░░░░░░░░░░░░░░░░░░░░    0%  (0/6 queries)
 Phase 1.6 (Hooks)   ░░░░░░░░░░░░░░░░░░░░    0%  (0/37 queries)
 Phase 1.7 (SBOM)    ░░░░░░░░░░░░░░░░░░░░    0%  (0/31 queries)
-Phases 2-7          ░░░░░░░░░░░░░░░░░░░░    0%  (0/25 queries)
-───────────────────────────────────────────────────────────────
-Total               ██░░░░░░░░░░░░░░░░░░    7%  (7/106 queries)
 ```
 
-See [TODO.md](TODO.md) for the complete implementation checklist.
+See [TODO.md](TODO.md) for implementation details.
 
 ---
 
