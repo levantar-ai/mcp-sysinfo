@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	kernel32                   = windows.NewLazySystemDLL("kernel32.dll")
-	procGlobalMemoryStatusEx   = kernel32.NewProc("GlobalMemoryStatusEx")
-	procGetPerformanceInfo     = kernel32.NewProc("GetPerformanceInfo")
+	kernel32                 = windows.NewLazySystemDLL("kernel32.dll")
+	psapi                    = windows.NewLazySystemDLL("psapi.dll")
+	procGlobalMemoryStatusEx = kernel32.NewProc("GlobalMemoryStatusEx")
+	procGetPerformanceInfo   = psapi.NewProc("GetPerformanceInfo")
 )
 
 // MEMORYSTATUSEX structure
