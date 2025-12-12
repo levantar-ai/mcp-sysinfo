@@ -1,6 +1,6 @@
-# Binaries
-mcp-sysinfo
-mcp-sysinfo.exe
+# Binaries (at root level only)
+/mcp-sysinfo
+/mcp-sysinfo.exe
 *.exe
 *.dll
 *.so
