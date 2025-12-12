@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yourusername/mcp-sysinfo/pkg/types"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // collect gathers memory information on Linux by parsing /proc/meminfo.

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yourusername/mcp-sysinfo/internal/cpu"
+	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 )
 
 func TestCPUInfo_Linux(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yourusername/mcp-sysinfo/internal/network"
+	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 )
 
 func TestNetworkInfo_Linux(t *testing.T) {

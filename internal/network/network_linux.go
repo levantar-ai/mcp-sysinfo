@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yourusername/mcp-sysinfo/pkg/types"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // collect gathers network interface information on Linux.
