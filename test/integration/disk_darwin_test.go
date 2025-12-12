@@ -5,7 +5,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/yourusername/mcp-sysinfo/internal/disk"
+	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 )
 
 func TestDiskInfo_Darwin(t *testing.T) {

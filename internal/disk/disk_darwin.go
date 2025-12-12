@@ -25,7 +25,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/yourusername/mcp-sysinfo/pkg/types"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // collect gathers disk partition information on macOS.

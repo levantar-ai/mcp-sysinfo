@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yourusername/mcp-sysinfo/internal/memory"
+	"github.com/levantar-ai/mcp-sysinfo/internal/memory"
 )
 
 func TestMemoryInfo_Linux(t *testing.T) {

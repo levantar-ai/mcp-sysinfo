@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yourusername/mcp-sysinfo/pkg/types"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // Collector collects uptime metrics.

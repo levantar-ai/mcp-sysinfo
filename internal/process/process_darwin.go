@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yourusername/mcp-sysinfo/pkg/types"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // collect gathers all running processes on macOS using ps command.

@@ -2,7 +2,7 @@
 package disk
 
 import (
-	"github.com/yourusername/mcp-sysinfo/pkg/types"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // Collector collects disk metrics.
