@@ -31,6 +31,8 @@ MCP System Info is a **security product first**, diagnostics tool second. Every 
 - **Parameterized arguments only** - User input maps to structured parameters, never concatenated into commands
 - **No shell interpolation** - Commands executed directly via `exec`, not through a shell
 - **Output parsing, not passthrough** - Raw command output is parsed into structured JSON
+- **Locale hardening** - Commands run with `LC_ALL=C` to ensure consistent, predictable output across systems
+- **No recursive filesystem searches** - No grep/find/recursive scan primitives exist in the API
 
 ```
 User Input              What Happens                      What Does NOT Happen
@@ -62,6 +64,11 @@ transport: stdio  # Default - no network listener
 ```
 
 The server reads from stdin and writes to stdout. No TCP/UDP ports opened. This is the **only** transport enabled by default.
+
+**stdio Security Model**: Authentication is not required because OS-level controls apply:
+- Only processes that can spawn the binary can interact with it
+- Parent process controls who can write to stdin / read from stdout
+- **Recommendation**: Run under a dedicated service account (`mcp-sysinfo`) and restrict binary execution via file permissions (`chmod 750`, owned by `root:mcp-sysinfo`)
 
 ### Unix Socket (Linux/macOS)
 
@@ -108,6 +115,28 @@ tls:
 ```
 
 **No plaintext HTTP. Ever.** The server refuses to start with `transport: http`.
+
+### Network Exposure Guardrails
+
+The server enforces safety checks on bind address:
+
+| Bind Address | Requirements |
+|--------------|--------------|
+| `127.0.0.1` / `::1` | mTLS recommended, auth recommended |
+| `0.0.0.0` / `::` | **mTLS required** + **auth required** (server refuses otherwise) |
+| Private IP | mTLS required, auth required |
+
+```yaml
+# This configuration will FAIL to start:
+transport: https
+tls:
+  bind: 0.0.0.0:8443
+  require_client_cert: false  # ERROR: must be true for non-localhost
+auth:
+  enabled: false              # ERROR: must be true for non-localhost
+```
+
+This prevents accidental wide-open exposure.
 
 ---
 
@@ -214,7 +243,19 @@ auth:
     jwks_uri: "https://auth.example.com/.well-known/jwks.json"
     jwks_refresh_interval: 3600  # Re-fetch keys hourly
     jwks_min_refresh: 300        # But not more than every 5 min
+
+    # Startup behavior when JWKS is unreachable
+    jwks_startup_policy: fail_closed  # DEFAULT: fail_closed
+
+    # Options:
+    # - fail_closed: Refuse to start if JWKS unreachable (RECOMMENDED)
+    # - fail_open_cached: Start with cached keys if available, fail if no cache
+    #   cache_max_age_hours: 24  # Max age of cached keys to accept
 ```
+
+**Default: fail_closed**. The server refuses to start if it cannot fetch signing keys. This ensures no requests are accepted with unverifiable tokens.
+
+For high-availability deployments, `fail_open_cached` allows startup with previously-cached keys (up to `cache_max_age_hours` old), but logs a warning and continues attempting JWKS refresh.
 
 For file-based keys, use a sidecar or cron job to rotate:
 
@@ -284,10 +325,24 @@ When rate limited, the server returns:
 | Scope | Description | Default | Risk Level |
 |-------|-------------|---------|------------|
 | `core` | CPU, memory, disk, network, processes, uptime, temperature | Enabled | Low |
-| `logs` | System logs, application logs, kernel logs | Enabled | Medium |
+| `logs_system` | Kernel logs, systemd journal, syslog | Enabled | Medium |
+| `logs_app` | Application-specific logs (often contain secrets/PII) | Enabled | Medium-High |
 | `hooks` | Scheduled tasks, kernel modules, network config, mounts | Enabled | Medium |
 | `sbom` | Package lists, container images, dependencies | Enabled | Medium |
-| `sensitive` | Auth logs, env vars, user accounts, SSH config, sudo config | **Disabled** | High |
+| `sensitive` | Auth logs, env vars, user accounts, SSH/sudo config, open files | **Disabled** | High |
+
+**Note on logs**: Logs are enabled by default but are **time-bounded** (max 24h) and **truncated** (max 1000 lines). Application logs (`logs_app`) are separated because they often contain leaked credentials, PII, or tokens. In high-sensitivity environments, disable `logs_app` or restrict to specific paths:
+
+```yaml
+scopes:
+  logs_app:
+    enabled: true
+    allowed_paths:
+      - /var/log/nginx/*.log
+      - /var/log/myapp/*.log
+    denied_paths:
+      - /var/log/myapp/debug.log  # Contains request bodies
+```
 
 ### Sensitive Queries (Disabled by Default)
 
@@ -301,7 +356,9 @@ These queries can expose credentials, PII, or security-relevant configuration:
 | `get_user_accounts` | High | Local users, groups, shell paths | Disabled |
 | `get_sudo_config` | High | Privilege escalation paths | Disabled |
 | `get_ssh_config` | High | Auth methods, allowed keys, forwarding | Disabled |
-| `get_open_files` | Medium | File paths, potential content via path | Requires parameters |
+| `get_open_files` | High | File paths, process details, potential content | Disabled |
+
+**Note**: `get_open_files` is in the `sensitive` scope (not `hooks`) because file paths can reveal sensitive information and can be used for reconnaissance. Even with parameter requirements, it remains high-risk.
 
 ### Parameter Requirements for Dangerous Queries
 
@@ -357,11 +414,13 @@ scopes:
     - get_uptime
     - get_temperature
 
-  logs:
+  logs_system:
     - get_journal_logs
     - get_syslog
-    - get_app_logs
     - get_kernel_logs
+
+  logs_app:
+    - get_app_logs
 
   hooks:
     - get_cron_jobs
@@ -376,7 +435,7 @@ scopes:
     - get_user_accounts
     - get_sudo_config
     - get_ssh_config
-    - get_open_files  # When used without required params
+    - get_open_files  # Always sensitive, even with params
 ```
 
 ---
@@ -613,6 +672,14 @@ audit:
   log_client_ip: true          # Log client IP
   log_redaction_count: true    # Log how many redactions (not values)
 
+  # Privacy controls
+  anonymize_identity: false    # Set true to hash jwt_sub/client identifiers
+  identity_hash_salt: ${AUDIT_HASH_SALT}  # Required if anonymize_identity=true
+
+  # Integrity (optional)
+  hmac_signing: false          # Sign each audit line with HMAC
+  hmac_key: ${AUDIT_HMAC_KEY}  # Required if hmac_signing=true
+
   # Syslog forwarding
   syslog:
     enabled: false             # Enable for production
@@ -620,6 +687,24 @@ audit:
     tag: mcp-sysinfo
     network: udp
     addr: "syslog.internal:514"
+```
+
+### Audit Log Security
+
+**Privacy**: If audit logs may be shared or analyzed by third parties, enable `anonymize_identity` to hash user identifiers (one-way, salted).
+
+**Tamper resistance**:
+- **Append-only**: Configure the log directory with append-only attributes (`chattr +a` on Linux) or use an append-only filesystem
+- **Forward immediately**: Enable syslog forwarding to a remote SIEM; local logs can be tampered with by a compromised host
+- **HMAC signing** (optional): Each audit line includes an HMAC, creating a lightweight integrity chain. Tampering breaks the chain.
+
+```json
+{
+  "ts": "2024-12-12T10:30:45.123Z",
+  "event": "query",
+  ...
+  "_hmac": "sha256:a1b2c3d4..."
+}
 ```
 
 ---
@@ -690,8 +775,9 @@ The server refuses to start if security configuration is invalid:
 | `transport: https` but no TLS cert | **Refuse to start** |
 | `auth.enabled: true` but no keys configured | **Refuse to start** |
 | Config file world-readable | **Refuse to start** |
-| JWKS URI unreachable at startup | **Refuse to start** (or start degraded with warning) |
+| JWKS URI unreachable at startup | **Refuse to start** (default) or use cached keys (if configured) |
 | Invalid redaction regex | **Refuse to start** |
+| `bind: 0.0.0.0` without mTLS + auth | **Refuse to start** |
 
 ```yaml
 config:
@@ -910,11 +996,15 @@ auth:
 | JWT auth | Disabled (stdio) | Required (https) |
 | JWT TTL | N/A | 300s max |
 | Sensitive queries | Disabled | Disabled (or explicit allow) |
+| `logs_system` scope | Enabled | Enabled (time-bounded) |
+| `logs_app` scope | Enabled | Review: disable or restrict paths |
 | Redaction | Enabled | Enabled + custom patterns |
 | Audit logging | **Enabled** | Enabled + syslog forward |
+| Audit identity | Plain | Consider `anonymize_identity` |
 | Max output | 1MB | Per-environment |
 | Rate limit | Per-identity | Per-identity + stricter for sensitive |
 | Config file mode | 0640 required | 0640 required |
+| JWKS startup | fail_closed | fail_closed (or fail_open_cached for HA) |
 
 ---
 
