@@ -165,52 +165,10 @@ jobs:
         with:
           args: ./...
 
-  # Get version from semantic-release dry-run
-  version:
-    name: Determine Version
-    runs-on: ubuntu-latest
-    needs: [integration-linux, integration-macos, integration-windows, lint, security]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    outputs:
-      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install semantic-release
-        run: npm install -g semantic-release @semantic-release/github
-
-      - name: Semantic Release (dry-run)
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          OUTPUT=$(npx semantic-release --dry-run --no-ci 2>&1) || true
-          echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -q "The next release version is"; then
-            VERSION=$(echo "$OUTPUT" | grep -oP 'The next release version is \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-            echo "new_release_published=true" >> $GITHUB_OUTPUT
-            echo "new_release_version=${VERSION}" >> $GITHUB_OUTPUT
-            echo "Next version: ${VERSION}"
-          else
-            echo "new_release_published=false" >> $GITHUB_OUTPUT
-            echo "No new release needed"
-          fi
-
-  # Build binaries on native platforms
+  # Build binaries on native platforms (always runs for CI)
   build:
     name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
-    needs: version
-    if: needs.version.outputs.new_release_published == 'true'
+    needs: [integration-linux, integration-macos, integration-windows, lint, security]
     strategy:
       matrix:
         include:
@@ -245,13 +203,12 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          VERSION="${{ needs.version.outputs.new_release_version }}"
           EXT=""
           if [ "${{ matrix.goos }}" = "windows" ]; then
             EXT=".exe"
           fi
           GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
-            -ldflags="-s -w -X main.version=${VERSION}" \
+            -ldflags="-s -w" \
             -o "dist/mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}${EXT}" \
             ./cmd/mcp-sysinfo
 
@@ -261,11 +218,11 @@ jobs:
           name: mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}
           path: dist/
 
-  # Create release and upload binaries
+  # Release (only on main branch push)
   release:
     name: Release
-    needs: [version, build]
-    if: needs.version.outputs.new_release_published == 'true'
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
@@ -291,16 +248,35 @@ jobs:
       - name: Install semantic-release
         run: npm install -g semantic-release @semantic-release/github
 
+      - name: Semantic Release (dry-run to get version)
+        id: semantic_dry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OUTPUT=$(npx semantic-release --dry-run --no-ci 2>&1) || true
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q "The next release version is"; then
+            VERSION=$(echo "$OUTPUT" | grep -oP 'The next release version is \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+            echo "new_release=true" >> $GITHUB_OUTPUT
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "Next version: ${VERSION}"
+          else
+            echo "new_release=false" >> $GITHUB_OUTPUT
+            echo "No new release needed"
+          fi
+
       - name: Semantic Release
+        if: steps.semantic_dry.outputs.new_release == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
 
       - name: Upload Release Assets
+        if: steps.semantic_dry.outputs.new_release == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION="${{ needs.version.outputs.new_release_version }}"
+          VERSION="${{ steps.semantic_dry.outputs.version }}"
           for file in dist/*; do
             if [ -f "$file" ]; then
               echo "Uploading $file to release v${VERSION}"
