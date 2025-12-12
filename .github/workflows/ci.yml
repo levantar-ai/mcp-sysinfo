@@ -260,8 +260,9 @@ jobs:
         run: |
           OUTPUT=$(npx semantic-release --dry-run --no-ci 2>&1) || true
           echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -q "The next release version is"; then
-            VERSION=$(echo "$OUTPUT" | grep -oP 'The next release version is \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          # Match "the next release version is X.Y.Z" (case insensitive)
+          if echo "$OUTPUT" | grep -qi "the next release version is"; then
+            VERSION=$(echo "$OUTPUT" | grep -oP '(?i)the next release version is \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
             echo "new_release=true" >> $GITHUB_OUTPUT
             echo "version=${VERSION}" >> $GITHUB_OUTPUT
             echo "Next version: ${VERSION}"
