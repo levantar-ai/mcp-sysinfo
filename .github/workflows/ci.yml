@@ -119,6 +119,7 @@ jobs:
           cache: true
 
       - name: Run Windows integration tests
+        shell: bash
         run: go test -v -tags=integration,windows ./test/integration/...
         env:
           INTEGRATION_TEST: "true"
