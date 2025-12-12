@@ -253,3 +253,85 @@ const (
 	PlatformWindows Platform = "windows"
 	PlatformUnknown Platform = "unknown"
 )
+
+// LogEntry represents a single log entry.
+type LogEntry struct {
+	Timestamp time.Time         `json:"timestamp"`
+	Source    string            `json:"source"`              // e.g., "kernel", "sshd", "nginx"
+	Level     string            `json:"level,omitempty"`     // e.g., "info", "warning", "error"
+	Message   string            `json:"message"`
+	PID       int32             `json:"pid,omitempty"`
+	Unit      string            `json:"unit,omitempty"`      // systemd unit name
+	Fields    map[string]string `json:"fields,omitempty"`    // additional structured fields
+}
+
+// LogResult represents the result of a log query.
+type LogResult struct {
+	Entries   []LogEntry `json:"entries"`
+	Source    string     `json:"source"`      // e.g., "journald", "syslog", "eventlog"
+	Count     int        `json:"count"`
+	Truncated bool       `json:"truncated"`   // true if results were limited
+	Timestamp time.Time  `json:"timestamp"`
+}
+
+// LogQuery represents parameters for querying logs.
+type LogQuery struct {
+	Lines      int       `json:"lines,omitempty"`       // max lines to return (default 100)
+	Since      time.Time `json:"since,omitempty"`       // start time filter
+	Until      time.Time `json:"until,omitempty"`       // end time filter
+	Unit       string    `json:"unit,omitempty"`        // systemd unit filter
+	Priority   int       `json:"priority,omitempty"`    // syslog priority (0-7)
+	Grep       string    `json:"grep,omitempty"`        // text filter
+	Source     string    `json:"source,omitempty"`      // source filter (e.g., "sshd")
+	Level      string    `json:"level,omitempty"`       // level filter
+	Follow     bool      `json:"follow,omitempty"`      // tail -f mode (not implemented)
+}
+
+// JournalLogResult represents systemd journal query results.
+type JournalLogResult struct {
+	LogResult
+	Boots []BootInfo `json:"boots,omitempty"` // available boot IDs
+}
+
+// BootInfo represents a system boot entry.
+type BootInfo struct {
+	ID        string    `json:"id"`
+	Timestamp time.Time `json:"timestamp"`
+	Current   bool      `json:"current"`
+}
+
+// EventLogResult represents Windows Event Log query results.
+type EventLogResult struct {
+	LogResult
+	Channel string `json:"channel"` // e.g., "System", "Application", "Security"
+}
+
+// EventLogQuery extends LogQuery for Windows Event Log.
+type EventLogQuery struct {
+	LogQuery
+	Channel  string `json:"channel,omitempty"`  // System, Application, Security, etc.
+	Provider string `json:"provider,omitempty"` // Event provider filter
+	EventID  int    `json:"event_id,omitempty"` // Specific event ID
+	Level    int    `json:"level,omitempty"`    // 1=Critical, 2=Error, 3=Warning, 4=Info
+}
+
+// KernelLogResult represents kernel/dmesg log results.
+type KernelLogResult struct {
+	LogResult
+	BootTime time.Time `json:"boot_time,omitempty"`
+}
+
+// AuthLogResult represents authentication log results.
+type AuthLogResult struct {
+	LogResult
+	FailedLogins    int `json:"failed_logins,omitempty"`
+	SuccessfulLogins int `json:"successful_logins,omitempty"`
+}
+
+// AppLogQuery represents parameters for application log queries.
+type AppLogQuery struct {
+	LogQuery
+	Path      string   `json:"path,omitempty"`       // specific log file path
+	Paths     []string `json:"paths,omitempty"`      // multiple paths
+	Pattern   string   `json:"pattern,omitempty"`    // glob pattern for log files
+}
