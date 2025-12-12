@@ -4,12 +4,12 @@ package cpu
 
 import (
 	"fmt"
-	"syscall"
 	"time"
 	"unsafe"
 
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 	"golang.org/x/sys/windows"
+	"golang.org/x/sys/windows/registry"
 )
 
 var (
@@ -117,35 +117,21 @@ func (c *Collector) getLoadAverage() (*types.LoadAverage, error) {
 // getFrequency returns CPU frequency on Windows using registry.
 func (c *Collector) getFrequency() (*types.FrequencyInfo, error) {
 	// Open the registry key for CPU info
-	key, err := windows.OpenKey(
-		windows.HKEY_LOCAL_MACHINE,
+	key, err := registry.OpenKey(
+		registry.LOCAL_MACHINE,
 		`HARDWARE\DESCRIPTION\System\CentralProcessor\0`,
-		windows.KEY_READ,
+		registry.QUERY_VALUE,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("opening registry key: %w", err)
 	}
-	defer windows.CloseKey(key)
+	defer key.Close()
 
 	// Read MHz value
-	var mhz uint32
-	var dtype uint32
-	var buf [4]byte
-	n := uint32(len(buf))
-
-	err = windows.RegQueryValueEx(
-		key,
-		syscall.StringToUTF16Ptr("~MHz"),
-		nil,
-		&dtype,
-		&buf[0],
-		&n,
-	)
+	mhz, _, err := key.GetIntegerValue("~MHz")
 	if err != nil {
 		return nil, fmt.Errorf("reading MHz: %w", err)
 	}
-
-	mhz = *(*uint32)(unsafe.Pointer(&buf[0]))
 
 	return &types.FrequencyInfo{
 		Current: float64(mhz),
