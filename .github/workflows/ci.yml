@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   issues: write
@@ -209,10 +213,14 @@ jobs:
         run: |
           mkdir -p dist
           EXT=""
+          CGO="0"
           if [ "${{ matrix.goos }}" = "windows" ]; then
             EXT=".exe"
           fi
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
+          if [ "${{ matrix.goos }}" = "darwin" ]; then
+            CGO="1"
+          fi
+          CGO_ENABLED=$CGO GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build \
             -ldflags="-s -w" \
             -o "dist/mcp-sysinfo-${{ matrix.goos }}-${{ matrix.goarch }}${EXT}" \
             ./cmd/mcp-sysinfo
