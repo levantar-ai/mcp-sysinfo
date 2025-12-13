@@ -60,8 +60,10 @@ func (c *Collector) getMounts() (*types.MountsResult, error) {
 		// Get disk usage
 		var stat syscall.Statfs_t
 		if err := syscall.Statfs(mountpoint, &stat); err == nil {
-			mount.Total = stat.Blocks * uint64(stat.Bsize)
-			mount.Free = stat.Bfree * uint64(stat.Bsize)
+			// #nosec G115 -- Bsize is always positive on Linux filesystems
+			bsize := uint64(stat.Bsize)
+			mount.Total = stat.Blocks * bsize
+			mount.Free = stat.Bfree * bsize
 			mount.Used = mount.Total - mount.Free
 			if mount.Total > 0 {
 				mount.UsedPct = float64(mount.Used) / float64(mount.Total) * 100
@@ -225,6 +227,7 @@ func (c *Collector) getOpenFiles() (*types.OpenFilesResult, error) {
 				fileType = "anon"
 			}
 
+			// #nosec G109,G115 -- PID values on Linux fit in int32 (max PID is 4194304)
 			files = append(files, types.OpenFile{
 				PID:         int32(pid),
 				ProcessName: procName,
