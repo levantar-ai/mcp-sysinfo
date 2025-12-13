@@ -51,17 +51,51 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1 MVP Complete (7/7 queries)**
+**Status: Phase 1.6 In Progress (29/44 queries)**
+
+### Phase 1: Core Metrics (7/7)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_cpu_info` | Usage, frequency, load average, cores | Yes | Yes | Yes |
-| `get_memory_info` | Total, used, available, swap | Yes | Yes | Yes |
-| `get_disk_info` | Partitions, usage, I/O stats | Yes | Yes | Yes |
-| `get_network_info` | Interfaces, I/O, connections | Yes | Yes | Yes |
-| `get_processes` | Process list, top by CPU/memory | Yes | Yes | Yes |
-| `get_uptime` | Boot time, uptime duration | Yes | Yes | Yes |
-| `get_temperature` | Hardware temperature sensors | Yes | Limited | Limited |
+| `get_cpu_info` | Usage, frequency, load average, cores | ✅ | ✅ | ✅ |
+| `get_memory_info` | Total, used, available, swap | ✅ | ✅ | ✅ |
+| `get_disk_info` | Partitions, usage, I/O stats | ✅ | ✅ | ✅ |
+| `get_network_info` | Interfaces, I/O, connections | ✅ | ✅ | ✅ |
+| `get_processes` | Process list, top by CPU/memory | ✅ | ✅ | ✅ |
+| `get_uptime` | Boot time, uptime duration | ✅ | ✅ | ✅ |
+| `get_temperature` | Hardware temperature sensors | ✅ | ⚠️ | ⚠️ |
+
+### Phase 1.5: Log Access (6/6)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_journal_logs` | Systemd journal | ✅ | - | - |
+| `get_syslog` | Traditional syslog | ✅ | ✅ | - |
+| `get_kernel_logs` | Kernel/dmesg logs | ✅ | ✅ | - |
+| `get_auth_logs` | Authentication logs (sensitive) | ✅ | ✅ | - |
+| `get_app_logs` | Application-specific logs | ✅ | ✅ | ✅ |
+| `get_event_log` | Windows Event Log | - | - | ✅ |
+
+### Phase 1.6: System Hooks (16/37)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_scheduled_tasks` | Task Scheduler / at jobs / launchd | ✅ | ✅ | ✅ |
+| `get_cron_jobs` | Cron entries | ✅ | ✅ | - |
+| `get_startup_items` | Startup programs and services | ✅ | ✅ | ✅ |
+| `get_systemd_services` | Systemd service status | ✅ | - | - |
+| `get_kernel_modules` | Loaded kernel modules | ✅ | ✅ | - |
+| `get_loaded_drivers` | Device drivers | ✅ | ✅ | ✅ |
+| `get_dns_servers` | Configured DNS servers | ✅ | ✅ | ✅ |
+| `get_routes` | Routing table | ✅ | ✅ | ✅ |
+| `get_firewall_rules` | Firewall rules | ✅ | ✅ | ✅ |
+| `get_listening_ports` | Listening network ports | ✅ | ✅ | ✅ |
+| `get_arp_table` | ARP table entries | ✅ | ✅ | ✅ |
+| `get_network_stats` | Network stack statistics | ✅ | ✅ | ✅ |
+| `get_mounts` | Mounted filesystems | ✅ | ✅ | ✅ |
+| `get_disk_io` | Disk I/O statistics | ✅ | ✅ | ✅ |
+| `get_open_files` | Open file descriptors | ✅ | ✅ | ✅ |
+| `get_inode_usage` | Inode usage | ✅ | ✅ | - |
 
 ### What You Can Do Now
 
@@ -91,22 +125,15 @@ Every query respects strict budgets:
 
 ## Roadmap
 
-### Phase 1.5: Log Access (Next)
-
-Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
-
-| Query | Description |
-|-------|-------------|
-| `get_journal_logs` | Systemd journal |
-| `get_syslog` | Traditional syslog |
-| `get_app_logs` | Application-specific logs |
-| `get_kernel_logs` | dmesg, boot, hardware |
-| `get_auth_logs` | Login/sudo/SSH (sensitive scope) |
-| `get_event_log` | Windows Event Viewer |
-
-### Phase 1.6: System Hooks (37 queries)
+### Phase 1.6: System Hooks (In Progress - 16/37 queries)
 
 Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgroups.
+
+**Remaining queries:**
+- Security Configuration: environment variables, user accounts, sudo config, SSH config, SELinux/AppArmor, certificates
+- Hardware Information: PCI devices, USB devices, block devices, SMART data
+- Process & Resources: cgroups, namespaces, capabilities, resource limits, memory maps
+- System State: boot parameters, sysctl values, shared memory, semaphores, message queues, lock files
 
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
@@ -259,8 +286,8 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 
 ```
 Phase 1 (MVP)       ████████████████████  100%  (7/7 queries)
-Phase 1.5 (Logs)    ░░░░░░░░░░░░░░░░░░░░    0%  (0/6 queries)
-Phase 1.6 (Hooks)   ░░░░░░░░░░░░░░░░░░░░    0%  (0/37 queries)
+Phase 1.5 (Logs)    ████████████████████  100%  (6/6 queries)
+Phase 1.6 (Hooks)   █████████░░░░░░░░░░░   43%  (16/37 queries)
 Phase 1.7 (SBOM)    ░░░░░░░░░░░░░░░░░░░░    0%  (0/31 queries)
 ```
 
