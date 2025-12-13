@@ -335,3 +335,230 @@ type AppLogQuery struct {
 	Paths     []string `json:"paths,omitempty"`      // multiple paths
 	Pattern   string   `json:"pattern,omitempty"`    // glob pattern for log files
 }
+
+// ScheduledTasksResult represents scheduled tasks query results.
+type ScheduledTasksResult struct {
+	Tasks     []ScheduledTask `json:"tasks"`
+	Count     int             `json:"count"`
+	Source    string          `json:"source"` // "taskscheduler", "at", "cron", "launchd"
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// ScheduledTask represents a single scheduled task.
+type ScheduledTask struct {
+	Name          string    `json:"name"`
+	Path          string    `json:"path,omitempty"`           // Task path/location
+	Status        string    `json:"status"`                   // Enabled, Disabled, Running, Ready
+	NextRun       time.Time `json:"next_run,omitempty"`
+	LastRun       time.Time `json:"last_run,omitempty"`
+	LastResult    int       `json:"last_result,omitempty"`    // Exit code
+	Author        string    `json:"author,omitempty"`
+	Description   string    `json:"description,omitempty"`
+	Command       string    `json:"command,omitempty"`        // Command/action to run
+	Arguments     string    `json:"arguments,omitempty"`
+	RunAsUser     string    `json:"run_as_user,omitempty"`
+	Schedule      string    `json:"schedule,omitempty"`       // Human-readable schedule
+	TriggerType   string    `json:"trigger_type,omitempty"`   // Daily, Weekly, OnBoot, etc.
+}
+
+// CronJobsResult represents cron jobs query results.
+type CronJobsResult struct {
+	Jobs      []CronJob `json:"jobs"`
+	Count     int       `json:"count"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+// CronJob represents a single cron job entry.
+type CronJob struct {
+	Schedule    string `json:"schedule"`              // "0 * * * *" or "@daily"
+	Command     string `json:"command"`
+	User        string `json:"user,omitempty"`
+	Source      string `json:"source"`                // "/etc/crontab", "user", "/etc/cron.d/name"
+	Enabled     bool   `json:"enabled"`
+	Description string `json:"description,omitempty"` // Comment above the entry
+}
+
+// StartupItemsResult represents startup items query results.
+type StartupItemsResult struct {
+	Items     []StartupItem `json:"items"`
+	Count     int           `json:"count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// StartupItem represents a startup program or service.
+type StartupItem struct {
+	Name        string `json:"name"`
+	Command     string `json:"command"`
+	Location    string `json:"location"`               // Registry key, plist path, etc.
+	Type        string `json:"type"`                   // "registry", "startup_folder", "launchagent", "systemd"
+	Enabled     bool   `json:"enabled"`
+	User        string `json:"user,omitempty"`         // User scope or "system"
+	Description string `json:"description,omitempty"`
+}
+
+// SystemdServicesResult represents systemd services query results.
+type SystemdServicesResult struct {
+	Services  []SystemdService `json:"services"`
+	Count     int              `json:"count"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// SystemdService represents a systemd service unit.
+type SystemdService struct {
+	Name        string `json:"name"`                    // e.g., "nginx.service"
+	LoadState   string `json:"load_state"`              // loaded, not-found, masked
+	ActiveState string `json:"active_state"`            // active, inactive, failed
+	SubState    string `json:"sub_state"`               // running, exited, dead, etc.
+	Description string `json:"description,omitempty"`
+	MainPID     int32  `json:"main_pid,omitempty"`
+	StartTime   string `json:"start_time,omitempty"`
+	Type        string `json:"type,omitempty"`          // simple, forking, oneshot, etc.
+	Enabled     string `json:"enabled,omitempty"`       // enabled, disabled, static, masked
+}
+
+// KernelModulesResult represents kernel modules query results.
+type KernelModulesResult struct {
+	Modules   []KernelModule `json:"modules"`
+	Count     int            `json:"count"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// KernelModule represents a loaded kernel module.
+type KernelModule struct {
+	Name      string   `json:"name"`
+	Size      int64    `json:"size"`                   // Size in bytes
+	UsedBy    int      `json:"used_by"`                // Reference count
+	UsedByMods []string `json:"used_by_mods,omitempty"` // Modules using this one
+	State     string   `json:"state,omitempty"`        // Live, Loading, Unloading
+	Address   string   `json:"address,omitempty"`      // Memory address
+}
+
+// LoadedDriversResult represents loaded drivers query results.
+type LoadedDriversResult struct {
+	Drivers   []LoadedDriver `json:"drivers"`
+	Count     int            `json:"count"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// LoadedDriver represents a loaded device driver.
+type LoadedDriver struct {
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	DeviceClass string `json:"device_class,omitempty"` // e.g., "network", "storage", "usb"
+	Vendor      string `json:"vendor,omitempty"`
+	Version     string `json:"version,omitempty"`
+	Path        string `json:"path,omitempty"`          // Driver path or module
+	Status      string `json:"status,omitempty"`        // Running, Stopped
+}
+
+// DNSServersResult represents DNS configuration query results.
+type DNSServersResult struct {
+	Servers   []DNSServer `json:"servers"`
+	Count     int         `json:"count"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+// DNSServer represents a configured DNS server.
+type DNSServer struct {
+	Address   string `json:"address"`
+	Interface string `json:"interface,omitempty"` // Interface this is configured for
+	Type      string `json:"type,omitempty"`      // system, interface, dhcp
+	Priority  int    `json:"priority,omitempty"`
+}
+
+// RoutesResult represents routing table query results.
+type RoutesResult struct {
+	Routes    []Route   `json:"routes"`
+	Count     int       `json:"count"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+// Route represents a network route.
+type Route struct {
+	Destination string `json:"destination"`
+	Gateway     string `json:"gateway,omitempty"`
+	Interface   string `json:"interface"`
+	Mask        string `json:"mask,omitempty"`
+	Metric      int    `json:"metric,omitempty"`
+	Flags       string `json:"flags,omitempty"`
+	Type        string `json:"type,omitempty"` // local, unicast, broadcast
+}
+
+// FirewallRulesResult represents firewall rules query results.
+type FirewallRulesResult struct {
+	Rules     []FirewallRule `json:"rules"`
+	Count     int            `json:"count"`
+	Source    string         `json:"source"` // iptables, nftables, pf, windows
+	Enabled   bool           `json:"enabled"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// FirewallRule represents a firewall rule.
+type FirewallRule struct {
+	Chain       string `json:"chain,omitempty"`       // INPUT, OUTPUT, FORWARD
+	Table       string `json:"table,omitempty"`       // filter, nat, mangle
+	Protocol    string `json:"protocol,omitempty"`    // tcp, udp, icmp
+	Source      string `json:"source,omitempty"`
+	Destination string `json:"destination,omitempty"`
+	Port        string `json:"port,omitempty"`
+	Action      string `json:"action"`                // ACCEPT, DROP, REJECT
+	Interface   string `json:"interface,omitempty"`
+	Direction   string `json:"direction,omitempty"`   // in, out
+	Description string `json:"description,omitempty"`
+	Enabled     bool   `json:"enabled"`
+}
+
+// ListeningPortsResult represents listening ports query results.
+type ListeningPortsResult struct {
+	Ports     []ListeningPort `json:"ports"`
+	Count     int             `json:"count"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// ListeningPort represents a listening network port.
+type ListeningPort struct {
+	Protocol    string `json:"protocol"` // tcp, udp
+	Address     string `json:"address"`
+	Port        uint16 `json:"port"`
+	PID         int32  `json:"pid,omitempty"`
+	ProcessName string `json:"process_name,omitempty"`
+	State       string `json:"state,omitempty"` // LISTEN
+	User        string `json:"user,omitempty"`
+}
+
+// ARPTableResult represents ARP table query results.
+type ARPTableResult struct {
+	Entries   []ARPEntry `json:"entries"`
+	Count     int        `json:"count"`
+	Timestamp time.Time  `json:"timestamp"`
+}
+
+// ARPEntry represents an ARP table entry.
+type ARPEntry struct {
+	IPAddress  string `json:"ip_address"`
+	MACAddress string `json:"mac_address"`
+	Interface  string `json:"interface"`
+	Type       string `json:"type,omitempty"` // static, dynamic
+	State      string `json:"state,omitempty"` // reachable, stale, permanent
+}
+
+// NetworkStatsResult represents network statistics query results.
+type NetworkStatsResult struct {
+	Stats     NetworkStats `json:"stats"`
+	Timestamp time.Time    `json:"timestamp"`
+}
+
+// NetworkStats represents network stack statistics.
+type NetworkStats struct {
+	TCPConnections    int    `json:"tcp_connections"`
+	TCPEstablished    int    `json:"tcp_established"`
+	TCPTimeWait       int    `json:"tcp_time_wait"`
+	TCPCloseWait      int    `json:"tcp_close_wait"`
+	UDPConnections    int    `json:"udp_connections"`
+	PacketsReceived   uint64 `json:"packets_received"`
+	PacketsSent       uint64 `json:"packets_sent"`
+	BytesReceived     uint64 `json:"bytes_received"`
+	BytesSent         uint64 `json:"bytes_sent"`
+	Errors            uint64 `json:"errors"`
+	Drops             uint64 `json:"drops"`
+}
