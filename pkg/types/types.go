@@ -562,3 +562,81 @@ type NetworkStats struct {
 	Errors            uint64 `json:"errors"`
 	Drops             uint64 `json:"drops"`
 }
+
+// MountsResult represents mounted filesystems query results.
+type MountsResult struct {
+	Mounts    []MountInfo `json:"mounts"`
+	Count     int         `json:"count"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+// MountInfo represents a mounted filesystem.
+type MountInfo struct {
+	Device     string   `json:"device"`
+	Mountpoint string   `json:"mountpoint"`
+	Fstype     string   `json:"fstype"`
+	Options    []string `json:"options,omitempty"`
+	Total      uint64   `json:"total,omitempty"`
+	Used       uint64   `json:"used,omitempty"`
+	Free       uint64   `json:"free,omitempty"`
+	UsedPct    float64  `json:"used_percent,omitempty"`
+}
+
+// DiskIOResult represents disk I/O statistics query results.
+type DiskIOResult struct {
+	Devices   []DiskIOStats `json:"devices"`
+	Count     int           `json:"count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// DiskIOStats represents I/O statistics for a disk device.
+type DiskIOStats struct {
+	Device         string  `json:"device"`
+	ReadCount      uint64  `json:"read_count"`
+	WriteCount     uint64  `json:"write_count"`
+	ReadBytes      uint64  `json:"read_bytes"`
+	WriteBytes     uint64  `json:"write_bytes"`
+	ReadTime       uint64  `json:"read_time_ms"`
+	WriteTime      uint64  `json:"write_time_ms"`
+	IOTime         uint64  `json:"io_time_ms,omitempty"`
+	WeightedIOTime uint64  `json:"weighted_io_time_ms,omitempty"`
+	IOInProgress   uint64  `json:"io_in_progress,omitempty"`
+	ReadMerged     uint64  `json:"read_merged,omitempty"`
+	WriteMerged    uint64  `json:"write_merged,omitempty"`
+	Utilization    float64 `json:"utilization_percent,omitempty"`
+}
+
+// OpenFilesResult represents open files query results.
+type OpenFilesResult struct {
+	Files     []OpenFile `json:"files"`
+	Count     int        `json:"count"`
+	Limit     int        `json:"limit,omitempty"`
+	Timestamp time.Time  `json:"timestamp"`
+}
+
+// OpenFile represents an open file descriptor.
+type OpenFile struct {
+	PID         int32  `json:"pid"`
+	ProcessName string `json:"process_name,omitempty"`
+	FD          int    `json:"fd"`
+	Path        string `json:"path"`
+	Type        string `json:"type,omitempty"` // file, socket, pipe, device
+	Mode        string `json:"mode,omitempty"` // r, w, rw
+}
+
+// InodeUsageResult represents inode usage query results.
+type InodeUsageResult struct {
+	Filesystems []InodeUsage `json:"filesystems"`
+	Count       int          `json:"count"`
+	Timestamp   time.Time    `json:"timestamp"`
+}
+
+// InodeUsage represents inode usage for a filesystem.
+type InodeUsage struct {
+	Filesystem string  `json:"filesystem"`
+	Mountpoint string  `json:"mountpoint"`
+	Total      uint64  `json:"total"`
+	Used       uint64  `json:"used"`
+	Free       uint64  `json:"free"`
+	UsedPct    float64 `json:"used_percent"`
+}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
+	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
 	"github.com/levantar-ai/mcp-sysinfo/internal/memory"
@@ -107,7 +108,7 @@ AVAILABLE QUERIES:
     get_app_logs        Application-specific logs
     get_event_log       Windows Event Log
 
-  Phase 1.6 - System Hooks (12 queries - partial):
+  Phase 1.6 - System Hooks (16 queries - partial):
     get_scheduled_tasks  Windows Task Scheduler / at jobs / launchd
     get_cron_jobs        Cron entries (Linux/macOS)
     get_startup_items    Startup programs and services
@@ -120,6 +121,10 @@ AVAILABLE QUERIES:
     get_listening_ports  Listening network ports
     get_arp_table        ARP table entries
     get_network_stats    Network stack statistics
+    get_mounts           Mounted filesystems
+    get_disk_io          Disk I/O statistics
+    get_open_files       Open file descriptors
+    get_inode_usage      Inode usage (Linux/macOS)
 
 EXAMPLES:
     # Show CPU information
@@ -247,6 +252,22 @@ func runQuery(queryName string, jsonOut bool) {
 	case "get_network_stats":
 		c := netconfig.NewCollector()
 		result, err = c.GetNetworkStats()
+
+	case "get_mounts":
+		c := filesystem.NewCollector()
+		result, err = c.GetMounts()
+
+	case "get_disk_io":
+		c := filesystem.NewCollector()
+		result, err = c.GetDiskIO()
+
+	case "get_open_files":
+		c := filesystem.NewCollector()
+		result, err = c.GetOpenFiles()
+
+	case "get_inode_usage":
+		c := filesystem.NewCollector()
+		result, err = c.GetInodeUsage()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)
