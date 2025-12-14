@@ -21,10 +21,10 @@ type OIDCValidator struct {
 	audience string
 
 	// JWKS cache
-	mu        sync.RWMutex
-	keys      map[string]*rsa.PublicKey
-	keysExp   time.Time
-	cacheTTL  time.Duration
+	mu       sync.RWMutex
+	keys     map[string]*rsa.PublicKey
+	keysExp  time.Time
+	cacheTTL time.Duration
 
 	// Discovery cache
 	discoveryOnce sync.Once

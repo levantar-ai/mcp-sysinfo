@@ -259,13 +259,13 @@ func (h *HTTPServer) introspectToken(token string) (*Identity, error) {
 	}
 
 	var result struct {
-		Active    bool     `json:"active"`
-		Sub       string   `json:"sub"`
-		ClientID  string   `json:"client_id"`
-		Scope     string   `json:"scope"`
-		MCPScopes []string `json:"mcp_scopes"`
+		Active    bool        `json:"active"`
+		Sub       string      `json:"sub"`
+		ClientID  string      `json:"client_id"`
+		Scope     string      `json:"scope"`
+		MCPScopes []string    `json:"mcp_scopes"`
 		Aud       interface{} `json:"aud"` // Can be string or []string
-		Exp       int64    `json:"exp"`
+		Exp       int64       `json:"exp"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {

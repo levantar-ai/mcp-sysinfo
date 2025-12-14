@@ -23,12 +23,12 @@ type wmiComputerSystem struct {
 
 // wmiBIOS represents Win32_BIOS WMI class.
 type wmiBIOS struct {
-	Manufacturer    string `json:"Manufacturer"`
-	Name            string `json:"Name"`
-	ReleaseDate     string `json:"ReleaseDate"`
-	SerialNumber    string `json:"SerialNumber"`
+	Manufacturer      string `json:"Manufacturer"`
+	Name              string `json:"Name"`
+	ReleaseDate       string `json:"ReleaseDate"`
+	SerialNumber      string `json:"SerialNumber"`
 	SMBIOSBIOSVersion string `json:"SMBIOSBIOSVersion"`
-	Version         string `json:"Version"`
+	Version           string `json:"Version"`
 }
 
 // wmiBaseBoard represents Win32_BaseBoard WMI class.
@@ -42,57 +42,57 @@ type wmiBaseBoard struct {
 
 // wmiSystemEnclosure represents Win32_SystemEnclosure WMI class.
 type wmiSystemEnclosure struct {
-	Manufacturer string `json:"Manufacturer"`
-	ChassisTypes []int  `json:"ChassisTypes"`
-	SerialNumber string `json:"SerialNumber"`
+	Manufacturer   string `json:"Manufacturer"`
+	ChassisTypes   []int  `json:"ChassisTypes"`
+	SerialNumber   string `json:"SerialNumber"`
 	SMBIOSAssetTag string `json:"SMBIOSAssetTag"`
-	Version      string `json:"Version"`
+	Version        string `json:"Version"`
 }
 
 // wmiUSBDevice represents Win32_USBControllerDevice WMI class.
 type wmiUSBDevice struct {
-	DeviceID    string `json:"DeviceID"`
-	Name        string `json:"Name"`
-	Description string `json:"Description"`
-	Status      string `json:"Status"`
+	DeviceID     string `json:"DeviceID"`
+	Name         string `json:"Name"`
+	Description  string `json:"Description"`
+	Status       string `json:"Status"`
 	Manufacturer string `json:"Manufacturer"`
-	Service     string `json:"Service"`
+	Service      string `json:"Service"`
 }
 
 // wmiPnPEntity represents Win32_PnPEntity for USB/PCI devices.
 type wmiPnPEntity struct {
-	DeviceID        string `json:"DeviceID"`
-	Name            string `json:"Name"`
-	Description     string `json:"Description"`
-	Manufacturer    string `json:"Manufacturer"`
-	Service         string `json:"Service"`
-	HardwareID      []string `json:"HardwareID"`
-	CompatibleID    []string `json:"CompatibleID"`
-	ClassGuid       string `json:"ClassGuid"`
-	PNPClass        string `json:"PNPClass"`
+	DeviceID     string   `json:"DeviceID"`
+	Name         string   `json:"Name"`
+	Description  string   `json:"Description"`
+	Manufacturer string   `json:"Manufacturer"`
+	Service      string   `json:"Service"`
+	HardwareID   []string `json:"HardwareID"`
+	CompatibleID []string `json:"CompatibleID"`
+	ClassGuid    string   `json:"ClassGuid"`
+	PNPClass     string   `json:"PNPClass"`
 }
 
 // wmiDiskDrive represents Win32_DiskDrive WMI class.
 type wmiDiskDrive struct {
-	DeviceID     string `json:"DeviceID"`
-	Model        string `json:"Model"`
-	Size         string `json:"Size"`
-	MediaType    string `json:"MediaType"`
-	SerialNumber string `json:"SerialNumber"`
+	DeviceID      string `json:"DeviceID"`
+	Model         string `json:"Model"`
+	Size          string `json:"Size"`
+	MediaType     string `json:"MediaType"`
+	SerialNumber  string `json:"SerialNumber"`
 	InterfaceType string `json:"InterfaceType"`
-	Partitions   int    `json:"Partitions"`
-	Index        int    `json:"Index"`
+	Partitions    int    `json:"Partitions"`
+	Index         int    `json:"Index"`
 }
 
 // wmiLogicalDisk represents Win32_LogicalDisk WMI class.
 type wmiLogicalDisk struct {
-	DeviceID     string `json:"DeviceID"`
-	VolumeName   string `json:"VolumeName"`
+	DeviceID           string `json:"DeviceID"`
+	VolumeName         string `json:"VolumeName"`
 	VolumeSerialNumber string `json:"VolumeSerialNumber"`
-	FileSystem   string `json:"FileSystem"`
-	Size         string `json:"Size"`
-	FreeSpace    string `json:"FreeSpace"`
-	DriveType    int    `json:"DriveType"`
+	FileSystem         string `json:"FileSystem"`
+	Size               string `json:"Size"`
+	FreeSpace          string `json:"FreeSpace"`
+	DriveType          int    `json:"DriveType"`
 }
 
 // getHardwareInfo retrieves hardware info using WMI.
@@ -262,10 +262,10 @@ func (c *Collector) getPCIDevices() (*types.PCIDevicesResult, error) {
 
 	for _, pnp := range pnpDevices {
 		device := types.PCIDevice{
-			Device:  pnp.Name,
-			Vendor:  pnp.Manufacturer,
-			Driver:  pnp.Service,
-			Class:   pnp.PNPClass,
+			Device: pnp.Name,
+			Vendor: pnp.Manufacturer,
+			Driver: pnp.Service,
+			Class:  pnp.PNPClass,
 		}
 
 		// Parse VEN/DEV from DeviceID (format: PCI\VEN_XXXX&DEV_YYYY&SUBSYS_...\...)

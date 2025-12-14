@@ -46,18 +46,18 @@ func (c *Collector) getVMInfo() (*types.VMInfoResult, error) {
 	mfgLower := strings.ToLower(result.Manufacturer)
 
 	hypervisors := map[string]string{
-		"vmware":          "vmware",
-		"virtualbox":      "virtualbox",
-		"kvm":             "kvm",
-		"qemu":            "qemu",
-		"xen":             "xen",
-		"microsoft":       "hyper-v",
-		"parallels":       "parallels",
-		"bochs":           "bochs",
-		"bhyve":           "bhyve",
-		"amazon ec2":      "aws",
-		"google compute":  "gcp",
-		"droplet":         "digitalocean",
+		"vmware":         "vmware",
+		"virtualbox":     "virtualbox",
+		"kvm":            "kvm",
+		"qemu":           "qemu",
+		"xen":            "xen",
+		"microsoft":      "hyper-v",
+		"parallels":      "parallels",
+		"bochs":          "bochs",
+		"bhyve":          "bhyve",
+		"amazon ec2":     "aws",
+		"google compute": "gcp",
+		"droplet":        "digitalocean",
 	}
 
 	for keyword, hvName := range hypervisors {

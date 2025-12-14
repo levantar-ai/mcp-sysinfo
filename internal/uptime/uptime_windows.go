@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	kernel32             = windows.NewLazySystemDLL("kernel32.dll")
-	procGetTickCount64   = kernel32.NewProc("GetTickCount64")
+	kernel32           = windows.NewLazySystemDLL("kernel32.dll")
+	procGetTickCount64 = kernel32.NewProc("GetTickCount64")
 )
 
 // collect gathers system uptime on Windows.

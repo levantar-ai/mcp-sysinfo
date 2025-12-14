@@ -5,13 +5,13 @@ import "time"
 
 // CPUInfo represents CPU metrics.
 type CPUInfo struct {
-	Percent      float64            `json:"percent"`
-	PerCPU       []float64          `json:"per_cpu,omitempty"`
-	Count        int                `json:"count"`
-	PhysicalCount int               `json:"physical_count"`
-	Frequency    *FrequencyInfo     `json:"frequency,omitempty"`
-	LoadAverage  *LoadAverage       `json:"load_average,omitempty"`
-	Timestamp    time.Time          `json:"timestamp"`
+	Percent       float64        `json:"percent"`
+	PerCPU        []float64      `json:"per_cpu,omitempty"`
+	Count         int            `json:"count"`
+	PhysicalCount int            `json:"physical_count"`
+	Frequency     *FrequencyInfo `json:"frequency,omitempty"`
+	LoadAverage   *LoadAverage   `json:"load_average,omitempty"`
+	Timestamp     time.Time      `json:"timestamp"`
 }
 
 // FrequencyInfo represents CPU frequency.
@@ -35,18 +35,18 @@ type MemoryInfo struct {
 	Used          uint64    `json:"used"`
 	UsedPercent   float64   `json:"used_percent"`
 	Free          uint64    `json:"free"`
-	Active        uint64    `json:"active,omitempty"`        // Linux/macOS
-	Inactive      uint64    `json:"inactive,omitempty"`      // Linux/macOS
-	Wired         uint64    `json:"wired,omitempty"`         // macOS only
-	Compressed    uint64    `json:"compressed,omitempty"`    // macOS only
-	Buffers       uint64    `json:"buffers,omitempty"`       // Linux only
-	Cached        uint64    `json:"cached,omitempty"`        // Linux/Windows
-	Shared        uint64    `json:"shared,omitempty"`        // Linux only
-	Slab          uint64    `json:"slab,omitempty"`          // Linux only
-	SReclaimable  uint64    `json:"sreclaimable,omitempty"`  // Linux only
+	Active        uint64    `json:"active,omitempty"`         // Linux/macOS
+	Inactive      uint64    `json:"inactive,omitempty"`       // Linux/macOS
+	Wired         uint64    `json:"wired,omitempty"`          // macOS only
+	Compressed    uint64    `json:"compressed,omitempty"`     // macOS only
+	Buffers       uint64    `json:"buffers,omitempty"`        // Linux only
+	Cached        uint64    `json:"cached,omitempty"`         // Linux/Windows
+	Shared        uint64    `json:"shared,omitempty"`         // Linux only
+	Slab          uint64    `json:"slab,omitempty"`           // Linux only
+	SReclaimable  uint64    `json:"sreclaimable,omitempty"`   // Linux only
 	SUReClaimable uint64    `json:"sunreclaimable,omitempty"` // Linux only
-	PageTables    uint64    `json:"page_tables,omitempty"`   // Linux only
-	SwapCached    uint64    `json:"swap_cached,omitempty"`   // Linux only
+	PageTables    uint64    `json:"page_tables,omitempty"`    // Linux only
+	SwapCached    uint64    `json:"swap_cached,omitempty"`    // Linux only
 	Swap          *SwapInfo `json:"swap,omitempty"`
 	Timestamp     time.Time `json:"timestamp"`
 }
@@ -127,7 +127,7 @@ type NetworkIOCounters struct {
 
 // ConnectionInfo represents a network connection.
 type ConnectionInfo struct {
-	Type       string `json:"type"`        // tcp, udp, tcp6, udp6
+	Type       string `json:"type"` // tcp, udp, tcp6, udp6
 	LocalAddr  string `json:"local_addr"`
 	LocalPort  uint16 `json:"local_port"`
 	RemoteAddr string `json:"remote_addr"`
@@ -138,15 +138,15 @@ type ConnectionInfo struct {
 
 // ProcessInfo represents a single process.
 type ProcessInfo struct {
-	PID         int32     `json:"pid"`
-	Name        string    `json:"name"`
-	Username    string    `json:"username,omitempty"`
-	CPUPercent  float64   `json:"cpu_percent"`
-	MemPercent  float32   `json:"mem_percent"`
-	MemRSS      uint64    `json:"mem_rss"`
-	Status      string    `json:"status"`
-	CreateTime  time.Time `json:"create_time"`
-	Cmdline     string    `json:"cmdline,omitempty"`
+	PID        int32     `json:"pid"`
+	Name       string    `json:"name"`
+	Username   string    `json:"username,omitempty"`
+	CPUPercent float64   `json:"cpu_percent"`
+	MemPercent float32   `json:"mem_percent"`
+	MemRSS     uint64    `json:"mem_rss"`
+	Status     string    `json:"status"`
+	CreateTime time.Time `json:"create_time"`
+	Cmdline    string    `json:"cmdline,omitempty"`
 }
 
 // ProcessList represents a list of processes.
@@ -217,31 +217,31 @@ type Container struct {
 
 // HealthScore represents overall system health.
 type HealthScore struct {
-	Score      int                  `json:"score"` // 0-100
-	Categories map[string]int       `json:"categories"`
-	Issues     []Issue              `json:"issues"`
-	Timestamp  time.Time            `json:"timestamp"`
+	Score      int            `json:"score"` // 0-100
+	Categories map[string]int `json:"categories"`
+	Issues     []Issue        `json:"issues"`
+	Timestamp  time.Time      `json:"timestamp"`
 }
 
 // Issue represents a detected system issue.
 type Issue struct {
-	Severity    string `json:"severity"` // critical, warning, info
-	Category    string `json:"category"`
-	Message     string `json:"message"`
-	Suggestion  string `json:"suggestion,omitempty"`
+	Severity   string `json:"severity"` // critical, warning, info
+	Category   string `json:"category"`
+	Message    string `json:"message"`
+	Suggestion string `json:"suggestion,omitempty"`
 }
 
 // Alert represents an alert configuration.
 type Alert struct {
-	ID          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	Condition   string                 `json:"condition"`
-	Threshold   float64                `json:"threshold"`
-	Duration    time.Duration          `json:"duration"`
-	Severity    string                 `json:"severity"`
-	Actions     []string               `json:"actions"`
-	Enabled     bool                   `json:"enabled"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	ID        string                 `json:"id"`
+	Name      string                 `json:"name"`
+	Condition string                 `json:"condition"`
+	Threshold float64                `json:"threshold"`
+	Duration  time.Duration          `json:"duration"`
+	Severity  string                 `json:"severity"`
+	Actions   []string               `json:"actions"`
+	Enabled   bool                   `json:"enabled"`
+	Metadata  map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // Platform represents the current platform.
@@ -257,34 +257,34 @@ const (
 // LogEntry represents a single log entry.
 type LogEntry struct {
 	Timestamp time.Time         `json:"timestamp"`
-	Source    string            `json:"source"`              // e.g., "kernel", "sshd", "nginx"
-	Level     string            `json:"level,omitempty"`     // e.g., "info", "warning", "error"
+	Source    string            `json:"source"`          // e.g., "kernel", "sshd", "nginx"
+	Level     string            `json:"level,omitempty"` // e.g., "info", "warning", "error"
 	Message   string            `json:"message"`
 	PID       int32             `json:"pid,omitempty"`
-	Unit      string            `json:"unit,omitempty"`      // systemd unit name
-	Fields    map[string]string `json:"fields,omitempty"`    // additional structured fields
+	Unit      string            `json:"unit,omitempty"`   // systemd unit name
+	Fields    map[string]string `json:"fields,omitempty"` // additional structured fields
 }
 
 // LogResult represents the result of a log query.
 type LogResult struct {
 	Entries   []LogEntry `json:"entries"`
-	Source    string     `json:"source"`      // e.g., "journald", "syslog", "eventlog"
+	Source    string     `json:"source"` // e.g., "journald", "syslog", "eventlog"
 	Count     int        `json:"count"`
-	Truncated bool       `json:"truncated"`   // true if results were limited
+	Truncated bool       `json:"truncated"` // true if results were limited
 	Timestamp time.Time  `json:"timestamp"`
 }
 
 // LogQuery represents parameters for querying logs.
 type LogQuery struct {
-	Lines      int       `json:"lines,omitempty"`       // max lines to return (default 100)
-	Since      time.Time `json:"since,omitempty"`       // start time filter
-	Until      time.Time `json:"until,omitempty"`       // end time filter
-	Unit       string    `json:"unit,omitempty"`        // systemd unit filter
-	Priority   int       `json:"priority,omitempty"`    // syslog priority (0-7)
-	Grep       string    `json:"grep,omitempty"`        // text filter
-	Source     string    `json:"source,omitempty"`      // source filter (e.g., "sshd")
-	Level      string    `json:"level,omitempty"`       // level filter
-	Follow     bool      `json:"follow,omitempty"`      // tail -f mode (not implemented)
+	Lines    int       `json:"lines,omitempty"`    // max lines to return (default 100)
+	Since    time.Time `json:"since,omitempty"`    // start time filter
+	Until    time.Time `json:"until,omitempty"`    // end time filter
+	Unit     string    `json:"unit,omitempty"`     // systemd unit filter
+	Priority int       `json:"priority,omitempty"` // syslog priority (0-7)
+	Grep     string    `json:"grep,omitempty"`     // text filter
+	Source   string    `json:"source,omitempty"`   // source filter (e.g., "sshd")
+	Level    string    `json:"level,omitempty"`    // level filter
+	Follow   bool      `json:"follow,omitempty"`   // tail -f mode (not implemented)
 }
 
 // JournalLogResult represents systemd journal query results.
@@ -324,16 +324,16 @@ type KernelLogResult struct {
 // AuthLogResult represents authentication log results.
 type AuthLogResult struct {
 	LogResult
-	FailedLogins    int `json:"failed_logins,omitempty"`
+	FailedLogins     int `json:"failed_logins,omitempty"`
 	SuccessfulLogins int `json:"successful_logins,omitempty"`
 }
 
 // AppLogQuery represents parameters for application log queries.
 type AppLogQuery struct {
 	LogQuery
-	Path      string   `json:"path,omitempty"`       // specific log file path
-	Paths     []string `json:"paths,omitempty"`      // multiple paths
-	Pattern   string   `json:"pattern,omitempty"`    // glob pattern for log files
+	Path    string   `json:"path,omitempty"`    // specific log file path
+	Paths   []string `json:"paths,omitempty"`   // multiple paths
+	Pattern string   `json:"pattern,omitempty"` // glob pattern for log files
 }
 
 // ScheduledTasksResult represents scheduled tasks query results.
@@ -346,19 +346,19 @@ type ScheduledTasksResult struct {
 
 // ScheduledTask represents a single scheduled task.
 type ScheduledTask struct {
-	Name          string    `json:"name"`
-	Path          string    `json:"path,omitempty"`           // Task path/location
-	Status        string    `json:"status"`                   // Enabled, Disabled, Running, Ready
-	NextRun       time.Time `json:"next_run,omitempty"`
-	LastRun       time.Time `json:"last_run,omitempty"`
-	LastResult    int       `json:"last_result,omitempty"`    // Exit code
-	Author        string    `json:"author,omitempty"`
-	Description   string    `json:"description,omitempty"`
-	Command       string    `json:"command,omitempty"`        // Command/action to run
-	Arguments     string    `json:"arguments,omitempty"`
-	RunAsUser     string    `json:"run_as_user,omitempty"`
-	Schedule      string    `json:"schedule,omitempty"`       // Human-readable schedule
-	TriggerType   string    `json:"trigger_type,omitempty"`   // Daily, Weekly, OnBoot, etc.
+	Name        string    `json:"name"`
+	Path        string    `json:"path,omitempty"` // Task path/location
+	Status      string    `json:"status"`         // Enabled, Disabled, Running, Ready
+	NextRun     time.Time `json:"next_run,omitempty"`
+	LastRun     time.Time `json:"last_run,omitempty"`
+	LastResult  int       `json:"last_result,omitempty"` // Exit code
+	Author      string    `json:"author,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Command     string    `json:"command,omitempty"` // Command/action to run
+	Arguments   string    `json:"arguments,omitempty"`
+	RunAsUser   string    `json:"run_as_user,omitempty"`
+	Schedule    string    `json:"schedule,omitempty"`     // Human-readable schedule
+	TriggerType string    `json:"trigger_type,omitempty"` // Daily, Weekly, OnBoot, etc.
 }
 
 // CronJobsResult represents cron jobs query results.
@@ -370,10 +370,10 @@ type CronJobsResult struct {
 
 // CronJob represents a single cron job entry.
 type CronJob struct {
-	Schedule    string `json:"schedule"`              // "0 * * * *" or "@daily"
+	Schedule    string `json:"schedule"` // "0 * * * *" or "@daily"
 	Command     string `json:"command"`
 	User        string `json:"user,omitempty"`
-	Source      string `json:"source"`                // "/etc/crontab", "user", "/etc/cron.d/name"
+	Source      string `json:"source"` // "/etc/crontab", "user", "/etc/cron.d/name"
 	Enabled     bool   `json:"enabled"`
 	Description string `json:"description,omitempty"` // Comment above the entry
 }
@@ -389,10 +389,10 @@ type StartupItemsResult struct {
 type StartupItem struct {
 	Name        string `json:"name"`
 	Command     string `json:"command"`
-	Location    string `json:"location"`               // Registry key, plist path, etc.
-	Type        string `json:"type"`                   // "registry", "startup_folder", "launchagent", "systemd"
+	Location    string `json:"location"` // Registry key, plist path, etc.
+	Type        string `json:"type"`     // "registry", "startup_folder", "launchagent", "systemd"
 	Enabled     bool   `json:"enabled"`
-	User        string `json:"user,omitempty"`         // User scope or "system"
+	User        string `json:"user,omitempty"` // User scope or "system"
 	Description string `json:"description,omitempty"`
 }
 
@@ -405,15 +405,15 @@ type SystemdServicesResult struct {
 
 // SystemdService represents a systemd service unit.
 type SystemdService struct {
-	Name        string `json:"name"`                    // e.g., "nginx.service"
-	LoadState   string `json:"load_state"`              // loaded, not-found, masked
-	ActiveState string `json:"active_state"`            // active, inactive, failed
-	SubState    string `json:"sub_state"`               // running, exited, dead, etc.
+	Name        string `json:"name"`         // e.g., "nginx.service"
+	LoadState   string `json:"load_state"`   // loaded, not-found, masked
+	ActiveState string `json:"active_state"` // active, inactive, failed
+	SubState    string `json:"sub_state"`    // running, exited, dead, etc.
 	Description string `json:"description,omitempty"`
 	MainPID     int32  `json:"main_pid,omitempty"`
 	StartTime   string `json:"start_time,omitempty"`
-	Type        string `json:"type,omitempty"`          // simple, forking, oneshot, etc.
-	Enabled     string `json:"enabled,omitempty"`       // enabled, disabled, static, masked
+	Type        string `json:"type,omitempty"`    // simple, forking, oneshot, etc.
+	Enabled     string `json:"enabled,omitempty"` // enabled, disabled, static, masked
 }
 
 // KernelModulesResult represents kernel modules query results.
@@ -425,12 +425,12 @@ type KernelModulesResult struct {
 
 // KernelModule represents a loaded kernel module.
 type KernelModule struct {
-	Name      string   `json:"name"`
-	Size      int64    `json:"size"`                   // Size in bytes
-	UsedBy    int      `json:"used_by"`                // Reference count
+	Name       string   `json:"name"`
+	Size       int64    `json:"size"`                   // Size in bytes
+	UsedBy     int      `json:"used_by"`                // Reference count
 	UsedByMods []string `json:"used_by_mods,omitempty"` // Modules using this one
-	State     string   `json:"state,omitempty"`        // Live, Loading, Unloading
-	Address   string   `json:"address,omitempty"`      // Memory address
+	State      string   `json:"state,omitempty"`        // Live, Loading, Unloading
+	Address    string   `json:"address,omitempty"`      // Memory address
 }
 
 // LoadedDriversResult represents loaded drivers query results.
@@ -447,8 +447,8 @@ type LoadedDriver struct {
 	DeviceClass string `json:"device_class,omitempty"` // e.g., "network", "storage", "usb"
 	Vendor      string `json:"vendor,omitempty"`
 	Version     string `json:"version,omitempty"`
-	Path        string `json:"path,omitempty"`          // Driver path or module
-	Status      string `json:"status,omitempty"`        // Running, Stopped
+	Path        string `json:"path,omitempty"`   // Driver path or module
+	Status      string `json:"status,omitempty"` // Running, Stopped
 }
 
 // DNSServersResult represents DNS configuration query results.
@@ -495,15 +495,15 @@ type FirewallRulesResult struct {
 
 // FirewallRule represents a firewall rule.
 type FirewallRule struct {
-	Chain       string `json:"chain,omitempty"`       // INPUT, OUTPUT, FORWARD
-	Table       string `json:"table,omitempty"`       // filter, nat, mangle
-	Protocol    string `json:"protocol,omitempty"`    // tcp, udp, icmp
+	Chain       string `json:"chain,omitempty"`    // INPUT, OUTPUT, FORWARD
+	Table       string `json:"table,omitempty"`    // filter, nat, mangle
+	Protocol    string `json:"protocol,omitempty"` // tcp, udp, icmp
 	Source      string `json:"source,omitempty"`
 	Destination string `json:"destination,omitempty"`
 	Port        string `json:"port,omitempty"`
-	Action      string `json:"action"`                // ACCEPT, DROP, REJECT
+	Action      string `json:"action"` // ACCEPT, DROP, REJECT
 	Interface   string `json:"interface,omitempty"`
-	Direction   string `json:"direction,omitempty"`   // in, out
+	Direction   string `json:"direction,omitempty"` // in, out
 	Description string `json:"description,omitempty"`
 	Enabled     bool   `json:"enabled"`
 }
@@ -538,7 +538,7 @@ type ARPEntry struct {
 	IPAddress  string `json:"ip_address"`
 	MACAddress string `json:"mac_address"`
 	Interface  string `json:"interface"`
-	Type       string `json:"type,omitempty"` // static, dynamic
+	Type       string `json:"type,omitempty"`  // static, dynamic
 	State      string `json:"state,omitempty"` // reachable, stale, permanent
 }
 
@@ -550,17 +550,17 @@ type NetworkStatsResult struct {
 
 // NetworkStats represents network stack statistics.
 type NetworkStats struct {
-	TCPConnections    int    `json:"tcp_connections"`
-	TCPEstablished    int    `json:"tcp_established"`
-	TCPTimeWait       int    `json:"tcp_time_wait"`
-	TCPCloseWait      int    `json:"tcp_close_wait"`
-	UDPConnections    int    `json:"udp_connections"`
-	PacketsReceived   uint64 `json:"packets_received"`
-	PacketsSent       uint64 `json:"packets_sent"`
-	BytesReceived     uint64 `json:"bytes_received"`
-	BytesSent         uint64 `json:"bytes_sent"`
-	Errors            uint64 `json:"errors"`
-	Drops             uint64 `json:"drops"`
+	TCPConnections  int    `json:"tcp_connections"`
+	TCPEstablished  int    `json:"tcp_established"`
+	TCPTimeWait     int    `json:"tcp_time_wait"`
+	TCPCloseWait    int    `json:"tcp_close_wait"`
+	UDPConnections  int    `json:"udp_connections"`
+	PacketsReceived uint64 `json:"packets_received"`
+	PacketsSent     uint64 `json:"packets_sent"`
+	BytesReceived   uint64 `json:"bytes_received"`
+	BytesSent       uint64 `json:"bytes_sent"`
+	Errors          uint64 `json:"errors"`
+	Drops           uint64 `json:"drops"`
 }
 
 // MountsResult represents mounted filesystems query results.
@@ -673,8 +673,8 @@ type UserAccount struct {
 	HomeDir     string   `json:"home_dir,omitempty"`
 	Shell       string   `json:"shell,omitempty"`
 	Groups      []string `json:"groups,omitempty"`
-	IsSystem    bool     `json:"is_system"`         // System account (UID < 1000 on Linux)
-	IsLocked    bool     `json:"is_locked"`         // Account is locked
+	IsSystem    bool     `json:"is_system"` // System account (UID < 1000 on Linux)
+	IsLocked    bool     `json:"is_locked"` // Account is locked
 	LastLogin   string   `json:"last_login,omitempty"`
 }
 
@@ -695,38 +695,38 @@ type SudoConfigResult struct {
 
 // SudoRule represents a sudoers rule.
 type SudoRule struct {
-	User     string   `json:"user,omitempty"`      // User or %group
-	Host     string   `json:"host,omitempty"`      // Hostname or ALL
-	RunAs    string   `json:"run_as,omitempty"`    // User to run as
-	Commands []string `json:"commands,omitempty"`  // Allowed commands
-	NoPasswd bool     `json:"no_passwd"`           // NOPASSWD flag
-	Raw      string   `json:"raw,omitempty"`       // Raw rule line
+	User     string   `json:"user,omitempty"`     // User or %group
+	Host     string   `json:"host,omitempty"`     // Hostname or ALL
+	RunAs    string   `json:"run_as,omitempty"`   // User to run as
+	Commands []string `json:"commands,omitempty"` // Allowed commands
+	NoPasswd bool     `json:"no_passwd"`          // NOPASSWD flag
+	Raw      string   `json:"raw,omitempty"`      // Raw rule line
 }
 
 // SSHConfigResult represents SSH configuration query results.
 type SSHConfigResult struct {
-	ServerConfig   map[string]string `json:"server_config,omitempty"`
-	ClientConfig   map[string]string `json:"client_config,omitempty"`
+	ServerConfig   map[string]string  `json:"server_config,omitempty"`
+	ClientConfig   map[string]string  `json:"client_config,omitempty"`
 	AuthorizedKeys []SSHAuthorizedKey `json:"authorized_keys,omitempty"`
-	ServerRunning  bool              `json:"server_running"`
-	SSHDPath       string            `json:"sshd_path,omitempty"`
-	Timestamp      time.Time         `json:"timestamp"`
+	ServerRunning  bool               `json:"server_running"`
+	SSHDPath       string             `json:"sshd_path,omitempty"`
+	Timestamp      time.Time          `json:"timestamp"`
 }
 
 // SSHAuthorizedKey represents an SSH authorized key.
 type SSHAuthorizedKey struct {
-	KeyType     string `json:"key_type"`               // ssh-rsa, ssh-ed25519, etc.
+	KeyType     string `json:"key_type"` // ssh-rsa, ssh-ed25519, etc.
 	Fingerprint string `json:"fingerprint,omitempty"`
 	Comment     string `json:"comment,omitempty"`
-	Options     string `json:"options,omitempty"`      // Key options like no-agent-forwarding
-	User        string `json:"user,omitempty"`         // User this key is for
+	Options     string `json:"options,omitempty"` // Key options like no-agent-forwarding
+	User        string `json:"user,omitempty"`    // User this key is for
 }
 
 // MACStatusResult represents Mandatory Access Control status.
 type MACStatusResult struct {
-	Type      string       `json:"type"`                // selinux, apparmor, sip, none
+	Type      string       `json:"type"` // selinux, apparmor, sip, none
 	Enabled   bool         `json:"enabled"`
-	Mode      string       `json:"mode,omitempty"`      // enforcing, permissive, complaining
+	Mode      string       `json:"mode,omitempty"` // enforcing, permissive, complaining
 	Profiles  []MACProfile `json:"profiles,omitempty"`
 	Timestamp time.Time    `json:"timestamp"`
 }
@@ -748,15 +748,15 @@ type CertificatesResult struct {
 
 // Certificate represents an SSL/TLS certificate.
 type Certificate struct {
-	Subject     string    `json:"subject"`
-	Issuer      string    `json:"issuer"`
-	NotBefore   time.Time `json:"not_before"`
-	NotAfter    time.Time `json:"not_after"`
-	SerialNumber string   `json:"serial_number,omitempty"`
-	Fingerprint string    `json:"fingerprint,omitempty"` // SHA256 fingerprint
-	IsCA        bool      `json:"is_ca"`
-	IsExpired   bool      `json:"is_expired"`
-	DaysUntilExpiry int   `json:"days_until_expiry"`
+	Subject         string    `json:"subject"`
+	Issuer          string    `json:"issuer"`
+	NotBefore       time.Time `json:"not_before"`
+	NotAfter        time.Time `json:"not_after"`
+	SerialNumber    string    `json:"serial_number,omitempty"`
+	Fingerprint     string    `json:"fingerprint,omitempty"` // SHA256 fingerprint
+	IsCA            bool      `json:"is_ca"`
+	IsExpired       bool      `json:"is_expired"`
+	DaysUntilExpiry int       `json:"days_until_expiry"`
 }
 
 // HardwareInfoResult represents system hardware information query results.
@@ -781,10 +781,10 @@ type SystemInfo struct {
 
 // BIOSInfo represents BIOS/UEFI information.
 type BIOSInfo struct {
-	Vendor      string `json:"vendor"`
-	Version     string `json:"version"`
-	Date        string `json:"date,omitempty"`
-	Release     string `json:"release,omitempty"`
+	Vendor  string `json:"vendor"`
+	Version string `json:"version"`
+	Date    string `json:"date,omitempty"`
+	Release string `json:"release,omitempty"`
 }
 
 // BaseboardInfo represents motherboard information.
@@ -838,21 +838,21 @@ type PCIDevicesResult struct {
 
 // PCIDevice represents a PCI device.
 type PCIDevice struct {
-	Slot         string `json:"slot"`
-	VendorID     string `json:"vendor_id"`
-	DeviceID     string `json:"device_id"`
-	Vendor       string `json:"vendor,omitempty"`
-	Device       string `json:"device,omitempty"`
-	SVendorID    string `json:"subsystem_vendor_id,omitempty"`
-	SDeviceID    string `json:"subsystem_device_id,omitempty"`
-	Class        string `json:"class,omitempty"`
-	ClassID      string `json:"class_id,omitempty"`
-	Revision     string `json:"revision,omitempty"`
-	Driver       string `json:"driver,omitempty"`
-	Module       string `json:"module,omitempty"`
-	IRQ          int    `json:"irq,omitempty"`
-	NumaNode     int    `json:"numa_node,omitempty"`
-	IOMMUGroup   string `json:"iommu_group,omitempty"`
+	Slot       string `json:"slot"`
+	VendorID   string `json:"vendor_id"`
+	DeviceID   string `json:"device_id"`
+	Vendor     string `json:"vendor,omitempty"`
+	Device     string `json:"device,omitempty"`
+	SVendorID  string `json:"subsystem_vendor_id,omitempty"`
+	SDeviceID  string `json:"subsystem_device_id,omitempty"`
+	Class      string `json:"class,omitempty"`
+	ClassID    string `json:"class_id,omitempty"`
+	Revision   string `json:"revision,omitempty"`
+	Driver     string `json:"driver,omitempty"`
+	Module     string `json:"module,omitempty"`
+	IRQ        int    `json:"irq,omitempty"`
+	NumaNode   int    `json:"numa_node,omitempty"`
+	IOMMUGroup string `json:"iommu_group,omitempty"`
 }
 
 // BlockDevicesResult represents block devices query results.
@@ -891,10 +891,10 @@ type ProcessEnvironResult struct {
 
 // IPCResourcesResult represents System V IPC resources query results.
 type IPCResourcesResult struct {
-	SharedMemory []SharedMemorySegment `json:"shared_memory"`
-	Semaphores   []SemaphoreSet        `json:"semaphores"`
-	MessageQueues []MessageQueue       `json:"message_queues"`
-	Timestamp    time.Time             `json:"timestamp"`
+	SharedMemory  []SharedMemorySegment `json:"shared_memory"`
+	Semaphores    []SemaphoreSet        `json:"semaphores"`
+	MessageQueues []MessageQueue        `json:"message_queues"`
+	Timestamp     time.Time             `json:"timestamp"`
 }
 
 // SharedMemorySegment represents a System V shared memory segment.
@@ -937,19 +937,19 @@ type NamespacesResult struct {
 
 // Namespace represents a Linux namespace.
 type Namespace struct {
-	Type     string  `json:"type"` // mnt, uts, ipc, pid, net, user, cgroup
-	ID       uint64  `json:"id"`
-	PID      int32   `json:"pid,omitempty"`
-	Command  string  `json:"command,omitempty"`
-	User     string  `json:"user,omitempty"`
-	NSPath   string  `json:"ns_path,omitempty"`
+	Type    string `json:"type"` // mnt, uts, ipc, pid, net, user, cgroup
+	ID      uint64 `json:"id"`
+	PID     int32  `json:"pid,omitempty"`
+	Command string `json:"command,omitempty"`
+	User    string `json:"user,omitempty"`
+	NSPath  string `json:"ns_path,omitempty"`
 }
 
 // CgroupsResult represents cgroup information query results.
 type CgroupsResult struct {
-	Version   int              `json:"version"` // 1 or 2
-	Groups    []CgroupInfo     `json:"groups"`
-	Timestamp time.Time        `json:"timestamp"`
+	Version   int          `json:"version"` // 1 or 2
+	Groups    []CgroupInfo `json:"groups"`
+	Timestamp time.Time    `json:"timestamp"`
 }
 
 // CgroupInfo represents a cgroup and its limits.
@@ -963,110 +963,110 @@ type CgroupInfo struct {
 
 // CapabilitiesResult represents process capabilities query results.
 type CapabilitiesResult struct {
-	PID         int32    `json:"pid"`
-	Name        string   `json:"name"`
-	Effective   []string `json:"effective"`
-	Permitted   []string `json:"permitted"`
-	Inheritable []string `json:"inheritable"`
-	Bounding    []string `json:"bounding,omitempty"`
-	Ambient     []string `json:"ambient,omitempty"`
+	PID         int32     `json:"pid"`
+	Name        string    `json:"name"`
+	Effective   []string  `json:"effective"`
+	Permitted   []string  `json:"permitted"`
+	Inheritable []string  `json:"inheritable"`
+	Bounding    []string  `json:"bounding,omitempty"`
+	Ambient     []string  `json:"ambient,omitempty"`
 	Timestamp   time.Time `json:"timestamp"`
 }
 
 // VMInfoResult represents virtualization detection query results.
 type VMInfoResult struct {
-	IsVM           bool      `json:"is_vm"`
-	Hypervisor     string    `json:"hypervisor,omitempty"`    // kvm, vmware, virtualbox, xen, hyper-v, etc.
-	VMType         string    `json:"vm_type,omitempty"`       // container, vm, none
-	ContainerType  string    `json:"container_type,omitempty"` // docker, lxc, podman, etc.
-	ProductName    string    `json:"product_name,omitempty"`
-	Manufacturer   string    `json:"manufacturer,omitempty"`
-	DetectionMethod string   `json:"detection_method,omitempty"`
-	Timestamp      time.Time `json:"timestamp"`
+	IsVM            bool      `json:"is_vm"`
+	Hypervisor      string    `json:"hypervisor,omitempty"`     // kvm, vmware, virtualbox, xen, hyper-v, etc.
+	VMType          string    `json:"vm_type,omitempty"`        // container, vm, none
+	ContainerType   string    `json:"container_type,omitempty"` // docker, lxc, podman, etc.
+	ProductName     string    `json:"product_name,omitempty"`
+	Manufacturer    string    `json:"manufacturer,omitempty"`
+	DetectionMethod string    `json:"detection_method,omitempty"`
+	Timestamp       time.Time `json:"timestamp"`
 }
 
 // TimezoneInfoResult represents timezone and locale query results.
 type TimezoneInfoResult struct {
-	Timezone       string    `json:"timezone"`             // e.g., "America/New_York"
-	Abbreviation   string    `json:"abbreviation"`         // e.g., "EST"
-	UTCOffset      string    `json:"utc_offset"`           // e.g., "-05:00"
-	DSTActive      bool      `json:"dst_active"`
-	LocalTime      time.Time `json:"local_time"`
-	Locale         string    `json:"locale,omitempty"`     // e.g., "en_US.UTF-8"
-	Timestamp      time.Time `json:"timestamp"`
+	Timezone     string    `json:"timezone"`     // e.g., "America/New_York"
+	Abbreviation string    `json:"abbreviation"` // e.g., "EST"
+	UTCOffset    string    `json:"utc_offset"`   // e.g., "-05:00"
+	DSTActive    bool      `json:"dst_active"`
+	LocalTime    time.Time `json:"local_time"`
+	Locale       string    `json:"locale,omitempty"` // e.g., "en_US.UTF-8"
+	Timestamp    time.Time `json:"timestamp"`
 }
 
 // NTPStatusResult represents NTP synchronization query results.
 type NTPStatusResult struct {
-	Synchronized   bool      `json:"synchronized"`
-	NTPService     string    `json:"ntp_service,omitempty"`  // systemd-timesyncd, ntpd, chrony
-	CurrentServer  string    `json:"current_server,omitempty"`
-	Stratum        int       `json:"stratum,omitempty"`
-	Offset         string    `json:"offset,omitempty"`       // Time offset
-	Delay          string    `json:"delay,omitempty"`        // Round trip delay
-	Jitter         string    `json:"jitter,omitempty"`
-	ReferenceTime  time.Time `json:"reference_time,omitempty"`
-	Timestamp      time.Time `json:"timestamp"`
+	Synchronized  bool      `json:"synchronized"`
+	NTPService    string    `json:"ntp_service,omitempty"` // systemd-timesyncd, ntpd, chrony
+	CurrentServer string    `json:"current_server,omitempty"`
+	Stratum       int       `json:"stratum,omitempty"`
+	Offset        string    `json:"offset,omitempty"` // Time offset
+	Delay         string    `json:"delay,omitempty"`  // Round trip delay
+	Jitter        string    `json:"jitter,omitempty"`
+	ReferenceTime time.Time `json:"reference_time,omitempty"`
+	Timestamp     time.Time `json:"timestamp"`
 }
 
 // CoreDumpsResult represents core dump detection query results.
 type CoreDumpsResult struct {
-	CoreDumps      []CoreDump `json:"core_dumps"`
-	Count          int        `json:"count"`
-	TotalSize      uint64     `json:"total_size"`
-	DumpPath       string     `json:"dump_path,omitempty"`
-	Timestamp      time.Time  `json:"timestamp"`
+	CoreDumps []CoreDump `json:"core_dumps"`
+	Count     int        `json:"count"`
+	TotalSize uint64     `json:"total_size"`
+	DumpPath  string     `json:"dump_path,omitempty"`
+	Timestamp time.Time  `json:"timestamp"`
 }
 
 // CoreDump represents a core dump file.
 type CoreDump struct {
-	Path           string    `json:"path"`
-	ProcessName    string    `json:"process_name,omitempty"`
-	PID            int32     `json:"pid,omitempty"`
-	Signal         int       `json:"signal,omitempty"`
-	Size           uint64    `json:"size"`
-	Time           time.Time `json:"time"`
+	Path        string    `json:"path"`
+	ProcessName string    `json:"process_name,omitempty"`
+	PID         int32     `json:"pid,omitempty"`
+	Signal      int       `json:"signal,omitempty"`
+	Size        uint64    `json:"size"`
+	Time        time.Time `json:"time"`
 }
 
 // PowerStateResult represents power/battery state query results.
 type PowerStateResult struct {
-	OnACPower      bool           `json:"on_ac_power"`
-	Batteries      []BatteryInfo  `json:"batteries,omitempty"`
-	PowerProfile   string         `json:"power_profile,omitempty"` // performance, balanced, powersave
-	Timestamp      time.Time      `json:"timestamp"`
+	OnACPower    bool          `json:"on_ac_power"`
+	Batteries    []BatteryInfo `json:"batteries,omitempty"`
+	PowerProfile string        `json:"power_profile,omitempty"` // performance, balanced, powersave
+	Timestamp    time.Time     `json:"timestamp"`
 }
 
 // BatteryInfo represents battery status.
 type BatteryInfo struct {
-	Name           string  `json:"name"`
-	Status         string  `json:"status"`           // Charging, Discharging, Full, Not charging
-	Percent        float64 `json:"percent"`
-	Capacity       uint64  `json:"capacity,omitempty"`        // mWh
-	CapacityFull   uint64  `json:"capacity_full,omitempty"`   // mWh
-	Voltage        float64 `json:"voltage,omitempty"`         // V
-	CurrentNow     float64 `json:"current_now,omitempty"`     // A
-	TimeToEmpty    string  `json:"time_to_empty,omitempty"`
-	TimeToFull     string  `json:"time_to_full,omitempty"`
-	Technology     string  `json:"technology,omitempty"`      // Li-ion, Li-poly
-	Manufacturer   string  `json:"manufacturer,omitempty"`
-	Model          string  `json:"model,omitempty"`
-	Serial         string  `json:"serial,omitempty"`
-	CycleCount     int     `json:"cycle_count,omitempty"`
+	Name         string  `json:"name"`
+	Status       string  `json:"status"` // Charging, Discharging, Full, Not charging
+	Percent      float64 `json:"percent"`
+	Capacity     uint64  `json:"capacity,omitempty"`      // mWh
+	CapacityFull uint64  `json:"capacity_full,omitempty"` // mWh
+	Voltage      float64 `json:"voltage,omitempty"`       // V
+	CurrentNow   float64 `json:"current_now,omitempty"`   // A
+	TimeToEmpty  string  `json:"time_to_empty,omitempty"`
+	TimeToFull   string  `json:"time_to_full,omitempty"`
+	Technology   string  `json:"technology,omitempty"` // Li-ion, Li-poly
+	Manufacturer string  `json:"manufacturer,omitempty"`
+	Model        string  `json:"model,omitempty"`
+	Serial       string  `json:"serial,omitempty"`
+	CycleCount   int     `json:"cycle_count,omitempty"`
 }
 
 // NUMATopologyResult represents NUMA topology query results.
 type NUMATopologyResult struct {
-	Nodes         []NUMANode `json:"nodes"`
-	Count         int        `json:"count"`
-	Timestamp     time.Time  `json:"timestamp"`
+	Nodes     []NUMANode `json:"nodes"`
+	Count     int        `json:"count"`
+	Timestamp time.Time  `json:"timestamp"`
 }
 
 // NUMANode represents a NUMA node.
 type NUMANode struct {
-	ID            int      `json:"id"`
-	CPUs          []int    `json:"cpus"`
-	MemoryTotal   uint64   `json:"memory_total"`
-	MemoryFree    uint64   `json:"memory_free"`
-	MemoryUsed    uint64   `json:"memory_used"`
-	Distances     []int    `json:"distances,omitempty"` // Distance to other nodes
+	ID          int    `json:"id"`
+	CPUs        []int  `json:"cpus"`
+	MemoryTotal uint64 `json:"memory_total"`
+	MemoryFree  uint64 `json:"memory_free"`
+	MemoryUsed  uint64 `json:"memory_used"`
+	Distances   []int  `json:"distances,omitempty"` // Distance to other nodes
 }

@@ -34,10 +34,10 @@ func DefaultConfig() *Config {
 		ListenAddr:       "127.0.0.1:8444",
 		Issuer:           "http://localhost:8444",
 		Audience:         "mcp-sysinfo",
-		DefaultTTL:       300,  // 5 minutes
-		MaxTTL:           300,  // 5 minutes max (per security docs)
-		KeyDir:           "",   // In-memory keys by default
-		ClientsFile:      "",   // No persistence by default
+		DefaultTTL:       300, // 5 minutes
+		MaxTTL:           300, // 5 minutes max (per security docs)
+		KeyDir:           "",  // In-memory keys by default
+		ClientsFile:      "",  // No persistence by default
 		KeyRotationHours: 24,
 	}
 }

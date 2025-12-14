@@ -90,12 +90,12 @@ func getPartitions() ([]types.PartitionInfo, error) {
 // isRealFilesystem returns true if the filesystem is a real disk.
 func isRealFilesystem(fstype string) bool {
 	pseudoFS := map[string]bool{
-		"devfs":    true,
-		"autofs":   true,
-		"volfs":    true,
-		"nullfs":   true,
-		"synthfs":  true,
-		"vmhgfs":   true,
+		"devfs":   true,
+		"autofs":  true,
+		"volfs":   true,
+		"nullfs":  true,
+		"synthfs": true,
+		"vmhgfs":  true,
 	}
 
 	return !pseudoFS[fstype]

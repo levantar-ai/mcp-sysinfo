@@ -23,8 +23,8 @@ type Event struct {
 		Provider struct {
 			Name string `xml:"Name,attr"`
 		} `xml:"Provider"`
-		EventID     int    `xml:"EventID"`
-		Level       int    `xml:"Level"`
+		EventID     int `xml:"EventID"`
+		Level       int `xml:"Level"`
 		TimeCreated struct {
 			SystemTime string `xml:"SystemTime,attr"`
 		} `xml:"TimeCreated"`
