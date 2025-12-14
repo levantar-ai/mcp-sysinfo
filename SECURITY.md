@@ -149,9 +149,122 @@ This prevents accidental wide-open exposure.
 | stdio | No | Disabled |
 | unix socket | No | Disabled (recommended: enable) |
 | named pipe | No | Disabled (recommended: enable) |
-| https | **Yes** | **Required** (server refuses to start without) |
+| http/https | **Yes** | **Required for production** |
 
-### JWT Authentication
+### Authentication Methods
+
+The HTTP transport supports two authentication methods:
+
+| Method | Use Case | Token Validation |
+|--------|----------|------------------|
+| **OIDC** | Enterprise IdP (Okta, Azure AD, etc.) | Local JWT validation via JWKS |
+| **OAuth Introspection** | Custom/internal auth servers | Per-request introspection call |
+
+Both methods follow OAuth 2.1 / MCP Authorization spec with Bearer tokens.
+
+### Option 1: OIDC (Enterprise IdP Integration)
+
+OIDC validates tokens locally using public keys from the IdP's JWKS endpoint. This is the recommended approach for enterprise deployments.
+
+```bash
+# Run with OIDC authentication
+mcp-sysinfo --transport http \
+    --listen 0.0.0.0:8443 \
+    --tls-cert /etc/mcp/cert.pem \
+    --tls-key /etc/mcp/key.pem \
+    --oidc-issuer https://enterprise.okta.com \
+    --oidc-audience mcp-sysinfo
+```
+
+**Supported OIDC Providers:**
+- Okta
+- Azure AD (Entra ID)
+- Auth0
+- Keycloak
+- Google Workspace
+- Any OIDC-compliant provider
+
+**How it works:**
+
+```
+┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│  AI Client  │────▶│   MCP Server    │     │  Enterprise IdP  │
+│             │     │                 │     │  (Okta, etc.)    │
+│             │     │  1. Fetch JWKS  │────▶│                  │
+│             │     │  2. Cache keys  │◀────│  /.well-known/   │
+│ Bearer JWT  │────▶│  3. Validate    │     │  jwks.json       │
+│             │     │     locally     │     │                  │
+└─────────────┘     └─────────────────┘     └──────────────────┘
+```
+
+The MCP server:
+1. Discovers JWKS URI from `/.well-known/openid-configuration`
+2. Fetches and caches public keys (1 hour TTL)
+3. Validates JWT signature, issuer, audience, and expiration locally
+4. No per-request call to the IdP (better performance)
+
+### Option 2: OAuth Token Introspection
+
+Token introspection validates tokens by calling the authorization server's `/introspect` endpoint. Use this when you need real-time token revocation or when using the built-in token server.
+
+```bash
+# Run with OAuth introspection
+mcp-sysinfo --transport http \
+    --listen 0.0.0.0:8443 \
+    --tls-cert /etc/mcp/cert.pem \
+    --tls-key /etc/mcp/key.pem \
+    --auth-server https://auth.internal.com \
+    --client-id mcp-sysinfo \
+    --client-secret $MCP_CLIENT_SECRET
+```
+
+**How it works:**
+
+```
+┌─────────────┐     ┌─────────────────┐     ┌──────────────────┐
+│  AI Client  │────▶│   MCP Server    │     │   Auth Server    │
+│             │     │                 │     │                  │
+│ Bearer JWT  │────▶│  POST /introspect│───▶│  Validate token  │
+│             │     │  {token: "..."}  │◀───│  {active: true}  │
+│             │     │                 │     │                  │
+└─────────────┘     └─────────────────┘     └──────────────────┘
+```
+
+### Built-in Token Server (Development/Testing)
+
+For development or environments without an existing IdP, use the included OAuth Authorization Server:
+
+```bash
+# Start the token server
+mcp-token-server serve \
+    --listen 127.0.0.1:8444 \
+    --issuer http://localhost:8444 \
+    --audience mcp-sysinfo \
+    --clients /etc/mcp/clients.json
+
+# Start MCP server with introspection
+mcp-sysinfo --transport http \
+    --listen 127.0.0.1:8080 \
+    --auth-server http://127.0.0.1:8444 \
+    --client-id mcp-sysinfo \
+    --client-secret $SECRET
+
+# Or with OIDC (local JWT validation)
+mcp-sysinfo --transport http \
+    --listen 127.0.0.1:8080 \
+    --oidc-issuer http://localhost:8444 \
+    --oidc-audience http://127.0.0.1:8080
+```
+
+The token server provides:
+- OAuth 2.1 client credentials flow
+- JWKS endpoint for OIDC validation
+- Token introspection endpoint
+- Automatic RSA key generation and rotation
+
+### JWT Authentication (Legacy Config)
+
+For file-based configuration, JWT settings can be specified in YAML:
 
 ```yaml
 auth:
