@@ -23,10 +23,14 @@ theme:
   features:
     - navigation.instant
     - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
     - navigation.indexes
     - navigation.top
+    - navigation.path
+    - toc.follow
     - search.suggest
     - search.highlight
     - content.code.copy
