@@ -4,6 +4,19 @@ Software Bill of Materials and package inventory for vulnerability detection, co
 
 ---
 
+## Important Limitations
+
+> ⚠️ **PATH Executables Only**: The `get_path_executables` query only returns executables found in directories listed in the system's PATH environment variable. It does **not** perform a deep filesystem scan or index all executables on the system.
+>
+> This is intentional for performance and security reasons:
+> - A full filesystem scan would be extremely slow and resource-intensive
+> - Most relevant executables for diagnostics are already in PATH
+> - Deep scanning could expose sensitive locations
+>
+> If you need a complete inventory of all executables, use the system package manager queries (`get_system_packages`) which list all installed packages, or use dedicated security scanning tools.
+
+---
+
 ## Design Principles
 
 ### Lightweight Collection

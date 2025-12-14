@@ -110,6 +110,8 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - macOS: Homebrew, pkgutil
 - Windows: Chocolatey, winget, wmic
 
+> ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
+
 ### What You Can Do Now
 
 ```bash
