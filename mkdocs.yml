@@ -1,0 +1,123 @@
+site_name: MCP System Info
+site_description: Read-only AI diagnostics plane for secure incident triage
+site_url: https://levantar-ai.github.io/mcp-sysinfo/
+repo_url: https://github.com/levantar-ai/mcp-sysinfo
+repo_name: levantar-ai/mcp-sysinfo
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - tags
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/levantar-ai/mcp-sysinfo
+  generator: false
+  version:
+    provider: mike
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - Query Reference:
+    - Overview: queries/index.md
+    - Core Metrics:
+      - queries/core/index.md
+      - get_cpu_info: queries/core/get_cpu_info.md
+      - get_memory_info: queries/core/get_memory_info.md
+      - get_disk_info: queries/core/get_disk_info.md
+      - get_network_info: queries/core/get_network_info.md
+      - get_processes: queries/core/get_processes.md
+      - get_uptime: queries/core/get_uptime.md
+      - get_temperature: queries/core/get_temperature.md
+    - Log Access:
+      - queries/logs/index.md
+    - System Hooks:
+      - queries/hooks/index.md
+    - Software Inventory:
+      - queries/sbom/index.md
+  - Security:
+    - Overview: security/index.md
+    - Authentication: security/authentication.md
+    - Scopes: security/scopes.md
+    - Deployment: security/deployment.md
+  - Architecture:
+    - Overview: architecture/index.md
+    - Cross-Platform: architecture/cross-platform.md
+  - API Reference:
+    - JSON-RPC: api/jsonrpc.md
+    - Schemas: api/schemas.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
