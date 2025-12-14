@@ -1,0 +1,21 @@
+version: 1
+
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=0
+
+flags:
+  - -trimpath
+
+goos: darwin
+goarch: amd64
+
+main: ./cmd/mcp-token-server
+
+binary: mcp-token-server-{{ .Os }}-{{ .Arch }}
+
+ldflags:
+  - -s -w
+  - -X main.version={{ .Env.VERSION }}
+  - -X main.commit={{ .Env.COMMIT }}
+  - -X main.date={{ .Env.BUILD_DATE }}

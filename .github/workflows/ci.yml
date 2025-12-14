@@ -243,57 +243,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Use PAT instead of GITHUB_TOKEN to allow release events to trigger SLSA workflow
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist/
-          merge-multiple: true
-
-      - name: List artifacts
-        run: ls -la dist/
-
       - name: Install semantic-release
         run: npm install -g semantic-release @semantic-release/github
 
-      - name: Semantic Release (dry-run to get version)
-        id: semantic_dry
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          OUTPUT=$(npx semantic-release --dry-run --no-ci 2>&1) || true
-          echo "$OUTPUT"
-          # Match "the next release version is X.Y.Z" (case insensitive)
-          if echo "$OUTPUT" | grep -qi "the next release version is"; then
-            VERSION=$(echo "$OUTPUT" | grep -oP '(?i)the next release version is \K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-            echo "new_release=true" >> $GITHUB_OUTPUT
-            echo "version=${VERSION}" >> $GITHUB_OUTPUT
-            echo "Next version: ${VERSION}"
-          else
-            echo "new_release=false" >> $GITHUB_OUTPUT
-            echo "No new release needed"
-          fi
-
       - name: Semantic Release
-        if: steps.semantic_dry.outputs.new_release == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use PAT to allow triggering SLSA workflow on release published event
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: npx semantic-release
-
-      - name: Upload Release Assets
-        if: steps.semantic_dry.outputs.new_release == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${{ steps.semantic_dry.outputs.version }}"
-          for file in dist/*; do
-            if [ -f "$file" ]; then
-              echo "Uploading $file to release v${VERSION}"
-              gh release upload "v${VERSION}" "$file" --clobber
-            fi
-          done
