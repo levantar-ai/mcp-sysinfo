@@ -33,22 +33,22 @@ func (c *Collector) collect() (*types.MemoryInfo, error) {
 	}
 
 	return &types.MemoryInfo{
-		Total:        memInfo["MemTotal"],
-		Available:    available,
-		Used:         used,
-		UsedPercent:  calculatePercent(used, memInfo["MemTotal"]),
-		Free:         memInfo["MemFree"],
-		Active:       memInfo["Active"],
-		Inactive:     memInfo["Inactive"],
-		Buffers:      memInfo["Buffers"],
-		Cached:       memInfo["Cached"],
-		Shared:       memInfo["Shmem"],
-		Slab:         memInfo["Slab"],
-		SReclaimable: memInfo["SReclaimable"],
+		Total:         memInfo["MemTotal"],
+		Available:     available,
+		Used:          used,
+		UsedPercent:   calculatePercent(used, memInfo["MemTotal"]),
+		Free:          memInfo["MemFree"],
+		Active:        memInfo["Active"],
+		Inactive:      memInfo["Inactive"],
+		Buffers:       memInfo["Buffers"],
+		Cached:        memInfo["Cached"],
+		Shared:        memInfo["Shmem"],
+		Slab:          memInfo["Slab"],
+		SReclaimable:  memInfo["SReclaimable"],
 		SUReClaimable: memInfo["SUnreclaim"],
-		PageTables:   memInfo["PageTables"],
-		SwapCached:   memInfo["SwapCached"],
-		Timestamp:    time.Now(),
+		PageTables:    memInfo["PageTables"],
+		SwapCached:    memInfo["SwapCached"],
+		Timestamp:     time.Now(),
 	}, nil
 }
 

@@ -15,10 +15,10 @@ import (
 )
 
 const (
-	procStat     = "/proc/stat"
-	procCPUInfo  = "/proc/cpuinfo"
-	procLoadAvg  = "/proc/loadavg"
-	sysCPUPath   = "/sys/devices/system/cpu"
+	procStat    = "/proc/stat"
+	procCPUInfo = "/proc/cpuinfo"
+	procLoadAvg = "/proc/loadavg"
+	sysCPUPath  = "/sys/devices/system/cpu"
 )
 
 // collect gathers CPU information on Linux.

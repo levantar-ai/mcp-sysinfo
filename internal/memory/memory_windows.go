@@ -33,20 +33,20 @@ type memoryStatusEx struct {
 
 // PERFORMANCE_INFORMATION structure
 type performanceInfo struct {
-	Size                  uint32
-	CommitTotal           uint64
-	CommitLimit           uint64
-	CommitPeak            uint64
-	PhysicalTotal         uint64
-	PhysicalAvailable     uint64
-	SystemCache           uint64
-	KernelTotal           uint64
-	KernelPaged           uint64
-	KernelNonpaged        uint64
-	PageSize              uint64
-	HandleCount           uint32
-	ProcessCount          uint32
-	ThreadCount           uint32
+	Size              uint32
+	CommitTotal       uint64
+	CommitLimit       uint64
+	CommitPeak        uint64
+	PhysicalTotal     uint64
+	PhysicalAvailable uint64
+	SystemCache       uint64
+	KernelTotal       uint64
+	KernelPaged       uint64
+	KernelNonpaged    uint64
+	PageSize          uint64
+	HandleCount       uint32
+	ProcessCount      uint32
+	ThreadCount       uint32
 }
 
 // collect gathers memory information on Windows.
@@ -76,13 +76,13 @@ func (c *Collector) collect() (*types.MemoryInfo, error) {
 	cached := perfInfo.SystemCache * perfInfo.PageSize
 
 	return &types.MemoryInfo{
-		Total:        total,
-		Available:    available,
-		Used:         used,
-		UsedPercent:  float64(memStatus.MemoryLoad),
-		Free:         available, // On Windows, available ≈ free
-		Cached:       cached,
-		Timestamp:    time.Now(),
+		Total:       total,
+		Available:   available,
+		Used:        used,
+		UsedPercent: float64(memStatus.MemoryLoad),
+		Free:        available, // On Windows, available ≈ free
+		Cached:      cached,
+		Timestamp:   time.Now(),
 	}, nil
 }
 

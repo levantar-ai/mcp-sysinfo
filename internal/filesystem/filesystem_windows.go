@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	kernel32              = windows.NewLazySystemDLL("kernel32.dll")
-	procGetLogicalDrives  = kernel32.NewProc("GetLogicalDrives")
-	procGetDiskFreeSpaceExW = kernel32.NewProc("GetDiskFreeSpaceExW")
+	kernel32                  = windows.NewLazySystemDLL("kernel32.dll")
+	procGetLogicalDrives      = kernel32.NewProc("GetLogicalDrives")
+	procGetDiskFreeSpaceExW   = kernel32.NewProc("GetDiskFreeSpaceExW")
 	procGetVolumeInformationW = kernel32.NewProc("GetVolumeInformationW")
 )
 

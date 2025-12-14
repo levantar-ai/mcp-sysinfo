@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	kernel32                = windows.NewLazySystemDLL("kernel32.dll")
-	procGetSystemTimes      = kernel32.NewProc("GetSystemTimes")
-	procGetSystemInfo       = kernel32.NewProc("GetSystemInfo")
+	kernel32                             = windows.NewLazySystemDLL("kernel32.dll")
+	procGetSystemTimes                   = kernel32.NewProc("GetSystemTimes")
+	procGetSystemInfo                    = kernel32.NewProc("GetSystemInfo")
 	procGetLogicalProcessorInformationEx = kernel32.NewProc("GetLogicalProcessorInformationEx")
 )
 

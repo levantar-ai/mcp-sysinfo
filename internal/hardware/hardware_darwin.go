@@ -15,19 +15,19 @@ import (
 // systemProfilerHardware represents the JSON structure from system_profiler.
 type systemProfilerHardware struct {
 	SPHardwareDataType []struct {
-		MachineName           string `json:"machine_name"`
-		MachineModel          string `json:"machine_model"`
-		ModelNumber           string `json:"model_number"`
-		ChipType              string `json:"chip_type"`
-		NumberProcessors      string `json:"number_processors"`
-		TotalNumberOfCores    string `json:"total_number_of_cores"`
-		Memory                string `json:"physical_memory"`
-		SerialNumber          string `json:"serial_number"`
-		HardwareUUID          string `json:"platform_UUID"`
-		ProvisioningUDID      string `json:"provisioning_UDID"`
-		ActivationLockStatus  string `json:"activation_lock_status"`
-		BootROMVersion        string `json:"boot_rom_version"`
-		SMCVersion            string `json:"SMC_version_system"`
+		MachineName          string `json:"machine_name"`
+		MachineModel         string `json:"machine_model"`
+		ModelNumber          string `json:"model_number"`
+		ChipType             string `json:"chip_type"`
+		NumberProcessors     string `json:"number_processors"`
+		TotalNumberOfCores   string `json:"total_number_of_cores"`
+		Memory               string `json:"physical_memory"`
+		SerialNumber         string `json:"serial_number"`
+		HardwareUUID         string `json:"platform_UUID"`
+		ProvisioningUDID     string `json:"provisioning_UDID"`
+		ActivationLockStatus string `json:"activation_lock_status"`
+		BootROMVersion       string `json:"boot_rom_version"`
+		SMCVersion           string `json:"SMC_version_system"`
 	} `json:"SPHardwareDataType"`
 }
 

@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	iphlpapi              = windows.NewLazySystemDLL("iphlpapi.dll")
-	procGetIfTable        = iphlpapi.NewProc("GetIfTable")
+	iphlpapi                = windows.NewLazySystemDLL("iphlpapi.dll")
+	procGetIfTable          = iphlpapi.NewProc("GetIfTable")
 	procGetExtendedTcpTable = iphlpapi.NewProc("GetExtendedTcpTable")
 )
 

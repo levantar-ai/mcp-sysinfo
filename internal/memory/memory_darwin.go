@@ -100,17 +100,17 @@ func (c *Collector) collect() (*types.MemoryInfo, error) {
 	available := free + inactive + purgeable + speculative
 
 	return &types.MemoryInfo{
-		Total:        totalMem,
-		Available:    available,
-		Used:         used,
-		UsedPercent:  calculatePercent(used, totalMem),
-		Free:         free,
-		Active:       active,
-		Inactive:     inactive,
-		Wired:        wired,
-		Compressed:   compressed,
-		Cached:       fileBacked,
-		Timestamp:    time.Now(),
+		Total:       totalMem,
+		Available:   available,
+		Used:        used,
+		UsedPercent: calculatePercent(used, totalMem),
+		Free:        free,
+		Active:      active,
+		Inactive:    inactive,
+		Wired:       wired,
+		Compressed:  compressed,
+		Cached:      fileBacked,
+		Timestamp:   time.Now(),
 	}, nil
 }
 

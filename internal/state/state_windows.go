@@ -38,14 +38,14 @@ func (c *Collector) getVMInfo() (*types.VMInfoResult, error) {
 
 			// Check for VM indicators
 			vmIndicators := map[string]string{
-				"vmware":      "vmware",
-				"virtual":     "virtualbox",
+				"vmware":                "vmware",
+				"virtual":               "virtualbox",
 				"microsoft corporation": "hyper-v",
-				"xen":         "xen",
-				"qemu":        "qemu",
-				"parallels":   "parallels",
-				"amazon ec2":  "aws",
-				"google":      "gcp",
+				"xen":                   "xen",
+				"qemu":                  "qemu",
+				"parallels":             "parallels",
+				"amazon ec2":            "aws",
+				"google":                "gcp",
 			}
 
 			for keyword, hvName := range vmIndicators {
