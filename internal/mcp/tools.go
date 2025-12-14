@@ -6,7 +6,10 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
+	"github.com/levantar-ai/mcp-sysinfo/internal/hardware"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
+	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
+	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
 	"github.com/levantar-ai/mcp-sysinfo/internal/memory"
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
@@ -28,6 +31,15 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 1.6: System Hooks (scope: hooks)
 	registerHookTools(s)
+
+	// Phase 1.6.6: Hardware Information (scope: hardware)
+	registerHardwareTools(s)
+
+	// Phase 1.6.7: Process & Resources (scope: resources)
+	registerResourceTools(s)
+
+	// Phase 1.6.8: System State (scope: state)
+	registerStateTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -575,6 +587,248 @@ func registerHookTools(s *Server) {
 	}, "hooks", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := filesystem.NewCollector()
 		result, err := c.GetInodeUsage()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerHardwareTools(s *Server) {
+	// Hardware Info
+	s.RegisterTool(Tool{
+		Name:        "get_hardware_info",
+		Description: "Get system, BIOS, and motherboard information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "hardware", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := hardware.NewCollector()
+		result, err := c.GetHardwareInfo()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// USB Devices
+	s.RegisterTool(Tool{
+		Name:        "get_usb_devices",
+		Description: "Get connected USB devices",
+		InputSchema: InputSchema{Type: "object"},
+	}, "hardware", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := hardware.NewCollector()
+		result, err := c.GetUSBDevices()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// PCI Devices
+	s.RegisterTool(Tool{
+		Name:        "get_pci_devices",
+		Description: "Get PCI devices",
+		InputSchema: InputSchema{Type: "object"},
+	}, "hardware", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := hardware.NewCollector()
+		result, err := c.GetPCIDevices()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Block Devices
+	s.RegisterTool(Tool{
+		Name:        "get_block_devices",
+		Description: "Get block device topology",
+		InputSchema: InputSchema{Type: "object"},
+	}, "hardware", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := hardware.NewCollector()
+		result, err := c.GetBlockDevices()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerResourceTools(s *Server) {
+	// Process Environment Variables
+	s.RegisterTool(Tool{
+		Name:        "get_process_environ",
+		Description: "Get environment variables for a specific process (Linux only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"pid": {
+					Type:        "integer",
+					Description: "Process ID to get environment for",
+				},
+			},
+			Required: []string{"pid"},
+		},
+	}, "resources", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		pid := int32(1) // Default to init
+		if p, ok := args["pid"].(float64); ok {
+			pid = int32(p)
+		}
+		c := resources.NewCollector()
+		result, err := c.GetProcessEnviron(pid)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// IPC Resources
+	s.RegisterTool(Tool{
+		Name:        "get_ipc_resources",
+		Description: "Get System V IPC resources (shared memory, semaphores, message queues)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "resources", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := resources.NewCollector()
+		result, err := c.GetIPCResources()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Namespaces
+	s.RegisterTool(Tool{
+		Name:        "get_namespaces",
+		Description: "Get Linux namespace information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "resources", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := resources.NewCollector()
+		result, err := c.GetNamespaces()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Cgroups
+	s.RegisterTool(Tool{
+		Name:        "get_cgroups",
+		Description: "Get cgroup limits and usage information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "resources", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := resources.NewCollector()
+		result, err := c.GetCgroups()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Process Capabilities
+	s.RegisterTool(Tool{
+		Name:        "get_capabilities",
+		Description: "Get process capabilities (Linux only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"pid": {
+					Type:        "integer",
+					Description: "Process ID to get capabilities for",
+				},
+			},
+			Required: []string{"pid"},
+		},
+	}, "resources", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		pid := int32(1) // Default to init
+		if p, ok := args["pid"].(float64); ok {
+			pid = int32(p)
+		}
+		c := resources.NewCollector()
+		result, err := c.GetCapabilities(pid)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerStateTools(s *Server) {
+	// VM Info
+	s.RegisterTool(Tool{
+		Name:        "get_vm_info",
+		Description: "Detect if running in a virtual machine or container",
+		InputSchema: InputSchema{Type: "object"},
+	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := state.NewCollector()
+		result, err := c.GetVMInfo()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Timezone
+	s.RegisterTool(Tool{
+		Name:        "get_timezone",
+		Description: "Get timezone and locale information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := state.NewCollector()
+		result, err := c.GetTimezone()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// NTP Status
+	s.RegisterTool(Tool{
+		Name:        "get_ntp_status",
+		Description: "Get NTP synchronization status",
+		InputSchema: InputSchema{Type: "object"},
+	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := state.NewCollector()
+		result, err := c.GetNTPStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Core Dumps
+	s.RegisterTool(Tool{
+		Name:        "get_core_dumps",
+		Description: "Get core dump/crash dump information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := state.NewCollector()
+		result, err := c.GetCoreDumps()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Power State
+	s.RegisterTool(Tool{
+		Name:        "get_power_state",
+		Description: "Get power/battery state information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := state.NewCollector()
+		result, err := c.GetPowerState()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// NUMA Topology
+	s.RegisterTool(Tool{
+		Name:        "get_numa_topology",
+		Description: "Get NUMA topology information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := state.NewCollector()
+		result, err := c.GetNUMATopology()
 		if err != nil {
 			return nil, err
 		}

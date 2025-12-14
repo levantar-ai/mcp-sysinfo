@@ -758,3 +758,315 @@ type Certificate struct {
 	IsExpired   bool      `json:"is_expired"`
 	DaysUntilExpiry int   `json:"days_until_expiry"`
 }
+
+// HardwareInfoResult represents system hardware information query results.
+type HardwareInfoResult struct {
+	System    SystemInfo    `json:"system"`
+	BIOS      BIOSInfo      `json:"bios"`
+	Baseboard BaseboardInfo `json:"baseboard"`
+	Chassis   ChassisInfo   `json:"chassis,omitempty"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// SystemInfo represents system/product information from DMI.
+type SystemInfo struct {
+	Manufacturer string `json:"manufacturer"`
+	ProductName  string `json:"product_name"`
+	Version      string `json:"version,omitempty"`
+	SerialNumber string `json:"serial_number,omitempty"`
+	UUID         string `json:"uuid,omitempty"`
+	Family       string `json:"family,omitempty"`
+	SKU          string `json:"sku,omitempty"`
+}
+
+// BIOSInfo represents BIOS/UEFI information.
+type BIOSInfo struct {
+	Vendor      string `json:"vendor"`
+	Version     string `json:"version"`
+	Date        string `json:"date,omitempty"`
+	Release     string `json:"release,omitempty"`
+}
+
+// BaseboardInfo represents motherboard information.
+type BaseboardInfo struct {
+	Manufacturer string `json:"manufacturer"`
+	ProductName  string `json:"product_name"`
+	Version      string `json:"version,omitempty"`
+	SerialNumber string `json:"serial_number,omitempty"`
+	AssetTag     string `json:"asset_tag,omitempty"`
+}
+
+// ChassisInfo represents chassis/enclosure information.
+type ChassisInfo struct {
+	Manufacturer string `json:"manufacturer,omitempty"`
+	Type         string `json:"type,omitempty"`
+	Version      string `json:"version,omitempty"`
+	SerialNumber string `json:"serial_number,omitempty"`
+	AssetTag     string `json:"asset_tag,omitempty"`
+}
+
+// USBDevicesResult represents USB devices query results.
+type USBDevicesResult struct {
+	Devices   []USBDevice `json:"devices"`
+	Count     int         `json:"count"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+// USBDevice represents a USB device.
+type USBDevice struct {
+	BusNum       int    `json:"bus_num"`
+	DevNum       int    `json:"dev_num"`
+	VendorID     string `json:"vendor_id"`
+	ProductID    string `json:"product_id"`
+	Vendor       string `json:"vendor,omitempty"`
+	Product      string `json:"product,omitempty"`
+	Manufacturer string `json:"manufacturer,omitempty"`
+	SerialNumber string `json:"serial_number,omitempty"`
+	DeviceClass  string `json:"device_class,omitempty"`
+	Speed        string `json:"speed,omitempty"`
+	MaxPower     string `json:"max_power,omitempty"`
+	Driver       string `json:"driver,omitempty"`
+	Path         string `json:"path,omitempty"`
+}
+
+// PCIDevicesResult represents PCI devices query results.
+type PCIDevicesResult struct {
+	Devices   []PCIDevice `json:"devices"`
+	Count     int         `json:"count"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+// PCIDevice represents a PCI device.
+type PCIDevice struct {
+	Slot         string `json:"slot"`
+	VendorID     string `json:"vendor_id"`
+	DeviceID     string `json:"device_id"`
+	Vendor       string `json:"vendor,omitempty"`
+	Device       string `json:"device,omitempty"`
+	SVendorID    string `json:"subsystem_vendor_id,omitempty"`
+	SDeviceID    string `json:"subsystem_device_id,omitempty"`
+	Class        string `json:"class,omitempty"`
+	ClassID      string `json:"class_id,omitempty"`
+	Revision     string `json:"revision,omitempty"`
+	Driver       string `json:"driver,omitempty"`
+	Module       string `json:"module,omitempty"`
+	IRQ          int    `json:"irq,omitempty"`
+	NumaNode     int    `json:"numa_node,omitempty"`
+	IOMMUGroup   string `json:"iommu_group,omitempty"`
+}
+
+// BlockDevicesResult represents block devices query results.
+type BlockDevicesResult struct {
+	Devices   []BlockDevice `json:"devices"`
+	Count     int           `json:"count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// BlockDevice represents a block device.
+type BlockDevice struct {
+	Name       string        `json:"name"`
+	MajMin     string        `json:"maj_min,omitempty"`
+	Size       uint64        `json:"size"`
+	Type       string        `json:"type"` // disk, part, lvm, loop, rom
+	Model      string        `json:"model,omitempty"`
+	Vendor     string        `json:"vendor,omitempty"`
+	Serial     string        `json:"serial,omitempty"`
+	Mountpoint string        `json:"mountpoint,omitempty"`
+	Fstype     string        `json:"fstype,omitempty"`
+	UUID       string        `json:"uuid,omitempty"`
+	Label      string        `json:"label,omitempty"`
+	RotType    string        `json:"rotational,omitempty"` // SSD or HDD
+	ReadOnly   bool          `json:"read_only"`
+	Removable  bool          `json:"removable"`
+	Children   []BlockDevice `json:"children,omitempty"`
+}
+
+// ProcessEnvironResult represents process environment variables query results.
+type ProcessEnvironResult struct {
+	PID       int32             `json:"pid"`
+	Name      string            `json:"name"`
+	Environ   map[string]string `json:"environ"`
+	Timestamp time.Time         `json:"timestamp"`
+}
+
+// IPCResourcesResult represents System V IPC resources query results.
+type IPCResourcesResult struct {
+	SharedMemory []SharedMemorySegment `json:"shared_memory"`
+	Semaphores   []SemaphoreSet        `json:"semaphores"`
+	MessageQueues []MessageQueue       `json:"message_queues"`
+	Timestamp    time.Time             `json:"timestamp"`
+}
+
+// SharedMemorySegment represents a System V shared memory segment.
+type SharedMemorySegment struct {
+	ID          int    `json:"id"`
+	Key         string `json:"key"`
+	Owner       string `json:"owner"`
+	Permissions string `json:"permissions"`
+	Bytes       uint64 `json:"bytes"`
+	AttachCount int    `json:"attach_count"`
+	Status      string `json:"status,omitempty"`
+	CreateTime  string `json:"create_time,omitempty"`
+}
+
+// SemaphoreSet represents a System V semaphore set.
+type SemaphoreSet struct {
+	ID          int    `json:"id"`
+	Key         string `json:"key"`
+	Owner       string `json:"owner"`
+	Permissions string `json:"permissions"`
+	NumSems     int    `json:"num_sems"`
+}
+
+// MessageQueue represents a System V message queue.
+type MessageQueue struct {
+	ID          int    `json:"id"`
+	Key         string `json:"key"`
+	Owner       string `json:"owner"`
+	Permissions string `json:"permissions"`
+	Messages    int    `json:"messages"`
+	Bytes       uint64 `json:"bytes"`
+}
+
+// NamespacesResult represents namespaces query results.
+type NamespacesResult struct {
+	Namespaces []Namespace `json:"namespaces"`
+	Count      int         `json:"count"`
+	Timestamp  time.Time   `json:"timestamp"`
+}
+
+// Namespace represents a Linux namespace.
+type Namespace struct {
+	Type     string  `json:"type"` // mnt, uts, ipc, pid, net, user, cgroup
+	ID       uint64  `json:"id"`
+	PID      int32   `json:"pid,omitempty"`
+	Command  string  `json:"command,omitempty"`
+	User     string  `json:"user,omitempty"`
+	NSPath   string  `json:"ns_path,omitempty"`
+}
+
+// CgroupsResult represents cgroup information query results.
+type CgroupsResult struct {
+	Version   int              `json:"version"` // 1 or 2
+	Groups    []CgroupInfo     `json:"groups"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// CgroupInfo represents a cgroup and its limits.
+type CgroupInfo struct {
+	Name       string            `json:"name"`
+	Path       string            `json:"path"`
+	Controller string            `json:"controller,omitempty"` // v1 only
+	Limits     map[string]string `json:"limits,omitempty"`
+	Usage      map[string]string `json:"usage,omitempty"`
+}
+
+// CapabilitiesResult represents process capabilities query results.
+type CapabilitiesResult struct {
+	PID         int32    `json:"pid"`
+	Name        string   `json:"name"`
+	Effective   []string `json:"effective"`
+	Permitted   []string `json:"permitted"`
+	Inheritable []string `json:"inheritable"`
+	Bounding    []string `json:"bounding,omitempty"`
+	Ambient     []string `json:"ambient,omitempty"`
+	Timestamp   time.Time `json:"timestamp"`
+}
+
+// VMInfoResult represents virtualization detection query results.
+type VMInfoResult struct {
+	IsVM           bool      `json:"is_vm"`
+	Hypervisor     string    `json:"hypervisor,omitempty"`    // kvm, vmware, virtualbox, xen, hyper-v, etc.
+	VMType         string    `json:"vm_type,omitempty"`       // container, vm, none
+	ContainerType  string    `json:"container_type,omitempty"` // docker, lxc, podman, etc.
+	ProductName    string    `json:"product_name,omitempty"`
+	Manufacturer   string    `json:"manufacturer,omitempty"`
+	DetectionMethod string   `json:"detection_method,omitempty"`
+	Timestamp      time.Time `json:"timestamp"`
+}
+
+// TimezoneInfoResult represents timezone and locale query results.
+type TimezoneInfoResult struct {
+	Timezone       string    `json:"timezone"`             // e.g., "America/New_York"
+	Abbreviation   string    `json:"abbreviation"`         // e.g., "EST"
+	UTCOffset      string    `json:"utc_offset"`           // e.g., "-05:00"
+	DSTActive      bool      `json:"dst_active"`
+	LocalTime      time.Time `json:"local_time"`
+	Locale         string    `json:"locale,omitempty"`     // e.g., "en_US.UTF-8"
+	Timestamp      time.Time `json:"timestamp"`
+}
+
+// NTPStatusResult represents NTP synchronization query results.
+type NTPStatusResult struct {
+	Synchronized   bool      `json:"synchronized"`
+	NTPService     string    `json:"ntp_service,omitempty"`  // systemd-timesyncd, ntpd, chrony
+	CurrentServer  string    `json:"current_server,omitempty"`
+	Stratum        int       `json:"stratum,omitempty"`
+	Offset         string    `json:"offset,omitempty"`       // Time offset
+	Delay          string    `json:"delay,omitempty"`        // Round trip delay
+	Jitter         string    `json:"jitter,omitempty"`
+	ReferenceTime  time.Time `json:"reference_time,omitempty"`
+	Timestamp      time.Time `json:"timestamp"`
+}
+
+// CoreDumpsResult represents core dump detection query results.
+type CoreDumpsResult struct {
+	CoreDumps      []CoreDump `json:"core_dumps"`
+	Count          int        `json:"count"`
+	TotalSize      uint64     `json:"total_size"`
+	DumpPath       string     `json:"dump_path,omitempty"`
+	Timestamp      time.Time  `json:"timestamp"`
+}
+
+// CoreDump represents a core dump file.
+type CoreDump struct {
+	Path           string    `json:"path"`
+	ProcessName    string    `json:"process_name,omitempty"`
+	PID            int32     `json:"pid,omitempty"`
+	Signal         int       `json:"signal,omitempty"`
+	Size           uint64    `json:"size"`
+	Time           time.Time `json:"time"`
+}
+
+// PowerStateResult represents power/battery state query results.
+type PowerStateResult struct {
+	OnACPower      bool           `json:"on_ac_power"`
+	Batteries      []BatteryInfo  `json:"batteries,omitempty"`
+	PowerProfile   string         `json:"power_profile,omitempty"` // performance, balanced, powersave
+	Timestamp      time.Time      `json:"timestamp"`
+}
+
+// BatteryInfo represents battery status.
+type BatteryInfo struct {
+	Name           string  `json:"name"`
+	Status         string  `json:"status"`           // Charging, Discharging, Full, Not charging
+	Percent        float64 `json:"percent"`
+	Capacity       uint64  `json:"capacity,omitempty"`        // mWh
+	CapacityFull   uint64  `json:"capacity_full,omitempty"`   // mWh
+	Voltage        float64 `json:"voltage,omitempty"`         // V
+	CurrentNow     float64 `json:"current_now,omitempty"`     // A
+	TimeToEmpty    string  `json:"time_to_empty,omitempty"`
+	TimeToFull     string  `json:"time_to_full,omitempty"`
+	Technology     string  `json:"technology,omitempty"`      // Li-ion, Li-poly
+	Manufacturer   string  `json:"manufacturer,omitempty"`
+	Model          string  `json:"model,omitempty"`
+	Serial         string  `json:"serial,omitempty"`
+	CycleCount     int     `json:"cycle_count,omitempty"`
+}
+
+// NUMATopologyResult represents NUMA topology query results.
+type NUMATopologyResult struct {
+	Nodes         []NUMANode `json:"nodes"`
+	Count         int        `json:"count"`
+	Timestamp     time.Time  `json:"timestamp"`
+}
+
+// NUMANode represents a NUMA node.
+type NUMANode struct {
+	ID            int      `json:"id"`
+	CPUs          []int    `json:"cpus"`
+	MemoryTotal   uint64   `json:"memory_total"`
+	MemoryFree    uint64   `json:"memory_free"`
+	MemoryUsed    uint64   `json:"memory_used"`
+	Distances     []int    `json:"distances,omitempty"` // Distance to other nodes
+}
