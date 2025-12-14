@@ -12,7 +12,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ## Phase 1: MVP - Core Diagnostics ✅ COMPLETE
 
-### 1.1 CPU Information ✅
+### 1.0.1 CPU Information ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/stat` for CPU usage
@@ -43,7 +43,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-### 1.2 Memory Information ✅
+### 1.0.2 Memory Information ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/meminfo`
@@ -67,7 +67,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-### 1.3 Disk Information ✅
+### 1.0.3 Disk Information ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/mounts` for partitions
@@ -93,7 +93,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-### 1.4 Network Information ✅
+### 1.0.4 Network Information ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/net/dev` for stats
@@ -119,7 +119,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-### 1.5 Process List ✅
+### 1.0.5 Process List ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/[pid]/stat` for each process
@@ -145,7 +145,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-### 1.6 System Uptime ✅
+### 1.0.6 System Uptime ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/uptime`
@@ -165,7 +165,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-### 1.7 Temperature Information ✅
+### 1.0.7 Temperature Information ✅
 
 #### Implementation
 - [x] 🐧 Linux: Read `/sys/class/thermal/`
