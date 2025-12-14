@@ -9,13 +9,13 @@ import (
 	"encoding/pem"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -44,7 +44,7 @@ func (c *Collector) getEnvVars() (*types.EnvVarsResult, error) {
 	}
 
 	// Try launchctl getenv for system environment
-	cmd := exec.Command("launchctl", "print", "system")
+	cmd := cmdexec.Command("launchctl", "print", "system")
 	if output, err := cmd.Output(); err == nil {
 		// Parse environment section if present
 		lines := strings.Split(string(output), "\n")
@@ -85,7 +85,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 	var groups []types.UserGroup
 
 	// Use dscl to list users
-	cmd := exec.Command("dscl", ".", "-list", "/Users")
+	cmd := cmdexec.Command("dscl", ".", "-list", "/Users")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.UserAccountsResult{
@@ -106,7 +106,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 		user := types.UserAccount{Username: username}
 
 		// Get user details
-		cmd := exec.Command("dscl", ".", "-read", "/Users/"+username)
+		cmd := cmdexec.Command("dscl", ".", "-read", "/Users/"+username)
 		if details, err := cmd.Output(); err == nil {
 			lines := strings.Split(string(details), "\n")
 			for _, line := range lines {
@@ -131,7 +131,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 	}
 
 	// Get groups
-	cmd = exec.Command("dscl", ".", "-list", "/Groups")
+	cmd = cmdexec.Command("dscl", ".", "-list", "/Groups")
 	if output, err := cmd.Output(); err == nil {
 		groupNames := strings.Split(strings.TrimSpace(string(output)), "\n")
 		for _, groupName := range groupNames {
@@ -143,7 +143,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 			group := types.UserGroup{Name: groupName}
 
 			// Get group details
-			cmd := exec.Command("dscl", ".", "-read", "/Groups/"+groupName)
+			cmd := cmdexec.Command("dscl", ".", "-read", "/Groups/"+groupName)
 			if details, err := cmd.Output(); err == nil {
 				lines := strings.Split(string(details), "\n")
 				for _, line := range lines {
@@ -261,7 +261,7 @@ func (c *Collector) getSSHConfig() (*types.SSHConfigResult, error) {
 	}
 
 	// Check if SSH server is running
-	cmd := exec.Command("pgrep", "-x", "sshd")
+	cmd := cmdexec.Command("pgrep", "-x", "sshd")
 	if err := cmd.Run(); err == nil {
 		result.ServerRunning = true
 	}
@@ -347,7 +347,7 @@ func (c *Collector) getMACStatus() (*types.MACStatusResult, error) {
 	}
 
 	// Check SIP status
-	cmd := exec.Command("csrutil", "status")
+	cmd := cmdexec.Command("csrutil", "status")
 	if output, err := cmd.Output(); err == nil {
 		outputStr := string(output)
 		if strings.Contains(outputStr, "enabled") {
@@ -366,7 +366,7 @@ func (c *Collector) getCertificates() (*types.CertificatesResult, error) {
 	var certs []types.Certificate
 
 	// Use security command to list certificates
-	cmd := exec.Command("security", "find-certificate", "-a", "-p", "/System/Library/Keychains/SystemRootCertificates.keychain")
+	cmd := cmdexec.Command("security", "find-certificate", "-a", "-p", "/System/Library/Keychains/SystemRootCertificates.keychain")
 	output, err := cmd.Output()
 	if err != nil {
 		// Fallback to /etc/ssl/certs

@@ -7,12 +7,12 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -33,7 +33,7 @@ func (c *Collector) getJournalLogs(query *types.LogQuery) (*types.JournalLogResu
 	query = normalizeQuery(query)
 
 	// Check if journalctl exists
-	journalctl, err := exec.LookPath("journalctl")
+	journalctl, err := cmdexec.LookPath("journalctl")
 	if err != nil {
 		return &types.JournalLogResult{
 			LogResult: types.LogResult{
@@ -69,7 +69,7 @@ func (c *Collector) getJournalLogs(query *types.LogQuery) (*types.JournalLogResu
 	}
 
 	// #nosec G204 -- arguments are validated/sanitized
-	cmd := exec.Command(journalctl, args...)
+	cmd := cmdexec.Command(journalctl, args...)
 	output, err := cmd.Output()
 	if err != nil {
 		// journalctl might fail if journal is empty or user lacks permissions
@@ -169,10 +169,10 @@ func (c *Collector) getKernelLogs(query *types.LogQuery) (*types.KernelLogResult
 	query = normalizeQuery(query)
 
 	// Try dmesg command first
-	dmesg, err := exec.LookPath("dmesg")
+	dmesg, err := cmdexec.LookPath("dmesg")
 	if err == nil {
 		// #nosec G204 -- dmesg path is from LookPath
-		cmd := exec.Command(dmesg, "--time-format=iso", "--nopager")
+		cmd := cmdexec.Command(dmesg, "--time-format=iso", "--nopager")
 		output, err := cmd.Output()
 		if err == nil {
 			entries := parseDmesgOutput(output)
@@ -276,7 +276,7 @@ func (c *Collector) getAuthLogs(query *types.LogQuery) (*types.AuthLogResult, er
 
 	if logPath == "" {
 		// Try journalctl as fallback
-		journalctl, err := exec.LookPath("journalctl")
+		journalctl, err := cmdexec.LookPath("journalctl")
 		if err == nil {
 			args := []string{
 				"--no-pager",
@@ -285,7 +285,7 @@ func (c *Collector) getAuthLogs(query *types.LogQuery) (*types.AuthLogResult, er
 				"_COMM=sshd",
 			}
 			// #nosec G204 -- arguments are validated
-			cmd := exec.Command(journalctl, args...)
+			cmd := cmdexec.Command(journalctl, args...)
 			output, err := cmd.Output()
 			if err == nil {
 				entries := parseJournalOutput(output)

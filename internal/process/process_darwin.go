@@ -4,19 +4,19 @@ package process
 
 import (
 	"fmt"
-	"os/exec"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
 // collect gathers all running processes on macOS using ps command.
 func (c *Collector) collect() (*types.ProcessList, error) {
 	// Use ps to get process list
-	out, err := exec.Command("ps", "-axo", "pid,ppid,user,pcpu,pmem,rss,state,lstart,comm").Output()
+	out, err := cmdexec.Command("ps", "-axo", "pid,ppid,user,pcpu,pmem,rss,state,lstart,comm").Output()
 	if err != nil {
 		return nil, fmt.Errorf("ps command failed: %w", err)
 	}
@@ -46,7 +46,7 @@ func (c *Collector) collect() (*types.ProcessList, error) {
 
 // getProcess returns information about a specific process.
 func (c *Collector) getProcess(pid int32) (*types.ProcessInfo, error) {
-	out, err := exec.Command("ps", "-p", strconv.Itoa(int(pid)), "-o", "pid,ppid,user,pcpu,pmem,rss,state,lstart,comm").Output()
+	out, err := cmdexec.Command("ps", "-p", strconv.Itoa(int(pid)), "-o", "pid,ppid,user,pcpu,pmem,rss,state,lstart,comm").Output()
 	if err != nil {
 		return nil, fmt.Errorf("ps command failed: %w", err)
 	}

@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"encoding/csv"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -15,6 +14,7 @@ import (
 
 	"golang.org/x/sys/windows/registry"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -24,7 +24,7 @@ func (c *Collector) getScheduledTasks() (*types.ScheduledTasksResult, error) {
 
 	// Use schtasks to list tasks
 	// #nosec G204 -- schtasks is a system tool
-	cmd := exec.Command("schtasks", "/query", "/fo", "csv", "/v")
+	cmd := cmdexec.Command("schtasks", "/query", "/fo", "csv", "/v")
 	output, err := cmd.Output()
 	if err != nil {
 		// Try PowerShell as fallback
@@ -127,7 +127,7 @@ func (c *Collector) getScheduledTasksPowerShell() (*types.ScheduledTasksResult, 
 
 	psCmd := `Get-ScheduledTask | Select-Object TaskName,State,Description | ConvertTo-Json`
 	// #nosec G204 -- PowerShell is a system tool
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.ScheduledTasksResult{

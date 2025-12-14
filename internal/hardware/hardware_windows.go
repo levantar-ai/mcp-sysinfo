@@ -4,11 +4,11 @@ package hardware
 
 import (
 	"encoding/json"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -406,7 +406,7 @@ func queryWMISingle[T any](query string) *T {
 func queryWMIMultiple[T any](query string) []T {
 	// Use PowerShell to query WMI and output as JSON
 	// #nosec G204 -- query is hardcoded
-	cmd := exec.Command("powershell", "-NoProfile", "-Command",
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
 		"Get-WmiObject -Query '"+query+"' | ConvertTo-Json -Compress")
 	output, err := cmd.Output()
 	if err != nil {
@@ -436,7 +436,7 @@ func queryWMIMultiple[T any](query string) []T {
 // queryWMIValue queries WMI for a single value.
 func queryWMIValue(query, field string) string {
 	// #nosec G204 -- query and field are hardcoded
-	cmd := exec.Command("powershell", "-NoProfile", "-Command",
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
 		"(Get-WmiObject -Query '"+query+"')."+field)
 	output, err := cmd.Output()
 	if err != nil {

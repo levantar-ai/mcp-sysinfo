@@ -6,13 +6,13 @@ import (
 	"bufio"
 	"bytes"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -21,10 +21,10 @@ func (c *Collector) getScheduledTasks() (*types.ScheduledTasksResult, error) {
 	var tasks []types.ScheduledTask
 
 	// Try to get at jobs
-	atq, err := exec.LookPath("atq")
+	atq, err := cmdexec.LookPath("atq")
 	if err == nil {
 		// #nosec G204 -- atq path is from LookPath
-		cmd := exec.Command(atq)
+		cmd := cmdexec.Command(atq)
 		output, err := cmd.Output()
 		if err == nil {
 			tasks = append(tasks, parseAtQueue(output)...)
@@ -96,9 +96,9 @@ func (c *Collector) getCronJobs() (*types.CronJobsResult, error) {
 	// User crontabs
 	users := []string{"root"}
 	// Try to get current user's crontab
-	if crontab, err := exec.LookPath("crontab"); err == nil {
+	if crontab, err := cmdexec.LookPath("crontab"); err == nil {
 		// #nosec G204 -- crontab path is from LookPath
-		cmd := exec.Command(crontab, "-l")
+		cmd := cmdexec.Command(crontab, "-l")
 		output, err := cmd.Output()
 		if err == nil {
 			currentUser := os.Getenv("USER")
@@ -387,7 +387,7 @@ func parseDesktopFile(path string) (types.StartupItem, error) {
 func (c *Collector) getSystemdServices() (*types.SystemdServicesResult, error) {
 	var services []types.SystemdService
 
-	systemctl, err := exec.LookPath("systemctl")
+	systemctl, err := cmdexec.LookPath("systemctl")
 	if err != nil {
 		return &types.SystemdServicesResult{
 			Services:  services,
@@ -398,7 +398,7 @@ func (c *Collector) getSystemdServices() (*types.SystemdServicesResult, error) {
 
 	// List all services
 	// #nosec G204 -- systemctl path is from LookPath
-	cmd := exec.Command(systemctl, "list-units", "--type=service", "--all", "--no-pager", "--plain", "--no-legend")
+	cmd := cmdexec.Command(systemctl, "list-units", "--type=service", "--all", "--no-pager", "--plain", "--no-legend")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.SystemdServicesResult{
@@ -430,7 +430,7 @@ func (c *Collector) getSystemdServices() (*types.SystemdServicesResult, error) {
 		var mainPID int32
 		if activeState == "active" {
 			// #nosec G204 -- systemctl path is from LookPath
-			showCmd := exec.Command(systemctl, "show", name, "--property=MainPID", "--no-pager")
+			showCmd := cmdexec.Command(systemctl, "show", name, "--property=MainPID", "--no-pager")
 			if showOutput, err := showCmd.Output(); err == nil {
 				if strings.HasPrefix(string(showOutput), "MainPID=") {
 					pidStr := strings.TrimPrefix(strings.TrimSpace(string(showOutput)), "MainPID=")
@@ -444,7 +444,7 @@ func (c *Collector) getSystemdServices() (*types.SystemdServicesResult, error) {
 		// Get enabled status
 		enabled := "unknown"
 		// #nosec G204 -- systemctl path is from LookPath
-		enabledCmd := exec.Command(systemctl, "is-enabled", name, "--no-pager")
+		enabledCmd := cmdexec.Command(systemctl, "is-enabled", name, "--no-pager")
 		if enabledOutput, err := enabledCmd.Output(); err == nil {
 			enabled = strings.TrimSpace(string(enabledOutput))
 		}
