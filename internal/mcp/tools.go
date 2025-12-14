@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -581,10 +580,4 @@ func registerHookTools(s *Server) {
 		}
 		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
 	})
-}
-
-// Helper to convert result to JSON content
-func toJSONContent(result interface{}) Content {
-	data, _ := json.MarshalIndent(result, "", "  ")
-	return Content{Type: "text", Text: string(data)}
 }

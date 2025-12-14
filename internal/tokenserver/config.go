@@ -44,6 +44,7 @@ func DefaultConfig() *Config {
 
 // LoadConfig reads configuration from a JSON file.
 func LoadConfig(path string) (*Config, error) {
+	// #nosec G304 -- path is from CLI argument
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config: %w", err)

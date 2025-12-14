@@ -189,7 +189,7 @@ func (s *Server) handleAuthServerMetadata(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "public, max-age=3600")
-	json.NewEncoder(w).Encode(metadata)
+	_ = json.NewEncoder(w).Encode(metadata)
 }
 
 // handleJWKS serves the JSON Web Key Set.
@@ -203,7 +203,7 @@ func (s *Server) handleJWKS(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "public, max-age=3600")
-	json.NewEncoder(w).Encode(jwks)
+	_ = json.NewEncoder(w).Encode(jwks)
 }
 
 // handleToken processes OAuth 2.1 token requests (client credentials flow).
@@ -275,7 +275,7 @@ func (s *Server) handleToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Pragma", "no-cache")
-	json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 // handleIntrospect handles OAuth 2.1 token introspection (RFC 7662).
@@ -310,7 +310,7 @@ func (s *Server) handleIntrospect(w http.ResponseWriter, r *http.Request) {
 	if token == "" {
 		// Return inactive for missing token (per RFC 7662)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"active": false})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"active": false})
 		return
 	}
 
@@ -319,7 +319,7 @@ func (s *Server) handleIntrospect(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// Token is invalid/expired - return inactive
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"active": false})
+		_ = json.NewEncoder(w).Encode(map[string]interface{}{"active": false})
 		return
 	}
 
@@ -340,7 +340,7 @@ func (s *Server) handleIntrospect(w http.ResponseWriter, r *http.Request) {
 	response["mcp_scopes"] = claims.MCPScopes
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 // handleHealth returns server health status.
@@ -357,14 +357,14 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(resp)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 // oauthError sends an OAuth 2.1 error response.
 func (s *Server) oauthError(w http.ResponseWriter, errCode, errDesc string, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{
+	_ = json.NewEncoder(w).Encode(map[string]string{
 		"error":             errCode,
 		"error_description": errDesc,
 	})
