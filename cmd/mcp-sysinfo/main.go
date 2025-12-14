@@ -21,6 +21,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
+	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
@@ -238,7 +239,7 @@ EXAMPLES:
     # Test a query directly
     mcp-sysinfo --query get_cpu_info --json
 
-AVAILABLE TOOLS (29):
+AVAILABLE TOOLS (35):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -253,7 +254,8 @@ AVAILABLE TOOLS (29):
     get_systemd_services, get_kernel_modules, get_loaded_drivers,
     get_dns_servers, get_routes, get_firewall_rules, get_listening_ports,
     get_arp_table, get_network_stats, get_mounts, get_disk_io,
-    get_open_files, get_inode_usage
+    get_open_files, get_inode_usage, get_env_vars, get_user_accounts,
+    get_sudo_config, get_ssh_config, get_mac_status, get_certificates
 
   Sensitive (scope: sensitive):
     get_auth_logs
@@ -388,6 +390,30 @@ func runQuery(queryName string, jsonOut bool) {
 	case "get_inode_usage":
 		c := filesystem.NewCollector()
 		result, err = c.GetInodeUsage()
+
+	case "get_env_vars":
+		c := security.NewCollector()
+		result, err = c.GetEnvVars()
+
+	case "get_user_accounts":
+		c := security.NewCollector()
+		result, err = c.GetUserAccounts()
+
+	case "get_sudo_config":
+		c := security.NewCollector()
+		result, err = c.GetSudoConfig()
+
+	case "get_ssh_config":
+		c := security.NewCollector()
+		result, err = c.GetSSHConfig()
+
+	case "get_mac_status":
+		c := security.NewCollector()
+		result, err = c.GetMACStatus()
+
+	case "get_certificates":
+		c := security.NewCollector()
+		result, err = c.GetCertificates()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)
