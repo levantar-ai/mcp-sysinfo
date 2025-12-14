@@ -5,12 +5,12 @@ package filesystem
 import (
 	"bufio"
 	"bytes"
-	"os/exec"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -19,7 +19,7 @@ func (c *Collector) getMounts() (*types.MountsResult, error) {
 	var mounts []types.MountInfo
 
 	// Use mount command
-	cmd := exec.Command("/sbin/mount")
+	cmd := cmdexec.Command("/sbin/mount")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.MountsResult{
@@ -110,7 +110,7 @@ func (c *Collector) getDiskIO() (*types.DiskIOResult, error) {
 	var devices []types.DiskIOStats
 
 	// Use iostat command
-	cmd := exec.Command("/usr/sbin/iostat", "-d", "-c", "2", "-w", "1")
+	cmd := cmdexec.Command("/usr/sbin/iostat", "-d", "-c", "2", "-w", "1")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.DiskIOResult{
@@ -186,7 +186,7 @@ func (c *Collector) getOpenFiles() (*types.OpenFilesResult, error) {
 	var files []types.OpenFile
 
 	// Use lsof command
-	cmd := exec.Command("/usr/sbin/lsof", "-F", "pcftn")
+	cmd := cmdexec.Command("/usr/sbin/lsof", "-F", "pcftn")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.OpenFilesResult{
@@ -291,7 +291,7 @@ func (c *Collector) getInodeUsage() (*types.InodeUsageResult, error) {
 	var filesystems []types.InodeUsage
 
 	// Use df -i
-	cmd := exec.Command("/bin/df", "-i")
+	cmd := cmdexec.Command("/bin/df", "-i")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.InodeUsageResult{

@@ -5,12 +5,12 @@ package security
 import (
 	"bufio"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -53,7 +53,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 
 	// Use PowerShell to get local users
 	psCmd := `Get-LocalUser | Select-Object Name,Enabled,Description,SID | ConvertTo-Json`
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err == nil {
 		users = parseWindowsUsers(output)
@@ -61,7 +61,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 
 	// Use net user as fallback
 	if len(users) == 0 {
-		cmd := exec.Command("net", "user")
+		cmd := cmdexec.Command("net", "user")
 		if output, err := cmd.Output(); err == nil {
 			lines := strings.Split(string(output), "\n")
 			for _, line := range lines {
@@ -83,7 +83,7 @@ func (c *Collector) getUserAccounts() (*types.UserAccountsResult, error) {
 
 	// Get local groups
 	psCmd = `Get-LocalGroup | Select-Object Name,Description,SID | ConvertTo-Json`
-	cmd = exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd = cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	if output, err := cmd.Output(); err == nil {
 		groups = parseWindowsGroups(output)
 	}
@@ -152,7 +152,7 @@ func (c *Collector) getSudoConfig() (*types.SudoConfigResult, error) {
 
 	// Get members of Administrators group
 	psCmd := `Get-LocalGroupMember -Group "Administrators" | Select-Object Name,ObjectClass | ConvertTo-Json`
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	if output, err := cmd.Output(); err == nil {
 		content := string(output)
 		lines := strings.Split(content, "\n")
@@ -176,7 +176,7 @@ func (c *Collector) getSudoConfig() (*types.SudoConfigResult, error) {
 
 	// Fallback to net localgroup
 	if len(rules) == 0 {
-		cmd := exec.Command("net", "localgroup", "Administrators")
+		cmd := cmdexec.Command("net", "localgroup", "Administrators")
 		if output, err := cmd.Output(); err == nil {
 			lines := strings.Split(string(output), "\n")
 			inMembers := false
@@ -233,7 +233,7 @@ func (c *Collector) getSSHConfig() (*types.SSHConfigResult, error) {
 	}
 
 	// Check if SSH server service is running
-	cmd := exec.Command("sc", "query", "sshd")
+	cmd := cmdexec.Command("sc", "query", "sshd")
 	if output, err := cmd.Output(); err == nil {
 		if strings.Contains(string(output), "RUNNING") {
 			result.ServerRunning = true
@@ -322,7 +322,7 @@ func (c *Collector) getMACStatus() (*types.MACStatusResult, error) {
 
 	// Check Windows Defender status
 	psCmd := `Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled,AntispywareEnabled,AntivirusEnabled | ConvertTo-Json`
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	if output, err := cmd.Output(); err == nil {
 		outputStr := string(output)
 		if strings.Contains(outputStr, "true") {
@@ -348,7 +348,7 @@ func (c *Collector) getMACStatus() (*types.MACStatusResult, error) {
 	}
 
 	// Check UAC status
-	cmd = exec.Command("reg", "query", `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System`, "/v", "EnableLUA")
+	cmd = cmdexec.Command("reg", "query", `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System`, "/v", "EnableLUA")
 	if output, err := cmd.Output(); err == nil {
 		if strings.Contains(string(output), "0x1") {
 			result.Profiles = append(result.Profiles, types.MACProfile{
@@ -367,7 +367,7 @@ func (c *Collector) getCertificates() (*types.CertificatesResult, error) {
 
 	// Use PowerShell to get certificates from system store
 	psCmd := `Get-ChildItem -Path Cert:\LocalMachine\Root | Select-Object Subject,Issuer,NotBefore,NotAfter,Thumbprint | ConvertTo-Json`
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.CertificatesResult{

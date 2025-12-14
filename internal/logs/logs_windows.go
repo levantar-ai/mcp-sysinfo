@@ -8,12 +8,12 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -233,7 +233,7 @@ func (c *Collector) getEventLog(query *types.EventLogQuery) (*types.EventLogResu
 	}
 
 	// #nosec G204 -- wevtutil path is from system
-	cmd := exec.Command("wevtutil", args...)
+	cmd := cmdexec.Command("wevtutil", args...)
 	output, err := cmd.Output()
 	if err != nil {
 		// Try PowerShell as fallback
@@ -334,7 +334,7 @@ func (c *Collector) getEventLogPowerShell(query *types.EventLogQuery, channel st
 	psCmd := fmt.Sprintf("Get-WinEvent -LogName '%s' -MaxEvents %d | Select-Object TimeCreated,ProviderName,Id,LevelDisplayName,Message | ConvertTo-Json", channel, query.Lines)
 
 	// #nosec G204 -- powershell path is from system
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.EventLogResult{

@@ -4,10 +4,10 @@ package kernel
 
 import (
 	"bufio"
-	"os/exec"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -17,7 +17,7 @@ func (c *Collector) getKernelModules() (*types.KernelModulesResult, error) {
 
 	// Use driverquery to list drivers
 	// #nosec G204 -- driverquery is a system tool
-	cmd := exec.Command("driverquery", "/v", "/fo", "csv")
+	cmd := cmdexec.Command("driverquery", "/v", "/fo", "csv")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.KernelModulesResult{
@@ -87,7 +87,7 @@ func (c *Collector) getLoadedDrivers() (*types.LoadedDriversResult, error) {
 
 	// Use driverquery with verbose info
 	// #nosec G204 -- driverquery is a system tool
-	cmd := exec.Command("driverquery", "/v", "/fo", "csv")
+	cmd := cmdexec.Command("driverquery", "/v", "/fo", "csv")
 	output, err := cmd.Output()
 	if err != nil {
 		// Try PowerShell as fallback
@@ -164,7 +164,7 @@ func (c *Collector) getDriversPowerShell() (*types.LoadedDriversResult, error) {
 
 	psCmd := `Get-WmiObject Win32_SystemDriver | Select-Object Name,DisplayName,State,PathName | ConvertTo-Json`
 	// #nosec G204 -- PowerShell is a system tool
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.LoadedDriversResult{

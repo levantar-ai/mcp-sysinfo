@@ -4,7 +4,6 @@ package filesystem
 
 import (
 	"bufio"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 	"golang.org/x/sys/windows"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -100,7 +100,7 @@ func (c *Collector) getDiskIO() (*types.DiskIOResult, error) {
 
 	// Use wmic to get disk performance
 	// #nosec G204 -- wmic is a system tool
-	cmd := exec.Command("wmic", "diskdrive", "get", "Name,Size,BytesPerSector", "/format:csv")
+	cmd := cmdexec.Command("wmic", "diskdrive", "get", "Name,Size,BytesPerSector", "/format:csv")
 	output, err := cmd.Output()
 	if err != nil {
 		// Try PowerShell as fallback
@@ -151,7 +151,7 @@ func (c *Collector) getDiskIOPowerShell() (*types.DiskIOResult, error) {
 
 	psCmd := `Get-Counter '\PhysicalDisk(*)\*' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty CounterSamples | Select-Object Path,CookedValue | ConvertTo-Json`
 	// #nosec G204 -- PowerShell is a system tool
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	_, err := cmd.Output()
 	if err != nil {
 		return &types.DiskIOResult{
@@ -177,7 +177,7 @@ func (c *Collector) getOpenFiles() (*types.OpenFilesResult, error) {
 	// For now, return basic info using handle count from processes
 	psCmd := `Get-Process | Select-Object ProcessName,Id,HandleCount | ConvertTo-Json`
 	// #nosec G204 -- PowerShell is a system tool
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.OpenFilesResult{

@@ -4,11 +4,11 @@ package state
 
 import (
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -21,7 +21,7 @@ func (c *Collector) getVMInfo() (*types.VMInfoResult, error) {
 
 	// Check kern.hv_support sysctl (indicates if hypervisor is present)
 	// #nosec G204 -- no user input
-	cmd := exec.Command("sysctl", "-n", "kern.hv_support")
+	cmd := cmdexec.Command("sysctl", "-n", "kern.hv_support")
 	if output, err := cmd.Output(); err == nil {
 		if strings.TrimSpace(string(output)) == "1" {
 			// Running on a Mac with hypervisor support (could be host or VM)
@@ -30,7 +30,7 @@ func (c *Collector) getVMInfo() (*types.VMInfoResult, error) {
 
 	// Check system_profiler for hardware model
 	// #nosec G204 -- no user input
-	cmd = exec.Command("system_profiler", "SPHardwareDataType")
+	cmd = cmdexec.Command("system_profiler", "SPHardwareDataType")
 	if output, err := cmd.Output(); err == nil {
 		content := string(output)
 		if strings.Contains(content, "Virtual") || strings.Contains(content, "VMware") ||
@@ -115,7 +115,7 @@ func (c *Collector) getNTPStatus() (*types.NTPStatusResult, error) {
 
 	// Try sntp command
 	// #nosec G204 -- no user input
-	cmd := exec.Command("sntp", "-d", "time.apple.com")
+	cmd := cmdexec.Command("sntp", "-d", "time.apple.com")
 	if output, err := cmd.Output(); err == nil {
 		result.NTPService = "sntp"
 		content := string(output)
@@ -184,7 +184,7 @@ func (c *Collector) getPowerState() (*types.PowerStateResult, error) {
 
 	// Use pmset to get power info
 	// #nosec G204 -- no user input
-	cmd := exec.Command("pmset", "-g", "batt")
+	cmd := cmdexec.Command("pmset", "-g", "batt")
 	if output, err := cmd.Output(); err == nil {
 		content := string(output)
 

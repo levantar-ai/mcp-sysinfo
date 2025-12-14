@@ -6,12 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"os"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -20,7 +20,7 @@ func (c *Collector) getDNSServers() (*types.DNSServersResult, error) {
 	var servers []types.DNSServer
 
 	// Use scutil to get DNS configuration
-	cmd := exec.Command("/usr/sbin/scutil", "--dns")
+	cmd := cmdexec.Command("/usr/sbin/scutil", "--dns")
 	output, err := cmd.Output()
 	if err == nil {
 		servers = parseScutilDNS(output)
@@ -101,7 +101,7 @@ func parseScutilDNS(output []byte) []types.DNSServer {
 func (c *Collector) getRoutes() (*types.RoutesResult, error) {
 	var routes []types.Route
 
-	cmd := exec.Command("/usr/sbin/netstat", "-rn")
+	cmd := cmdexec.Command("/usr/sbin/netstat", "-rn")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.RoutesResult{
@@ -164,7 +164,7 @@ func (c *Collector) getFirewallRules() (*types.FirewallRulesResult, error) {
 	enabled := false
 
 	// Check if pf is enabled
-	cmd := exec.Command("/sbin/pfctl", "-s", "info")
+	cmd := cmdexec.Command("/sbin/pfctl", "-s", "info")
 	output, err := cmd.Output()
 	if err == nil {
 		if strings.Contains(string(output), "Enabled") {
@@ -174,7 +174,7 @@ func (c *Collector) getFirewallRules() (*types.FirewallRulesResult, error) {
 
 	// Get rules (requires root)
 	// #nosec G204 -- pfctl is a system tool
-	rulesCmd := exec.Command("/sbin/pfctl", "-s", "rules")
+	rulesCmd := cmdexec.Command("/sbin/pfctl", "-s", "rules")
 	rulesOutput, err := rulesCmd.Output()
 	if err == nil {
 		rules = parsePFRules(rulesOutput)
@@ -248,7 +248,7 @@ func (c *Collector) getListeningPorts() (*types.ListeningPortsResult, error) {
 	var ports []types.ListeningPort
 
 	// Use lsof for listening ports
-	cmd := exec.Command("/usr/sbin/lsof", "-i", "-n", "-P")
+	cmd := cmdexec.Command("/usr/sbin/lsof", "-i", "-n", "-P")
 	output, err := cmd.Output()
 	if err != nil {
 		// Fallback to netstat
@@ -327,7 +327,7 @@ func parseLsof(output []byte) []types.ListeningPort {
 func (c *Collector) getListeningPortsNetstat() (*types.ListeningPortsResult, error) {
 	var ports []types.ListeningPort
 
-	cmd := exec.Command("/usr/sbin/netstat", "-an")
+	cmd := cmdexec.Command("/usr/sbin/netstat", "-an")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.ListeningPortsResult{
@@ -381,7 +381,7 @@ func (c *Collector) getListeningPortsNetstat() (*types.ListeningPortsResult, err
 func (c *Collector) getARPTable() (*types.ARPTableResult, error) {
 	var entries []types.ARPEntry
 
-	cmd := exec.Command("/usr/sbin/arp", "-an")
+	cmd := cmdexec.Command("/usr/sbin/arp", "-an")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.ARPTableResult{
@@ -428,7 +428,7 @@ func (c *Collector) getNetworkStats() (*types.NetworkStatsResult, error) {
 	stats := types.NetworkStats{}
 
 	// Get TCP connection stats using netstat
-	cmd := exec.Command("/usr/sbin/netstat", "-s", "-p", "tcp")
+	cmd := cmdexec.Command("/usr/sbin/netstat", "-s", "-p", "tcp")
 	output, err := cmd.Output()
 	if err == nil {
 		scanner := bufio.NewScanner(bytes.NewReader(output))
@@ -443,7 +443,7 @@ func (c *Collector) getNetworkStats() (*types.NetworkStatsResult, error) {
 	}
 
 	// Get interface stats
-	ifCmd := exec.Command("/usr/sbin/netstat", "-ib")
+	ifCmd := cmdexec.Command("/usr/sbin/netstat", "-ib")
 	ifOutput, err := ifCmd.Output()
 	if err == nil {
 		scanner := bufio.NewScanner(bytes.NewReader(ifOutput))

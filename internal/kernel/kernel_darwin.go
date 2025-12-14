@@ -5,12 +5,12 @@ package kernel
 import (
 	"bufio"
 	"bytes"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -19,7 +19,7 @@ func (c *Collector) getKernelModules() (*types.KernelModulesResult, error) {
 	var modules []types.KernelModule
 
 	// Use kextstat to list loaded kernel extensions
-	kextstat, err := exec.LookPath("kextstat")
+	kextstat, err := cmdexec.LookPath("kextstat")
 	if err != nil {
 		return &types.KernelModulesResult{
 			Modules:   modules,
@@ -29,7 +29,7 @@ func (c *Collector) getKernelModules() (*types.KernelModulesResult, error) {
 	}
 
 	// #nosec G204 -- kextstat path is from LookPath
-	cmd := exec.Command(kextstat, "-l")
+	cmd := cmdexec.Command(kextstat, "-l")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.KernelModulesResult{
@@ -96,7 +96,7 @@ func (c *Collector) getLoadedDrivers() (*types.LoadedDriversResult, error) {
 	var drivers []types.LoadedDriver
 
 	// Use system_profiler to get driver info
-	cmd := exec.Command("/usr/sbin/system_profiler", "SPExtensionsDataType", "-json")
+	cmd := cmdexec.Command("/usr/sbin/system_profiler", "SPExtensionsDataType", "-json")
 	output, err := cmd.Output()
 	if err != nil {
 		// Fallback to kextstat
@@ -142,7 +142,7 @@ func parseSystemProfilerExtensions(output []byte) []types.LoadedDriver {
 func (c *Collector) getDriversFromKextstat() (*types.LoadedDriversResult, error) {
 	var drivers []types.LoadedDriver
 
-	kextstat, err := exec.LookPath("kextstat")
+	kextstat, err := cmdexec.LookPath("kextstat")
 	if err != nil {
 		return &types.LoadedDriversResult{
 			Drivers:   drivers,
@@ -152,7 +152,7 @@ func (c *Collector) getDriversFromKextstat() (*types.LoadedDriversResult, error)
 	}
 
 	// #nosec G204 -- kextstat path is from LookPath
-	cmd := exec.Command(kextstat, "-l")
+	cmd := cmdexec.Command(kextstat, "-l")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.LoadedDriversResult{

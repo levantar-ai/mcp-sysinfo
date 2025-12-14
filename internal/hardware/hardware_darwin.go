@@ -4,11 +4,11 @@ package hardware
 
 import (
 	"encoding/json"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -51,7 +51,7 @@ type usbItem struct {
 // getHardwareInfo retrieves hardware info using system_profiler.
 func (c *Collector) getHardwareInfo() (*types.HardwareInfoResult, error) {
 	// #nosec G204 -- no user input
-	cmd := exec.Command("system_profiler", "SPHardwareDataType", "-json")
+	cmd := cmdexec.Command("system_profiler", "SPHardwareDataType", "-json")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.HardwareInfoResult{
@@ -100,7 +100,7 @@ func (c *Collector) getUSBDevices() (*types.USBDevicesResult, error) {
 	var devices []types.USBDevice
 
 	// #nosec G204 -- no user input
-	cmd := exec.Command("system_profiler", "SPUSBDataType", "-json")
+	cmd := cmdexec.Command("system_profiler", "SPUSBDataType", "-json")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.USBDevicesResult{
@@ -180,7 +180,7 @@ func (c *Collector) getPCIDevices() (*types.PCIDevicesResult, error) {
 
 	// Use ioreg to get PCI devices
 	// #nosec G204 -- no user input
-	cmd := exec.Command("ioreg", "-r", "-c", "IOPCIDevice", "-a")
+	cmd := cmdexec.Command("ioreg", "-r", "-c", "IOPCIDevice", "-a")
 	output, err := cmd.Output()
 	if err != nil {
 		// Try system_profiler as fallback
@@ -202,7 +202,7 @@ func (c *Collector) getPCIDevicesFromSystemProfiler() (*types.PCIDevicesResult, 
 	var devices []types.PCIDevice
 
 	// #nosec G204 -- no user input
-	cmd := exec.Command("system_profiler", "SPPCIDataType")
+	cmd := cmdexec.Command("system_profiler", "SPPCIDataType")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.PCIDevicesResult{
@@ -338,7 +338,7 @@ func (c *Collector) getBlockDevices() (*types.BlockDevicesResult, error) {
 	var devices []types.BlockDevice
 
 	// #nosec G204 -- no user input
-	cmd := exec.Command("diskutil", "list", "-plist")
+	cmd := cmdexec.Command("diskutil", "list", "-plist")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.BlockDevicesResult{

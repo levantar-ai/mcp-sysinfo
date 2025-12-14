@@ -5,11 +5,11 @@ package network
 import (
 	"fmt"
 	"net"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -51,7 +51,7 @@ func (c *Collector) collect() (*types.NetworkInfo, error) {
 // getIOCounters returns network I/O statistics using netstat on macOS.
 func (c *Collector) getIOCounters() (map[string]*types.NetworkIOCounters, error) {
 	// Use netstat -ib for interface statistics
-	out, err := exec.Command("netstat", "-ib").Output()
+	out, err := cmdexec.Command("netstat", "-ib").Output()
 	if err != nil {
 		return nil, fmt.Errorf("netstat failed: %w", err)
 	}
@@ -110,7 +110,7 @@ func (c *Collector) getConnections(kind string) ([]types.ConnectionInfo, error) 
 		args = append(args, "-p", "udp")
 	}
 
-	out, err := exec.Command("netstat", args...).Output()
+	out, err := cmdexec.Command("netstat", args...).Output()
 	if err != nil {
 		return nil, fmt.Errorf("netstat failed: %w", err)
 	}

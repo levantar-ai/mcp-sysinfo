@@ -7,13 +7,13 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -49,7 +49,7 @@ func (c *Collector) getSyslog(query *types.LogQuery) (*types.LogResult, error) {
 	}
 
 	// #nosec G204 -- log command path is hardcoded
-	cmd := exec.Command("/usr/bin/log", args...)
+	cmd := cmdexec.Command("/usr/bin/log", args...)
 	output, err := cmd.Output()
 	if err != nil {
 		// Fallback to /var/log/system.log
@@ -130,7 +130,7 @@ func (c *Collector) getKernelLogs(query *types.LogQuery) (*types.KernelLogResult
 	}
 
 	// #nosec G204 -- log command path is hardcoded
-	cmd := exec.Command("/usr/bin/log", args...)
+	cmd := cmdexec.Command("/usr/bin/log", args...)
 	output, err := cmd.Output()
 	if err != nil {
 		// Try dmesg as fallback
@@ -157,7 +157,7 @@ func (c *Collector) getKernelLogs(query *types.LogQuery) (*types.KernelLogResult
 // getDmesgDarwin uses dmesg as fallback for kernel logs.
 func (c *Collector) getDmesgDarwin(query *types.LogQuery) (*types.KernelLogResult, error) {
 	// #nosec G204 -- dmesg path is hardcoded
-	cmd := exec.Command("/sbin/dmesg")
+	cmd := cmdexec.Command("/sbin/dmesg")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.KernelLogResult{
@@ -213,7 +213,7 @@ func (c *Collector) getAuthLogs(query *types.LogQuery) (*types.AuthLogResult, er
 	}
 
 	// #nosec G204 -- log command path is hardcoded
-	cmd := exec.Command("/usr/bin/log", args...)
+	cmd := cmdexec.Command("/usr/bin/log", args...)
 	output, err := cmd.Output()
 	if err != nil {
 		// Fallback to reading auth files

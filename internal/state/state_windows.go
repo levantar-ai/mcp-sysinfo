@@ -5,11 +5,11 @@ package state
 import (
 	"encoding/json"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -22,7 +22,7 @@ func (c *Collector) getVMInfo() (*types.VMInfoResult, error) {
 
 	// Query WMI for computer system info
 	// #nosec G204 -- query is hardcoded
-	cmd := exec.Command("powershell", "-NoProfile", "-Command",
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
 		"Get-WmiObject Win32_ComputerSystem | Select-Object Manufacturer, Model | ConvertTo-Json")
 	if output, err := cmd.Output(); err == nil {
 		var cs struct {
@@ -77,7 +77,7 @@ func (c *Collector) getTimezone() (*types.TimezoneInfoResult, error) {
 
 	// Get timezone from Windows
 	// #nosec G204 -- query is hardcoded
-	cmd := exec.Command("powershell", "-NoProfile", "-Command",
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
 		"[System.TimeZoneInfo]::Local.Id")
 	if output, err := cmd.Output(); err == nil {
 		result.Timezone = strings.TrimSpace(string(output))
@@ -111,7 +111,7 @@ func (c *Collector) getNTPStatus() (*types.NTPStatusResult, error) {
 
 	// Query w32tm for NTP status
 	// #nosec G204 -- query is hardcoded
-	cmd := exec.Command("w32tm", "/query", "/status")
+	cmd := cmdexec.Command("w32tm", "/query", "/status")
 	if output, err := cmd.Output(); err == nil {
 		result.NTPService = "w32time"
 		content := string(output)
@@ -190,7 +190,7 @@ func (c *Collector) getPowerState() (*types.PowerStateResult, error) {
 
 	// Query WMI for battery info
 	// #nosec G204 -- query is hardcoded
-	cmd := exec.Command("powershell", "-NoProfile", "-Command",
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
 		"Get-WmiObject Win32_Battery | Select-Object Name, EstimatedChargeRemaining, BatteryStatus | ConvertTo-Json")
 	if output, err := cmd.Output(); err == nil {
 		// Handle both single object and array
@@ -257,7 +257,7 @@ func (c *Collector) getNUMATopology() (*types.NUMATopologyResult, error) {
 
 	// Query WMI for NUMA info
 	// #nosec G204 -- query is hardcoded
-	cmd := exec.Command("powershell", "-NoProfile", "-Command",
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
 		"Get-WmiObject Win32_Processor | Select-Object NumberOfLogicalProcessors, NumberOfCores | ConvertTo-Json")
 	if output, err := cmd.Output(); err == nil {
 		// Windows typically exposes NUMA through processor groups

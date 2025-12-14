@@ -6,12 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -20,7 +20,7 @@ func (c *Collector) getScheduledTasks() (*types.ScheduledTasksResult, error) {
 	var tasks []types.ScheduledTask
 
 	// Get launchd jobs using launchctl
-	launchctl, err := exec.LookPath("launchctl")
+	launchctl, err := cmdexec.LookPath("launchctl")
 	if err != nil {
 		return &types.ScheduledTasksResult{
 			Tasks:     tasks,
@@ -32,7 +32,7 @@ func (c *Collector) getScheduledTasks() (*types.ScheduledTasksResult, error) {
 
 	// List user jobs
 	// #nosec G204 -- launchctl path is from LookPath
-	cmd := exec.Command(launchctl, "list")
+	cmd := cmdexec.Command(launchctl, "list")
 	output, err := cmd.Output()
 	if err == nil {
 		tasks = append(tasks, parseLaunchctlList(output, "user")...)
@@ -40,7 +40,7 @@ func (c *Collector) getScheduledTasks() (*types.ScheduledTasksResult, error) {
 
 	// Try to list system jobs (may require root)
 	// #nosec G204 -- launchctl path is from LookPath
-	sysCmd := exec.Command("sudo", "-n", launchctl, "list")
+	sysCmd := cmdexec.Command("sudo", "-n", launchctl, "list")
 	sysOutput, err := sysCmd.Output()
 	if err == nil {
 		tasks = append(tasks, parseLaunchctlList(sysOutput, "system")...)
@@ -103,9 +103,9 @@ func (c *Collector) getCronJobs() (*types.CronJobsResult, error) {
 	}
 
 	// User crontab
-	if crontab, err := exec.LookPath("crontab"); err == nil {
+	if crontab, err := cmdexec.LookPath("crontab"); err == nil {
 		// #nosec G204 -- crontab path is from LookPath
-		cmd := exec.Command(crontab, "-l")
+		cmd := cmdexec.Command(crontab, "-l")
 		output, err := cmd.Output()
 		if err == nil {
 			currentUser := os.Getenv("USER")

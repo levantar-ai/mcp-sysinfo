@@ -9,13 +9,13 @@ import (
 	"encoding/pem"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -249,7 +249,7 @@ func (c *Collector) getSSHConfig() (*types.SSHConfigResult, error) {
 	}
 
 	// Check if SSH server is running
-	cmd := exec.Command("pgrep", "-x", "sshd")
+	cmd := cmdexec.Command("pgrep", "-x", "sshd")
 	if err := cmd.Run(); err == nil {
 		result.ServerRunning = true
 	}

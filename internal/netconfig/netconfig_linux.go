@@ -6,12 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"os"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -42,10 +42,10 @@ func (c *Collector) getDNSServers() (*types.DNSServersResult, error) {
 	}
 
 	// Try systemd-resolved if available
-	resolvectl, err := exec.LookPath("resolvectl")
+	resolvectl, err := cmdexec.LookPath("resolvectl")
 	if err == nil {
 		// #nosec G204 -- resolvectl path is from LookPath
-		cmd := exec.Command(resolvectl, "status", "--no-pager")
+		cmd := cmdexec.Command(resolvectl, "status", "--no-pager")
 		output, err := cmd.Output()
 		if err == nil {
 			servers = append(servers, parseResolvectl(output)...)
@@ -100,10 +100,10 @@ func (c *Collector) getRoutes() (*types.RoutesResult, error) {
 	var routes []types.Route
 
 	// Try ip route first
-	ip, err := exec.LookPath("ip")
+	ip, err := cmdexec.LookPath("ip")
 	if err == nil {
 		// #nosec G204 -- ip path is from LookPath
-		cmd := exec.Command(ip, "route", "show")
+		cmd := cmdexec.Command(ip, "route", "show")
 		output, err := cmd.Output()
 		if err == nil {
 			routes = parseIPRoute(output)
@@ -224,10 +224,10 @@ func (c *Collector) getFirewallRules() (*types.FirewallRulesResult, error) {
 	enabled := false
 
 	// Try iptables first
-	iptables, err := exec.LookPath("iptables")
+	iptables, err := cmdexec.LookPath("iptables")
 	if err == nil {
 		// #nosec G204 -- iptables path is from LookPath
-		cmd := exec.Command(iptables, "-L", "-n", "-v")
+		cmd := cmdexec.Command(iptables, "-L", "-n", "-v")
 		output, err := cmd.Output()
 		if err == nil {
 			rules = parseIptables(output)
@@ -238,10 +238,10 @@ func (c *Collector) getFirewallRules() (*types.FirewallRulesResult, error) {
 
 	// Try nftables if iptables not found or empty
 	if len(rules) == 0 {
-		nft, err := exec.LookPath("nft")
+		nft, err := cmdexec.LookPath("nft")
 		if err == nil {
 			// #nosec G204 -- nft path is from LookPath
-			cmd := exec.Command(nft, "list", "ruleset")
+			cmd := cmdexec.Command(nft, "list", "ruleset")
 			output, err := cmd.Output()
 			if err == nil && len(output) > 0 {
 				rules = parseNftables(output)
@@ -377,17 +377,17 @@ func (c *Collector) getListeningPorts() (*types.ListeningPortsResult, error) {
 	var ports []types.ListeningPort
 
 	// Try ss command first (more reliable)
-	ss, err := exec.LookPath("ss")
+	ss, err := cmdexec.LookPath("ss")
 	if err == nil {
 		// #nosec G204 -- ss path is from LookPath
-		cmd := exec.Command(ss, "-tlnp")
+		cmd := cmdexec.Command(ss, "-tlnp")
 		output, err := cmd.Output()
 		if err == nil {
 			ports = append(ports, parseSS(output, "tcp")...)
 		}
 
 		// #nosec G204 -- ss path is from LookPath
-		cmdUDP := exec.Command(ss, "-ulnp")
+		cmdUDP := cmdexec.Command(ss, "-ulnp")
 		outputUDP, err := cmdUDP.Output()
 		if err == nil {
 			ports = append(ports, parseSS(outputUDP, "udp")...)

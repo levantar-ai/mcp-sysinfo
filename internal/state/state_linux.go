@@ -5,12 +5,12 @@ package state
 import (
 	"bufio"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -183,7 +183,7 @@ func (c *Collector) getNTPStatus() (*types.NTPStatusResult, error) {
 
 	// Try timedatectl (systemd)
 	// #nosec G204 -- no user input
-	cmd := exec.Command("timedatectl", "show")
+	cmd := cmdexec.Command("timedatectl", "show")
 	if output, err := cmd.Output(); err == nil {
 		result.NTPService = "systemd-timesyncd"
 		for _, line := range strings.Split(string(output), "\n") {
@@ -202,7 +202,7 @@ func (c *Collector) getNTPStatus() (*types.NTPStatusResult, error) {
 
 	// Try chronyc
 	// #nosec G204 -- no user input
-	cmd = exec.Command("chronyc", "tracking")
+	cmd = cmdexec.Command("chronyc", "tracking")
 	if output, err := cmd.Output(); err == nil {
 		result.NTPService = "chrony"
 		for _, line := range strings.Split(string(output), "\n") {
@@ -227,7 +227,7 @@ func (c *Collector) getNTPStatus() (*types.NTPStatusResult, error) {
 
 	// Try ntpq
 	// #nosec G204 -- no user input
-	cmd = exec.Command("ntpq", "-p")
+	cmd = cmdexec.Command("ntpq", "-p")
 	if output, err := cmd.Output(); err == nil {
 		result.NTPService = "ntpd"
 		lines := strings.Split(string(output), "\n")

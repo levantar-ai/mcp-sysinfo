@@ -5,12 +5,12 @@ package netconfig
 import (
 	"bufio"
 	"bytes"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -21,7 +21,7 @@ func (c *Collector) getDNSServers() (*types.DNSServersResult, error) {
 	// Use PowerShell to get DNS configuration
 	psCmd := `Get-DnsClientServerAddress | Where-Object {$_.AddressFamily -eq 2} | Select-Object InterfaceAlias,ServerAddresses | ConvertTo-Json`
 	// #nosec G204 -- PowerShell is a system tool
-	cmd := exec.Command("powershell", "-NoProfile", "-Command", psCmd)
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", psCmd)
 	output, err := cmd.Output()
 	if err == nil {
 		servers = parsePowerShellDNS(output)
@@ -30,7 +30,7 @@ func (c *Collector) getDNSServers() (*types.DNSServersResult, error) {
 	// Fallback to netsh
 	if len(servers) == 0 {
 		// #nosec G204 -- netsh is a system tool
-		nsCmd := exec.Command("netsh", "interface", "ip", "show", "dns")
+		nsCmd := cmdexec.Command("netsh", "interface", "ip", "show", "dns")
 		nsOutput, err := nsCmd.Output()
 		if err == nil {
 			servers = parseNetshDNS(nsOutput)
@@ -120,7 +120,7 @@ func (c *Collector) getRoutes() (*types.RoutesResult, error) {
 
 	// Use route print
 	// #nosec G204 -- route is a system tool
-	cmd := exec.Command("route", "print")
+	cmd := cmdexec.Command("route", "print")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.RoutesResult{
@@ -200,7 +200,7 @@ func (c *Collector) getFirewallRules() (*types.FirewallRulesResult, error) {
 
 	// Check if firewall is enabled
 	// #nosec G204 -- netsh is a system tool
-	statusCmd := exec.Command("netsh", "advfirewall", "show", "allprofiles", "state")
+	statusCmd := cmdexec.Command("netsh", "advfirewall", "show", "allprofiles", "state")
 	statusOutput, err := statusCmd.Output()
 	if err == nil {
 		if strings.Contains(string(statusOutput), "ON") {
@@ -210,7 +210,7 @@ func (c *Collector) getFirewallRules() (*types.FirewallRulesResult, error) {
 
 	// Get firewall rules (may require admin)
 	// #nosec G204 -- netsh is a system tool
-	rulesCmd := exec.Command("netsh", "advfirewall", "firewall", "show", "rule", "name=all")
+	rulesCmd := cmdexec.Command("netsh", "advfirewall", "firewall", "show", "rule", "name=all")
 	rulesOutput, err := rulesCmd.Output()
 	if err == nil {
 		rules = parseNetshFirewall(rulesOutput)
@@ -279,7 +279,7 @@ func (c *Collector) getListeningPorts() (*types.ListeningPortsResult, error) {
 
 	// Use netstat with process names
 	// #nosec G204 -- netstat is a system tool
-	cmd := exec.Command("netstat", "-ano")
+	cmd := cmdexec.Command("netstat", "-ano")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.ListeningPortsResult{
@@ -348,7 +348,7 @@ func (c *Collector) getARPTable() (*types.ARPTableResult, error) {
 	var entries []types.ARPEntry
 
 	// #nosec G204 -- arp is a system tool
-	cmd := exec.Command("arp", "-a")
+	cmd := cmdexec.Command("arp", "-a")
 	output, err := cmd.Output()
 	if err != nil {
 		return &types.ARPTableResult{
@@ -417,7 +417,7 @@ func (c *Collector) getNetworkStats() (*types.NetworkStatsResult, error) {
 
 	// Get TCP stats
 	// #nosec G204 -- netstat is a system tool
-	cmd := exec.Command("netstat", "-s", "-p", "tcp")
+	cmd := cmdexec.Command("netstat", "-s", "-p", "tcp")
 	output, err := cmd.Output()
 	if err == nil {
 		scanner := bufio.NewScanner(bytes.NewReader(output))
@@ -431,7 +431,7 @@ func (c *Collector) getNetworkStats() (*types.NetworkStatsResult, error) {
 
 	// Count connections by state
 	// #nosec G204 -- netstat is a system tool
-	stateCmd := exec.Command("netstat", "-an")
+	stateCmd := cmdexec.Command("netstat", "-an")
 	stateOutput, err := stateCmd.Output()
 	if err == nil {
 		scanner := bufio.NewScanner(bytes.NewReader(stateOutput))
