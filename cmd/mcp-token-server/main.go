@@ -95,7 +95,10 @@ func serveCmd() {
 	tlsCert := fs.String("tls-cert", "", "TLS certificate file")
 	tlsKey := fs.String("tls-key", "", "TLS key file")
 
-	fs.Parse(os.Args[2:])
+	if err := fs.Parse(os.Args[2:]); err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing flags: %v\n", err)
+		os.Exit(1)
+	}
 
 	// Load config
 	var cfg *tokenserver.Config
@@ -175,7 +178,10 @@ func clientCmd() {
 		fs := flag.NewFlagSet("client-add", flag.ExitOnError)
 		clientsFile := fs.String("clients", "clients.json", "Clients file path")
 		scopesFlag := fs.String("scopes", "core", "Comma-separated scopes")
-		fs.Parse(os.Args[3:])
+		if err := fs.Parse(os.Args[3:]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing flags: %v\n", err)
+			os.Exit(1)
+		}
 		args := fs.Args()
 
 		if len(args) < 2 {
@@ -208,7 +214,10 @@ func clientCmd() {
 	case "list":
 		fs := flag.NewFlagSet("client-list", flag.ExitOnError)
 		clientsFile := fs.String("clients", "clients.json", "Clients file path")
-		fs.Parse(os.Args[3:])
+		if err := fs.Parse(os.Args[3:]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing flags: %v\n", err)
+			os.Exit(1)
+		}
 
 		cs, err := tokenserver.NewClientStore(*clientsFile)
 		if err != nil {
@@ -235,7 +244,10 @@ func clientCmd() {
 	case "remove":
 		fs := flag.NewFlagSet("client-remove", flag.ExitOnError)
 		clientsFile := fs.String("clients", "clients.json", "Clients file path")
-		fs.Parse(os.Args[3:])
+		if err := fs.Parse(os.Args[3:]); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing flags: %v\n", err)
+			os.Exit(1)
+		}
 		args := fs.Args()
 
 		if len(args) < 1 {
@@ -265,7 +277,10 @@ func clientCmd() {
 func rotateCmd() {
 	fs := flag.NewFlagSet("rotate", flag.ExitOnError)
 	keyDir := fs.String("key-dir", "", "Key storage directory (required)")
-	fs.Parse(os.Args[2:])
+	if err := fs.Parse(os.Args[2:]); err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing flags: %v\n", err)
+		os.Exit(1)
+	}
 
 	if *keyDir == "" {
 		fmt.Println("Usage: mcp-token-server rotate --key-dir <path>")

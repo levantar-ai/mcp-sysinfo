@@ -160,21 +160,15 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
 		case <-ctx.Done():
-			httpServer.Shutdown(context.Background())
+			if err := httpServer.Shutdown(context.Background()); err != nil {
+				fmt.Fprintf(os.Stderr, "Error during shutdown: %v\n", err)
+			}
 		}
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown transport: %s\n", *transport)
 		os.Exit(1)
 	}
-}
-
-func printBanner() {
-	fmt.Println("MCP System Info Server")
-	fmt.Println("======================")
-	fmt.Printf("Version:  %s\n", version)
-	fmt.Printf("Platform: %s/%s\n", runtime.GOOS, runtime.GOARCH)
-	fmt.Printf("Go:       %s\n", runtime.Version())
 }
 
 func printVersion() {

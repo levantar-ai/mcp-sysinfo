@@ -212,6 +212,7 @@ func savePrivateKey(path string, key *rsa.PrivateKey) error {
 		Bytes: der,
 	}
 
+	// #nosec G304 -- path is from trusted server config
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return fmt.Errorf("failed to create key file: %w", err)
@@ -226,6 +227,7 @@ func savePrivateKey(path string, key *rsa.PrivateKey) error {
 }
 
 func loadPrivateKey(path string) (*rsa.PrivateKey, error) {
+	// #nosec G304 -- path is from trusted server config
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

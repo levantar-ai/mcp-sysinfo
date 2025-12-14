@@ -12,6 +12,11 @@ import (
 	"time"
 )
 
+// contextKey is a custom type for context keys to avoid collisions.
+type contextKey string
+
+const identityKey contextKey = "identity"
+
 // HTTPConfig configures the HTTP transport.
 type HTTPConfig struct {
 	// ListenAddr is the address to listen on
@@ -152,7 +157,7 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// Store identity in context for scope checking
-		r = r.WithContext(context.WithValue(r.Context(), "identity", identity))
+		r = r.WithContext(context.WithValue(r.Context(), identityKey, identity))
 	}
 
 	// Read request body
@@ -168,7 +173,7 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 	// Send response
 	w.Header().Set("Content-Type", "application/json")
 	if response != nil {
-		json.NewEncoder(w).Encode(response)
+		_ = json.NewEncoder(w).Encode(response)
 	}
 }
 
@@ -334,7 +339,7 @@ func (h *HTTPServer) sendAuthChallenge(w http.ResponseWriter, err error) {
 	))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusUnauthorized)
-	json.NewEncoder(w).Encode(map[string]string{
+	_ = json.NewEncoder(w).Encode(map[string]string{
 		"error":             "unauthorized",
 		"error_description": err.Error(),
 	})
@@ -370,7 +375,7 @@ func (h *HTTPServer) handleProtectedResourceMetadata(w http.ResponseWriter, r *h
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "public, max-age=3600")
-	json.NewEncoder(w).Encode(metadata)
+	_ = json.NewEncoder(w).Encode(metadata)
 }
 
 // handleHealth returns server health.
@@ -383,7 +388,7 @@ func (h *HTTPServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	_ = json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":      "healthy",
 		"transport":   "http",
 		"auth_method": authMethod,
@@ -394,7 +399,7 @@ func (h *HTTPServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 func (h *HTTPServer) sendError(w http.ResponseWriter, status int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{
+	_ = json.NewEncoder(w).Encode(map[string]string{
 		"error": message,
 	})
 }
