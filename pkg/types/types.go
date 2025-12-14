@@ -640,3 +640,121 @@ type InodeUsage struct {
 	Free       uint64  `json:"free"`
 	UsedPct    float64 `json:"used_percent"`
 }
+
+// EnvVarsResult represents environment variables query results.
+type EnvVarsResult struct {
+	Variables []EnvVar  `json:"variables"`
+	Count     int       `json:"count"`
+	Source    string    `json:"source"` // system, process, user
+	Timestamp time.Time `json:"timestamp"`
+}
+
+// EnvVar represents an environment variable.
+type EnvVar struct {
+	Name   string `json:"name"`
+	Value  string `json:"value"`
+	Source string `json:"source,omitempty"` // system, user, process
+}
+
+// UserAccountsResult represents user accounts query results.
+type UserAccountsResult struct {
+	Users     []UserAccount `json:"users"`
+	Groups    []UserGroup   `json:"groups"`
+	UserCount int           `json:"user_count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// UserAccount represents a local user account.
+type UserAccount struct {
+	Username    string   `json:"username"`
+	UID         int      `json:"uid"`
+	GID         int      `json:"gid"`
+	DisplayName string   `json:"display_name,omitempty"`
+	HomeDir     string   `json:"home_dir,omitempty"`
+	Shell       string   `json:"shell,omitempty"`
+	Groups      []string `json:"groups,omitempty"`
+	IsSystem    bool     `json:"is_system"`         // System account (UID < 1000 on Linux)
+	IsLocked    bool     `json:"is_locked"`         // Account is locked
+	LastLogin   string   `json:"last_login,omitempty"`
+}
+
+// UserGroup represents a local group.
+type UserGroup struct {
+	Name    string   `json:"name"`
+	GID     int      `json:"gid"`
+	Members []string `json:"members,omitempty"`
+}
+
+// SudoConfigResult represents sudo configuration query results.
+type SudoConfigResult struct {
+	Rules       []SudoRule `json:"rules"`
+	Count       int        `json:"count"`
+	SudoersPath string     `json:"sudoers_path"`
+	Timestamp   time.Time  `json:"timestamp"`
+}
+
+// SudoRule represents a sudoers rule.
+type SudoRule struct {
+	User     string   `json:"user,omitempty"`      // User or %group
+	Host     string   `json:"host,omitempty"`      // Hostname or ALL
+	RunAs    string   `json:"run_as,omitempty"`    // User to run as
+	Commands []string `json:"commands,omitempty"`  // Allowed commands
+	NoPasswd bool     `json:"no_passwd"`           // NOPASSWD flag
+	Raw      string   `json:"raw,omitempty"`       // Raw rule line
+}
+
+// SSHConfigResult represents SSH configuration query results.
+type SSHConfigResult struct {
+	ServerConfig   map[string]string `json:"server_config,omitempty"`
+	ClientConfig   map[string]string `json:"client_config,omitempty"`
+	AuthorizedKeys []SSHAuthorizedKey `json:"authorized_keys,omitempty"`
+	ServerRunning  bool              `json:"server_running"`
+	SSHDPath       string            `json:"sshd_path,omitempty"`
+	Timestamp      time.Time         `json:"timestamp"`
+}
+
+// SSHAuthorizedKey represents an SSH authorized key.
+type SSHAuthorizedKey struct {
+	KeyType     string `json:"key_type"`               // ssh-rsa, ssh-ed25519, etc.
+	Fingerprint string `json:"fingerprint,omitempty"`
+	Comment     string `json:"comment,omitempty"`
+	Options     string `json:"options,omitempty"`      // Key options like no-agent-forwarding
+	User        string `json:"user,omitempty"`         // User this key is for
+}
+
+// MACStatusResult represents Mandatory Access Control status.
+type MACStatusResult struct {
+	Type      string       `json:"type"`                // selinux, apparmor, sip, none
+	Enabled   bool         `json:"enabled"`
+	Mode      string       `json:"mode,omitempty"`      // enforcing, permissive, complaining
+	Profiles  []MACProfile `json:"profiles,omitempty"`
+	Timestamp time.Time    `json:"timestamp"`
+}
+
+// MACProfile represents a MAC policy profile.
+type MACProfile struct {
+	Name   string `json:"name"`
+	Status string `json:"status"` // enforce, complain, unconfined
+	Domain string `json:"domain,omitempty"`
+}
+
+// CertificatesResult represents SSL/TLS certificates query results.
+type CertificatesResult struct {
+	Certificates []Certificate `json:"certificates"`
+	Count        int           `json:"count"`
+	StorePath    string        `json:"store_path,omitempty"`
+	Timestamp    time.Time     `json:"timestamp"`
+}
+
+// Certificate represents an SSL/TLS certificate.
+type Certificate struct {
+	Subject     string    `json:"subject"`
+	Issuer      string    `json:"issuer"`
+	NotBefore   time.Time `json:"not_before"`
+	NotAfter    time.Time `json:"not_after"`
+	SerialNumber string   `json:"serial_number,omitempty"`
+	Fingerprint string    `json:"fingerprint,omitempty"` // SHA256 fingerprint
+	IsCA        bool      `json:"is_ca"`
+	IsExpired   bool      `json:"is_expired"`
+	DaysUntilExpiry int   `json:"days_until_expiry"`
+}
