@@ -1114,3 +1114,26 @@ type SystemPackage struct {
 	Status       string `json:"status,omitempty"` // installed, config-files, etc.
 	Source       string `json:"source,omitempty"` // Repository/source
 }
+
+// LanguagePackagesResult represents language package manager query results.
+type LanguagePackagesResult struct {
+	Language       string            `json:"language"`        // python, nodejs, go, rust, ruby, java, php, dotnet
+	PackageManager string            `json:"package_manager"` // pip, npm, go, cargo, gem, maven, composer, nuget
+	Packages       []LanguagePackage `json:"packages"`
+	Count          int               `json:"count"`
+	Location       string            `json:"location,omitempty"` // Path scanned (e.g., site-packages dir, go.sum path)
+	Timestamp      time.Time         `json:"timestamp"`
+}
+
+// LanguagePackage represents a language-specific package.
+type LanguagePackage struct {
+	Name         string   `json:"name"`
+	Version      string   `json:"version"`
+	License      string   `json:"license,omitempty"`
+	Summary      string   `json:"summary,omitempty"`
+	Author       string   `json:"author,omitempty"`
+	Homepage     string   `json:"homepage,omitempty"`
+	Location     string   `json:"location,omitempty"`     // Installation path
+	Dependencies []string `json:"dependencies,omitempty"` // Direct dependencies
+	DevDep       bool     `json:"dev_dependency,omitempty"`
+}

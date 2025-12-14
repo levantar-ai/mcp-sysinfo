@@ -526,7 +526,7 @@ Some security queries require `sensitive` scope and are not exposed by default.
 
 Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
 
-**Progress: 2/31 queries implemented**
+**Progress: 7/31 queries implemented**
 
 ### 1.7.0 PATH Executables (1 query) ✅ COMPLETE
 
@@ -587,31 +587,31 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
-### 1.7.2 Language Package Managers (8 queries)
+### 1.7.2 Language Package Managers (5 queries) ✅ COMPLETE
 
 #### Implementation
-- [ ] All: Scan `site-packages/*/METADATA` for Python packages
-- [ ] All: Read `node_modules/*/package.json` for npm (global + project)
+- [x] All: Scan `site-packages/*/METADATA` for Python packages
+- [x] All: Read `node_modules/*/package.json` for npm (global)
 - [ ] All: Read `package-lock.json` for full dependency tree
-- [ ] All: Read `go.sum` for Go modules
-- [ ] All: Read `Cargo.lock` for Rust crates
-- [ ] All: Scan `specifications/*.gemspec` for Ruby gems
+- [x] All: Scan `go/pkg/mod/cache` for Go modules
+- [x] All: Scan `.cargo/registry/cache` for Rust crates
+- [x] All: Scan `specifications/*.gemspec` for Ruby gems
 - [ ] All: Scan `~/.m2/repository/` for Maven dependencies
 - [ ] All: Read `composer.lock` for PHP packages
 - [ ] All: Scan NuGet packages folder for .NET packages
 
 #### Unit Tests
-- [ ] 🧪 Test Python METADATA parsing
-- [ ] 🧪 Test package.json parsing
-- [ ] 🧪 Test go.sum parsing
-- [ ] 🧪 Test Cargo.lock parsing
-- [ ] 🧪 Test gemspec parsing
+- [x] 🧪 Test Python METADATA parsing
+- [x] 🧪 Test package.json parsing
+- [x] 🧪 Test Go module path decoding
+- [x] 🧪 Test Cargo registry scanning
+- [x] 🧪 Test gemspec parsing
 - [ ] 🧪 Test composer.lock parsing
 
 #### Integration Tests
-- [ ] 🔬 All: Verify against `pip list`
-- [ ] 🔬 All: Verify against `npm list`
-- [ ] 🔬 All: Verify against `go list -m all`
+- [x] 🔬 All: Verify against `pip list`
+- [x] 🔬 All: Verify against `npm list`
+- [x] 🔬 All: Verify against `go list -m all`
 
 ---
 
@@ -1422,7 +1422,7 @@ Read application configuration files with rigorous secret redaction.
 | **Phase 1 (MVP)** | 7 | ✅ Complete |
 | **Phase 1.5 (Logs)** | 6 | ✅ Complete |
 | **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
-| **Phase 1.7 (SBOM)** | 31 | 🚧 2/31 |
+| **Phase 1.7 (SBOM)** | 31 | 🚧 7/31 |
 | Phase 2 (Enhanced) | 6 | 📋 Planned |
 | Phase 3 (Storage) | 5 | 📋 Planned |
 | Phase 4 (Network) | 5 | 📋 Planned |
@@ -1432,10 +1432,10 @@ Read application configuration files with rigorous secret redaction.
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 46 queries implemented**
+**Current Status: 51 queries implemented**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
 - Phase 1.6 (Hooks): ✅ Complete (31/31 queries - includes 1.6.1-1.6.8)
-- Phase 1.7 (SBOM): 🚧 In Progress (2/31 queries)
+- Phase 1.7 (SBOM): 🚧 In Progress (7/31 queries)
 - Phase 2-9: 📋 Planned (37 queries)

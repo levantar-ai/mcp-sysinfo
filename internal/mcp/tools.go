@@ -868,4 +868,74 @@ func registerSoftwareTools(s *Server) {
 		}
 		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
 	})
+
+	// Python Packages
+	s.RegisterTool(Tool{
+		Name:        "get_python_packages",
+		Description: "Get installed Python packages from site-packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetPythonPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Node.js Packages
+	s.RegisterTool(Tool{
+		Name:        "get_node_packages",
+		Description: "Get globally installed Node.js packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetNodePackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Go Modules
+	s.RegisterTool(Tool{
+		Name:        "get_go_modules",
+		Description: "Get Go modules from the module cache",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetGoModules()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Rust Packages
+	s.RegisterTool(Tool{
+		Name:        "get_rust_packages",
+		Description: "Get Rust crates from Cargo registry cache",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetRustPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Ruby Gems
+	s.RegisterTool(Tool{
+		Name:        "get_ruby_gems",
+		Description: "Get installed Ruby gems",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetRubyGems()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
 }
