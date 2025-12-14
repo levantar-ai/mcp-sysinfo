@@ -383,6 +383,29 @@ jobs:
           ./mcp-sysinfo-linux-amd64 --query get_mac_status --json || true
           ./mcp-sysinfo-linux-amd64 --query get_certificates --json || true
 
+      - name: Test hardware info
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_hardware_info --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_usb_devices --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_pci_devices --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_block_devices --json
+
+      - name: Test process resources
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_ipc_resources --json
+          ./mcp-sysinfo-linux-amd64 --query get_namespaces --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_cgroups --json
+          ./mcp-sysinfo-linux-amd64 --query get_capabilities --json --pid 1 || true
+
+      - name: Test system state
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_vm_info --json
+          ./mcp-sysinfo-linux-amd64 --query get_timezone --json
+          ./mcp-sysinfo-linux-amd64 --query get_ntp_status --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_core_dumps --json
+          ./mcp-sysinfo-linux-amd64 --query get_power_state --json
+          ./mcp-sysinfo-linux-amd64 --query get_numa_topology --json || true
+
   smoke-test-darwin:
     name: Smoke Test Darwin
     runs-on: macos-latest
@@ -453,6 +476,21 @@ jobs:
           ./mcp-sysinfo-darwin-arm64 --query get_mac_status --json || true
           ./mcp-sysinfo-darwin-arm64 --query get_certificates --json || true
 
+      - name: Test hardware info
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_hardware_info --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_usb_devices --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_pci_devices --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_block_devices --json || true
+
+      - name: Test system state
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_vm_info --json
+          ./mcp-sysinfo-darwin-arm64 --query get_timezone --json
+          ./mcp-sysinfo-darwin-arm64 --query get_ntp_status --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_core_dumps --json
+          ./mcp-sysinfo-darwin-arm64 --query get_power_state --json
+
   smoke-test-windows:
     name: Smoke Test Windows
     runs-on: windows-latest
@@ -522,6 +560,24 @@ jobs:
           .\mcp-sysinfo-windows-amd64 --query get_env_vars --json
           .\mcp-sysinfo-windows-amd64 --query get_user_accounts --json
           .\mcp-sysinfo-windows-amd64 --query get_certificates --json
+        continue-on-error: true
+
+      - name: Test hardware info
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_hardware_info --json
+          .\mcp-sysinfo-windows-amd64 --query get_usb_devices --json
+          .\mcp-sysinfo-windows-amd64 --query get_pci_devices --json
+          .\mcp-sysinfo-windows-amd64 --query get_block_devices --json
+        continue-on-error: true
+
+      - name: Test system state
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_vm_info --json
+          .\mcp-sysinfo-windows-amd64 --query get_timezone --json
+          .\mcp-sysinfo-windows-amd64 --query get_ntp_status --json
+          .\mcp-sysinfo-windows-amd64 --query get_core_dumps --json
+          .\mcp-sysinfo-windows-amd64 --query get_power_state --json
+          .\mcp-sysinfo-windows-amd64 --query get_numa_topology --json
         continue-on-error: true
 
   # ============================================
