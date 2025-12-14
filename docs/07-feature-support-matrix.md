@@ -218,7 +218,7 @@ Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.m
 
 ---
 
-## Phase 2 - Enhanced Monitoring
+## Phase 2 - Enhanced Diagnostics
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|-------|-------|---------|
@@ -278,8 +278,8 @@ macOS     ███████████████████████�
 
 | Feature | Reason |
 |---------|--------|
-| NVIDIA GPU monitoring | No modern NVIDIA driver support |
-| AMD GPU monitoring | No AMD support on macOS |
+| NVIDIA GPU diagnostics | No modern NVIDIA driver support |
+| AMD GPU diagnostics | No AMD support on macOS |
 | Native containers | No Docker-less container runtime |
 | LVM | Not supported on macOS |
 | systemd | Uses launchd instead |

@@ -1,10 +1,10 @@
 # Tier 4: Security & Compliance
 
-Security monitoring, audit & compliance, and forensics support.
+Security diagnostics, audit & compliance, and forensics support.
 
 ---
 
-## Security Monitoring
+## Security Analysis
 
 ### Open Port Scanning
 Detect unexpected listening ports.
@@ -105,7 +105,7 @@ Who's logged in, from where, session duration.
 
 ---
 
-### Privilege Escalation Monitoring
+### Privilege Escalation Detection
 Track sudo usage, setuid binary execution.
 
 | Platform | Implementation | Availability | Install |

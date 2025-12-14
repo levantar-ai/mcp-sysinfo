@@ -1,12 +1,12 @@
-# Tier 1: Enhanced Core Monitoring
+# Tier 1: Core Security Diagnostics
 
-Real-time metrics, storage deep dive, network intelligence, and **log access for diagnostics**.
+System metrics, storage analysis, network intelligence, and **log access for security diagnostics**.
 
 ---
 
 ## System Log Access (Critical for Diagnostics)
 
-Without log access, an AI can only see symptoms ("CPU is high") but not causes. Log access transforms the system from monitoring to actual diagnostics.
+Without log access, an AI can only see symptoms ("CPU is high") but not causes. Log access enables true root cause analysis for security incident triage.
 
 ### Journald Logs (Linux)
 Systemd journal - the primary log source on modern Linux systems.
@@ -143,7 +143,7 @@ Tools to make log analysis more effective.
 ## Real-Time Metrics
 
 ### Live Streaming Metrics
-Real-time WebSocket/SSE streams for dashboards and continuous monitoring.
+Real-time WebSocket/SSE streams for dashboards and continuous diagnostics.
 
 | Platform | Implementation | Availability | Install |
 |----------|----------------|--------------|---------|
@@ -164,7 +164,7 @@ CPU, memory, I/O usage tracked per PID over time.
 
 ---
 
-### GPU Monitoring
+### GPU Diagnostics
 NVIDIA, AMD, and Intel GPU statistics.
 
 | Platform | Implementation | Availability | Install |
@@ -262,7 +262,7 @@ Watch for file changes in real-time.
 
 ---
 
-### Mount Point Monitoring
+### Mount Point Detection
 Auto-detect new mounts, NFS/SMB health.
 
 | Platform | Implementation | Availability | Install |

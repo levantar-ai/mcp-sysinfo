@@ -10,7 +10,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
-## Phase 1: MVP - Core Monitoring ✅ COMPLETE
+## Phase 1: MVP - Core Diagnostics ✅ COMPLETE
 
 ### 1.1 CPU Information ✅
 
@@ -190,7 +190,7 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ## Phase 1.5: Log Access (Critical for Diagnostics) 📋 NEXT
 
-Log access transforms the system from monitoring to actual diagnostics. Without logs, AI can only see symptoms ("CPU is high") but not causes.
+Log access enables true root cause analysis for security incident triage. Without logs, AI can only see symptoms ("CPU is high") but not causes.
 
 ### 1.5.1 Journald Logs (Linux)
 
@@ -630,9 +630,9 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
-## Phase 2: Enhanced Monitoring
+## Phase 2: Enhanced Diagnostics
 
-### 2.1 GPU Monitoring
+### 2.1 GPU Diagnostics
 
 #### Implementation
 - [ ] 🐧 Linux (NVIDIA): Use NVML library
@@ -766,7 +766,7 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
-### 3.4 Mount Point Monitoring
+### 3.4 Mount Point Detection
 
 #### Implementation
 - [ ] 🐧 Linux: Watch `/proc/mounts`

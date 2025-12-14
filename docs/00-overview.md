@@ -1,16 +1,16 @@
 # MCP System Info Server - Overview
 
-A comprehensive system monitoring and management platform using the Model Context Protocol (MCP).
+A read-only security diagnostics platform using the Model Context Protocol (MCP) for AI-assisted incident triage.
 
 ## Document Structure
 
 | Document | Description |
 |----------|-------------|
 | [00-overview.md](00-overview.md) | This file - project overview, rationale, and quick start |
-| [01-tier1-core-monitoring.md](01-tier1-core-monitoring.md) | Real-time metrics, storage, network intelligence |
+| [01-tier1-core-monitoring.md](01-tier1-core-monitoring.md) | Core diagnostics, log access, system metrics |
 | [02-tier2-analytics.md](02-tier2-analytics.md) | Historical data, trends, anomaly detection |
 | [03-tier3-automation.md](03-tier3-automation.md) | Alerts, auto-remediation, process management |
-| [04-tier4-security.md](04-tier4-security.md) | Security monitoring, compliance, forensics |
+| [04-tier4-security.md](04-tier4-security.md) | Security analysis, compliance, forensics |
 | [05-tier5-integration.md](05-tier5-integration.md) | Platform integrations, plugins, multi-host |
 | [06-tier6-llm-features.md](06-tier6-llm-features.md) | LLM-optimized features, diagnostics, documentation |
 
