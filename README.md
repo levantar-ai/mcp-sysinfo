@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.7 In Progress (46 queries implemented)**
+**Status: Phase 1.7 In Progress (51 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -113,17 +113,21 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_power_state` | Power/battery state | ✅ | ✅ | ✅ |
 | `get_numa_topology` | NUMA topology | ✅ | - | - |
 
-### Phase 1.7: Software Inventory (2/31)
+### Phase 1.7: Software Inventory (7/31)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
 | `get_path_executables` | Executables in PATH directories | ✅ | ✅ | ✅ |
 | `get_system_packages` | Installed system packages | ✅ | ✅ | ✅ |
+| `get_python_packages` | Python packages from site-packages | ✅ | ✅ | ✅ |
+| `get_node_packages` | Global Node.js packages | ✅ | ✅ | ✅ |
+| `get_go_modules` | Go modules from GOPATH/pkg/mod | ✅ | ✅ | ✅ |
+| `get_rust_packages` | Rust crates from .cargo/registry | ✅ | ✅ | ✅ |
+| `get_ruby_gems` | Ruby gems from specifications | ✅ | ✅ | ✅ |
 
 **Package managers supported:**
-- Linux: dpkg, rpm, apk, pacman
-- macOS: Homebrew, pkgutil
-- Windows: Chocolatey, winget, wmic
+- System: dpkg, rpm, apk, pacman, Homebrew, pkgutil, Chocolatey, winget
+- Language: pip (Python), npm (Node.js), go modules, Cargo (Rust), RubyGems
 
 > ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
 
@@ -161,16 +165,17 @@ Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgr
 
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
-### Phase 1.7: SBOM & Inventory (In Progress - 2/31 queries)
+### Phase 1.7: SBOM & Inventory (In Progress - 7/31 queries)
 
 Software Bill of Materials for vulnerability detection.
 
 **Implemented:**
 - PATH executables discovery
-- System package managers (dpkg, rpm, apk, pacman, brew, choco)
+- System package managers (dpkg, rpm, apk, pacman, brew, choco, winget)
+- Language package managers (pip, npm, go modules, Cargo, RubyGems)
 
 **Remaining queries:**
-- Language package managers (pip, npm, go, cargo, gem, maven, composer)
+- Additional language package managers (Maven, Composer, NuGet)
 - Container images (Docker API)
 - SBOM export (CycloneDX, SPDX)
 - Vulnerability lookup (OSV, NVD)
