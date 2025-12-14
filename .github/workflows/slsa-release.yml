@@ -3,6 +3,12 @@ name: SLSA Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build (e.g., v1.4.0)'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -26,16 +32,16 @@ jobs:
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
 
       - name: Generate build metadata
         id: metadata
         run: |
-          # Extract version from release tag
-          VERSION="${{ github.event.release.tag_name }}"
+          # Extract version from release tag or manual input
+          VERSION="${{ github.event.release.tag_name || inputs.tag }}"
 
-          # Get commit SHA from release
-          COMMIT="${{ github.event.release.target_commitish }}"
+          # Get commit SHA from release or current ref
+          COMMIT="${{ github.event.release.target_commitish || github.sha }}"
 
           # Use ISO 8601 basic format without colons for SLSA compatibility
           BUILD_DATE=$(date -u +%Y%m%dT%H%M%SZ)
@@ -226,7 +232,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # Download all binary assets from the release (not .intoto.jsonl files)
-          gh release download ${{ github.event.release.tag_name }} \
+          gh release download ${{ github.event.release.tag_name || inputs.tag }} \
             --repo ${{ github.repository }} \
             --pattern 'mcp-*' \
             --skip-existing
