@@ -290,8 +290,10 @@ func (c *Collector) getCoreDumps() (*types.CoreDumpsResult, error) {
 
 			dump := types.CoreDump{
 				Path: filepath.Join(dumpPath, name),
-				Size: uint64(info.Size()),
 				Time: info.ModTime(),
+			}
+			if size := info.Size(); size > 0 {
+				dump.Size = uint64(size) // #nosec G115 -- checked for non-negative
 			}
 
 			// Try to extract process name from filename
@@ -471,7 +473,7 @@ func (c *Collector) getNUMATopology() (*types.NUMATopologyResult, error) {
 					node.MemoryFree = val
 				}
 			}
-			meminfo.Close()
+			_ = meminfo.Close()
 			node.MemoryUsed = node.MemoryTotal - node.MemoryFree
 		}
 
