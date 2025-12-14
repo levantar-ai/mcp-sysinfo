@@ -1,17 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
+	"github.com/levantar-ai/mcp-sysinfo/internal/mcp"
 	"github.com/levantar-ai/mcp-sysinfo/internal/memory"
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
@@ -33,8 +37,26 @@ func main() {
 	// CLI flags
 	showVersion := flag.Bool("version", false, "Show version information")
 	showHelp := flag.Bool("help", false, "Show help information")
-	query := flag.String("query", "", "Run a specific query (e.g., get_cpu_info)")
-	jsonOutput := flag.Bool("json", false, "Output in JSON format")
+	query := flag.String("query", "", "Run a specific query directly (bypasses MCP)")
+	jsonOutput := flag.Bool("json", false, "Output in JSON format (for --query)")
+
+	// Transport flags
+	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
+	listenAddr := flag.String("listen", "127.0.0.1:8080", "Listen address for HTTP transport")
+	serverURL := flag.String("server-url", "", "Public server URL (for OAuth metadata)")
+
+	// OAuth flags (for HTTP transport with token introspection)
+	authServer := flag.String("auth-server", "", "OAuth authorization server URL (for token introspection)")
+	clientID := flag.String("client-id", "", "OAuth client ID for token introspection")
+	clientSecret := flag.String("client-secret", "", "OAuth client secret")
+
+	// OIDC flags (for HTTP transport with local JWT validation)
+	oidcIssuer := flag.String("oidc-issuer", "", "OIDC issuer URL (e.g., https://enterprise.okta.com)")
+	oidcAudience := flag.String("oidc-audience", "", "Expected audience claim (typically this server's client ID)")
+
+	// TLS flags
+	tlsCert := flag.String("tls-cert", "", "TLS certificate file")
+	tlsKey := flag.String("tls-key", "", "TLS key file")
 
 	flag.Usage = printHelp
 	flag.Parse()
@@ -49,15 +71,102 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Direct query mode (for testing/debugging)
 	if *query != "" {
 		runQuery(*query, *jsonOutput)
 		os.Exit(0)
 	}
 
-	// Default: show info and available queries
-	printBanner()
-	fmt.Println("\nUse --help for available commands and queries.")
-	fmt.Println("Use --query <name> to run a specific query.")
+	// Create MCP server
+	mcpServer := mcp.NewServer("mcp-sysinfo", version)
+	mcp.RegisterAllTools(mcpServer)
+
+	// Set up context with signal handling
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-sigChan
+		cancel()
+	}()
+
+	// Run server based on transport
+	switch *transport {
+	case "stdio":
+		// Standard MCP transport - JSON-RPC over stdin/stdout
+		if err := mcpServer.ServeStdio(ctx); err != nil && err != context.Canceled {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+
+	case "http":
+		// HTTP transport with optional OAuth
+		httpConfig := &mcp.HTTPConfig{
+			ListenAddr: *listenAddr,
+			ServerURL:  *serverURL,
+			TLSCert:    *tlsCert,
+			TLSKey:     *tlsKey,
+		}
+
+		if httpConfig.ServerURL == "" {
+			// Default server URL based on listen address
+			scheme := "http"
+			if *tlsCert != "" {
+				scheme = "https"
+			}
+			httpConfig.ServerURL = fmt.Sprintf("%s://%s", scheme, *listenAddr)
+		}
+
+		// Configure authentication - OIDC takes precedence over OAuth introspection
+		if *oidcIssuer != "" {
+			if *oidcAudience == "" {
+				fmt.Fprintln(os.Stderr, "Error: --oidc-audience required with --oidc-issuer")
+				os.Exit(1)
+			}
+
+			httpConfig.OIDC = &mcp.OIDCConfig{
+				Issuer:         *oidcIssuer,
+				Audience:       *oidcAudience,
+				RequiredScopes: []string{}, // Allow any scope, tool-level checks
+			}
+		} else if *authServer != "" {
+			// Fall back to OAuth introspection
+			if *clientID == "" || *clientSecret == "" {
+				fmt.Fprintln(os.Stderr, "Error: --client-id and --client-secret required with --auth-server")
+				os.Exit(1)
+			}
+
+			httpConfig.Auth = &mcp.OAuthConfig{
+				AuthServerURL:     *authServer,
+				ClientID:          *clientID,
+				ClientSecret:      *clientSecret,
+				ResourceServerURL: httpConfig.ServerURL,
+				RequiredScopes:    []string{}, // Allow any scope, tool-level checks
+			}
+		}
+
+		httpServer := mcp.NewHTTPServer(mcpServer, httpConfig)
+
+		errChan := make(chan error, 1)
+		go func() {
+			errChan <- httpServer.Start()
+		}()
+
+		select {
+		case err := <-errChan:
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		case <-ctx.Done():
+			httpServer.Shutdown(context.Background())
+		}
+
+	default:
+		fmt.Fprintf(os.Stderr, "Error: unknown transport: %s\n", *transport)
+		os.Exit(1)
+	}
 }
 
 func printBanner() {
@@ -80,69 +189,86 @@ func printHelp() {
 	fmt.Print(`MCP System Info Server - Read-only AI diagnostics plane
 
 USAGE:
-    mcp-sysinfo [OPTIONS]
-    mcp-sysinfo --query <QUERY_NAME> [--json]
+    mcp-sysinfo [OPTIONS]                    Run as MCP server (stdio)
+    mcp-sysinfo --transport http [OPTIONS]   Run as HTTP server with OAuth
+    mcp-sysinfo --query <NAME> [--json]      Run query directly (testing)
 
-OPTIONS:
-    --help              Show this help message
-    --version           Show version information
-    --query <name>      Run a specific query
-    --json              Output results in JSON format
+TRANSPORT OPTIONS:
+    --transport <type>   Transport: stdio (default), http
+    --listen <addr>      HTTP listen address (default: 127.0.0.1:8080)
+    --server-url <url>   Public server URL (for OAuth metadata)
+    --tls-cert <file>    TLS certificate file (enables HTTPS)
+    --tls-key <file>     TLS key file
 
-AVAILABLE QUERIES:
+OIDC OPTIONS (for HTTP transport - local JWT validation):
+    --oidc-issuer <url>  OIDC issuer URL (e.g., https://enterprise.okta.com)
+    --oidc-audience <s>  Expected audience claim
 
-  Phase 1 - Core Metrics (7 queries):
-    get_cpu_info        CPU usage, frequency, load average, core count
-    get_memory_info     Total, used, available memory and swap
-    get_disk_info       Partitions, usage, filesystem types
-    get_network_info    Interfaces, I/O counters, connections
-    get_processes       Process list, top by CPU/memory
-    get_uptime          Boot time, uptime duration
-    get_temperature     Hardware temperature sensors
+OAUTH OPTIONS (for HTTP transport - token introspection):
+    --auth-server <url>  OAuth authorization server URL
+    --client-id <id>     OAuth client ID for token introspection
+    --client-secret <s>  OAuth client secret
 
-  Phase 1.5 - Log Access (6 queries):
-    get_journal_logs    Systemd journal (Linux)
-    get_syslog          Traditional syslog (Linux/macOS)
-    get_kernel_logs     Kernel/dmesg logs
-    get_auth_logs       Authentication logs (sensitive)
-    get_app_logs        Application-specific logs
-    get_event_log       Windows Event Log
-
-  Phase 1.6 - System Hooks (16 queries - partial):
-    get_scheduled_tasks  Windows Task Scheduler / at jobs / launchd
-    get_cron_jobs        Cron entries (Linux/macOS)
-    get_startup_items    Startup programs and services
-    get_systemd_services Systemd service status (Linux)
-    get_kernel_modules   Loaded kernel modules
-    get_loaded_drivers   Device drivers
-    get_dns_servers      Configured DNS servers
-    get_routes           Routing table
-    get_firewall_rules   Firewall rules
-    get_listening_ports  Listening network ports
-    get_arp_table        ARP table entries
-    get_network_stats    Network stack statistics
-    get_mounts           Mounted filesystems
-    get_disk_io          Disk I/O statistics
-    get_open_files       Open file descriptors
-    get_inode_usage      Inode usage (Linux/macOS)
+OTHER OPTIONS:
+    --help               Show this help message
+    --version            Show version information
+    --query <name>       Run a specific query directly
+    --json               Output results in JSON format
 
 EXAMPLES:
-    # Show CPU information
-    mcp-sysinfo --query get_cpu_info
+    # Run as MCP server (for Claude Desktop, etc.)
+    mcp-sysinfo
 
-    # Get memory info as JSON
-    mcp-sysinfo --query get_memory_info --json
+    # Run as HTTP server without auth (development)
+    mcp-sysinfo --transport http --listen 127.0.0.1:8080
 
-    # List running processes
-    mcp-sysinfo --query get_processes
+    # Run as HTTP server with OIDC (enterprise IdP)
+    mcp-sysinfo --transport http \
+        --listen 0.0.0.0:8443 \
+        --server-url https://mcp.example.com \
+        --tls-cert /etc/mcp/cert.pem \
+        --tls-key /etc/mcp/key.pem \
+        --oidc-issuer https://enterprise.okta.com \
+        --oidc-audience mcp-sysinfo
 
-    # View recent system logs
-    mcp-sysinfo --query get_syslog
+    # Run as HTTP server with OAuth introspection
+    mcp-sysinfo --transport http \
+        --listen 0.0.0.0:8443 \
+        --server-url https://mcp.example.com \
+        --tls-cert /etc/mcp/cert.pem \
+        --tls-key /etc/mcp/key.pem \
+        --auth-server http://localhost:8444 \
+        --client-id mcp-sysinfo \
+        --client-secret SECRET
+
+    # Test a query directly
+    mcp-sysinfo --query get_cpu_info --json
+
+AVAILABLE TOOLS (29):
+
+  Core Metrics (scope: core):
+    get_cpu_info, get_memory_info, get_disk_info, get_network_info,
+    get_processes, get_uptime, get_temperature
+
+  Log Access (scope: logs):
+    get_journal_logs, get_syslog, get_kernel_logs, get_app_logs,
+    get_event_log
+
+  System Hooks (scope: hooks):
+    get_scheduled_tasks, get_cron_jobs, get_startup_items,
+    get_systemd_services, get_kernel_modules, get_loaded_drivers,
+    get_dns_servers, get_routes, get_firewall_rules, get_listening_ports,
+    get_arp_table, get_network_stats, get_mounts, get_disk_io,
+    get_open_files, get_inode_usage
+
+  Sensitive (scope: sensitive):
+    get_auth_logs
 
 SECURITY:
-    This tool provides READ-ONLY access to system information.
-    No shell execution, no arbitrary commands.
-    See SECURITY.md for the complete security model.
+    stdio transport: No auth required (OS-level controls apply)
+    http transport:  OAuth 2.1 with token introspection recommended
+
+    See SECURITY.md for complete security architecture.
 
 For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
@@ -171,7 +297,7 @@ func runQuery(queryName string, jsonOut bool) {
 
 	case "get_processes":
 		c := process.NewCollector()
-		result, err = c.GetTopProcesses(10, "cpu") // Top 10 by CPU
+		result, err = c.GetTopProcesses(10, "cpu")
 
 	case "get_uptime":
 		c := uptime.NewCollector()
@@ -294,8 +420,6 @@ func runQuery(queryName string, jsonOut bool) {
 
 func printResult(queryName string, result interface{}) {
 	fmt.Printf("=== %s ===\n\n", queryName)
-
-	// Pretty print based on type
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	_ = enc.Encode(result)

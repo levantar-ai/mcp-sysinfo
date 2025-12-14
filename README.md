@@ -43,9 +43,10 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | Model | Use Case |
 |-------|----------|
 | **stdio** (default) | Local MCP client (Claude Desktop) |
+| **HTTP + OIDC** | Enterprise IdP (Okta, Azure AD, Auth0) |
+| **HTTP + OAuth** | Custom auth server with token introspection |
 | **SSH tunnel** | Remote access with existing SSH infrastructure |
 | **Teleport MCP** | Enterprise SSO + RBAC + session recording |
-| **mTLS** | Service-to-service automation |
 
 ---
 
@@ -254,6 +255,82 @@ ssh -tt user@server "mcp-sysinfo --transport stdio"
 ```
 
 SSH provides authentication. The server runs in stdio mode with no network listener.
+
+---
+
+## HTTP Transport with Authentication
+
+For remote access with OAuth 2.1 / OIDC authentication:
+
+### Option 1: OIDC (Enterprise IdP)
+
+Integrate with your existing identity provider (Okta, Azure AD, Auth0, Keycloak):
+
+```bash
+# Run with OIDC authentication
+mcp-sysinfo --transport http \
+    --listen 0.0.0.0:8443 \
+    --tls-cert /etc/mcp/cert.pem \
+    --tls-key /etc/mcp/key.pem \
+    --oidc-issuer https://enterprise.okta.com \
+    --oidc-audience mcp-sysinfo
+```
+
+The MCP server fetches JWKS from the IdP and validates tokens locally.
+
+### Option 2: OAuth Token Introspection
+
+Use the built-in token server or any OAuth 2.1 authorization server:
+
+```bash
+# Start the built-in token server
+mcp-token-server serve \
+    --listen 127.0.0.1:8444 \
+    --issuer http://localhost:8444 \
+    --audience mcp-sysinfo \
+    --clients /etc/mcp/clients.json
+
+# Start MCP server with OAuth introspection
+mcp-sysinfo --transport http \
+    --listen 127.0.0.1:8080 \
+    --auth-server http://127.0.0.1:8444 \
+    --client-id mcp-sysinfo \
+    --client-secret $SECRET
+```
+
+### Get a Token and Call the API
+
+```bash
+# Get access token (client credentials flow)
+TOKEN=$(curl -s -X POST http://localhost:8444/token \
+    -d "grant_type=client_credentials" \
+    -d "client_id=myapp" \
+    -d "client_secret=mysecret" \
+    | jq -r '.access_token')
+
+# Call MCP server with token
+curl -X POST http://localhost:8080/ \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_uptime"}}'
+```
+
+### CLI Flags Reference
+
+| Flag | Description |
+|------|-------------|
+| `--transport http` | Enable HTTP transport (default: stdio) |
+| `--listen <addr>` | Listen address (default: 127.0.0.1:8080) |
+| `--server-url <url>` | Public server URL for OAuth metadata |
+| `--tls-cert <file>` | TLS certificate file |
+| `--tls-key <file>` | TLS key file |
+| `--oidc-issuer <url>` | OIDC issuer URL (e.g., https://okta.com) |
+| `--oidc-audience <str>` | Expected JWT audience claim |
+| `--auth-server <url>` | OAuth auth server for introspection |
+| `--client-id <id>` | Client ID for introspection |
+| `--client-secret <str>` | Client secret for introspection |
+
+See [SECURITY.md](SECURITY.md) for complete authentication documentation.
 
 ---
 
