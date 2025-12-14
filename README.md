@@ -403,8 +403,10 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 Phase 1 (MVP)       ████████████████████  100%  (7/7 queries)
 Phase 1.5 (Logs)    ████████████████████  100%  (6/6 queries)
 Phase 1.6 (Hooks)   ████████████████████  100%  (31/31 queries)
-Phase 1.7 (SBOM)    █░░░░░░░░░░░░░░░░░░░    6%  (2/31 queries)
+Phase 1.7 (SBOM)    ████░░░░░░░░░░░░░░░░   23%  (7/31 queries)
 ```
+
+**Total: 51 queries implemented**
 
 See [TODO.md](TODO.md) for implementation details.
 
