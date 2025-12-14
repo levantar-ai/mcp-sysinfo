@@ -13,6 +13,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
+	"github.com/levantar-ai/mcp-sysinfo/internal/hardware"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
 	"github.com/levantar-ai/mcp-sysinfo/internal/mcp"
@@ -20,8 +21,10 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
+	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
+	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
@@ -40,6 +43,7 @@ func main() {
 	showHelp := flag.Bool("help", false, "Show help information")
 	query := flag.String("query", "", "Run a specific query directly (bypasses MCP)")
 	jsonOutput := flag.Bool("json", false, "Output in JSON format (for --query)")
+	pid := flag.Int("pid", 0, "Process ID for queries that need it (e.g., get_capabilities)")
 
 	// Transport flags
 	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
@@ -74,7 +78,7 @@ func main() {
 
 	// Direct query mode (for testing/debugging)
 	if *query != "" {
-		runQuery(*query, *jsonOutput)
+		runQuery(*query, *jsonOutput, int32(*pid))
 		os.Exit(0)
 	}
 
@@ -270,7 +274,7 @@ For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
 }
 
-func runQuery(queryName string, jsonOut bool) {
+func runQuery(queryName string, jsonOut bool, pid int32) {
 	var result interface{}
 	var err error
 
@@ -414,6 +418,69 @@ func runQuery(queryName string, jsonOut bool) {
 	case "get_certificates":
 		c := security.NewCollector()
 		result, err = c.GetCertificates()
+
+	// Hardware queries (Phase 1.6.6)
+	case "get_hardware_info":
+		c := hardware.NewCollector()
+		result, err = c.GetHardwareInfo()
+
+	case "get_usb_devices":
+		c := hardware.NewCollector()
+		result, err = c.GetUSBDevices()
+
+	case "get_pci_devices":
+		c := hardware.NewCollector()
+		result, err = c.GetPCIDevices()
+
+	case "get_block_devices":
+		c := hardware.NewCollector()
+		result, err = c.GetBlockDevices()
+
+	// Resources queries (Phase 1.6.7)
+	case "get_process_environ":
+		c := resources.NewCollector()
+		result, err = c.GetProcessEnviron(pid)
+
+	case "get_ipc_resources":
+		c := resources.NewCollector()
+		result, err = c.GetIPCResources()
+
+	case "get_namespaces":
+		c := resources.NewCollector()
+		result, err = c.GetNamespaces()
+
+	case "get_cgroups":
+		c := resources.NewCollector()
+		result, err = c.GetCgroups()
+
+	case "get_capabilities":
+		c := resources.NewCollector()
+		result, err = c.GetCapabilities(pid)
+
+	// State queries (Phase 1.6.8)
+	case "get_vm_info":
+		c := state.NewCollector()
+		result, err = c.GetVMInfo()
+
+	case "get_timezone":
+		c := state.NewCollector()
+		result, err = c.GetTimezone()
+
+	case "get_ntp_status":
+		c := state.NewCollector()
+		result, err = c.GetNTPStatus()
+
+	case "get_core_dumps":
+		c := state.NewCollector()
+		result, err = c.GetCoreDumps()
+
+	case "get_power_state":
+		c := state.NewCollector()
+		result, err = c.GetPowerState()
+
+	case "get_numa_topology":
+		c := state.NewCollector()
+		result, err = c.GetNUMATopology()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)
