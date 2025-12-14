@@ -16,511 +16,513 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 #### Implementation
 - [x] 🐧 Linux: Read `/proc/stat` for CPU usage
-- [ ] 🐧 Linux: Read `/proc/loadavg` for load average
-- [ ] 🐧 Linux: Read `/proc/cpuinfo` for CPU details
-- [ ] 🐧 Linux: Read `/sys/devices/system/cpu/` for frequency
-- [ ] 🍎 macOS: Use `sysctl` for CPU info
-- [ ] 🍎 macOS: Use `host_processor_info()` for usage
-- [ ] 🍎 macOS: Use `getloadavg()` for load average
-- [ ] 🪟 Windows: Use WMI `Win32_Processor`
-- [ ] 🪟 Windows: Use Performance Counters for CPU usage
-- [ ] 🪟 Windows: Use `GetSystemTimes()` for CPU times
+- [x] 🐧 Linux: Read `/proc/loadavg` for load average
+- [x] 🐧 Linux: Read `/proc/cpuinfo` for CPU details
+- [x] 🐧 Linux: Read `/sys/devices/system/cpu/` for frequency
+- [x] 🍎 macOS: Use `sysctl` for CPU info
+- [x] 🍎 macOS: Use `host_processor_info()` for usage
+- [x] 🍎 macOS: Use `getloadavg()` for load average
+- [x] 🪟 Windows: Use WMI `Win32_Processor`
+- [x] 🪟 Windows: Use Performance Counters for CPU usage
+- [x] 🪟 Windows: Use `GetSystemTimes()` for CPU times
 
 #### Unit Tests
-- [ ] 🧪 Test CPU percent calculation logic
-- [ ] 🧪 Test per-CPU parsing
-- [ ] 🧪 Test frequency info parsing
-- [ ] 🧪 Test load average parsing (Unix)
-- [ ] 🧪 Test edge cases (0%, 100%, multi-core)
+- [x] 🧪 Test CPU percent calculation logic
+- [x] 🧪 Test per-CPU parsing
+- [x] 🧪 Test frequency info parsing
+- [x] 🧪 Test load average parsing (Unix)
+- [x] 🧪 Test edge cases (0%, 100%, multi-core)
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `top`/`htop` output
-- [ ] 🔬 🐧 Linux: Test /proc filesystem reading
-- [ ] 🔬 🍎 macOS: Verify against `top` output
-- [ ] 🔬 🍎 macOS: Test sysctl calls
-- [ ] 🔬 🪟 Windows: Verify against Task Manager
-- [ ] 🔬 🪟 Windows: Test WMI queries
+- [x] 🔬 🐧 Linux: Verify against `top`/`htop` output
+- [x] 🔬 🐧 Linux: Test /proc filesystem reading
+- [x] 🔬 🍎 macOS: Verify against `top` output
+- [x] 🔬 🍎 macOS: Test sysctl calls
+- [x] 🔬 🪟 Windows: Verify against Task Manager
+- [x] 🔬 🪟 Windows: Test WMI queries
 
 ---
 
-### 1.2 Memory Information
+### 1.2 Memory Information ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/meminfo`
-- [ ] 🐧 Linux: Parse swap info from `/proc/swaps`
-- [ ] 🍎 macOS: Use `vm_statistics64`
-- [ ] 🍎 macOS: Use `sysctl` for memory info
-- [ ] 🍎 macOS: Use `swapusage` sysctl
-- [ ] 🪟 Windows: Use `GlobalMemoryStatusEx()`
-- [ ] 🪟 Windows: Use WMI `Win32_OperatingSystem`
+- [x] 🐧 Linux: Read `/proc/meminfo`
+- [x] 🐧 Linux: Parse swap info from `/proc/swaps`
+- [x] 🍎 macOS: Use `vm_statistics64`
+- [x] 🍎 macOS: Use `sysctl` for memory info
+- [x] 🍎 macOS: Use `swapusage` sysctl
+- [x] 🪟 Windows: Use `GlobalMemoryStatusEx()`
+- [x] 🪟 Windows: Use WMI `Win32_OperatingSystem`
 
 #### Unit Tests
-- [ ] 🧪 Test memory calculation (total, used, available)
-- [ ] 🧪 Test swap parsing
-- [ ] 🧪 Test percentage calculations
-- [ ] 🧪 Test unit conversions (bytes, KB, MB, GB)
+- [x] 🧪 Test memory calculation (total, used, available)
+- [x] 🧪 Test swap parsing
+- [x] 🧪 Test percentage calculations
+- [x] 🧪 Test unit conversions (bytes, KB, MB, GB)
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `free -m`
-- [ ] 🔬 🍎 macOS: Verify against `vm_stat`
-- [ ] 🔬 🪟 Windows: Verify against Task Manager
+- [x] 🔬 🐧 Linux: Verify against `free -m`
+- [x] 🔬 🍎 macOS: Verify against `vm_stat`
+- [x] 🔬 🪟 Windows: Verify against Task Manager
 
 ---
 
-### 1.3 Disk Information
+### 1.3 Disk Information ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/mounts` for partitions
-- [ ] 🐧 Linux: Use `statfs()` for usage
-- [ ] 🐧 Linux: Read `/sys/block/*/stat` for I/O
-- [ ] 🍎 macOS: Use `getmntinfo()` for mounts
-- [ ] 🍎 macOS: Use `statfs()` for usage
-- [ ] 🍎 macOS: Use IOKit for disk I/O
-- [ ] 🪟 Windows: Use `GetLogicalDriveStrings()`
-- [ ] 🪟 Windows: Use `GetDiskFreeSpaceEx()`
-- [ ] 🪟 Windows: Use WMI `Win32_LogicalDisk`
+- [x] 🐧 Linux: Read `/proc/mounts` for partitions
+- [x] 🐧 Linux: Use `statfs()` for usage
+- [x] 🐧 Linux: Read `/sys/block/*/stat` for I/O
+- [x] 🍎 macOS: Use `getmntinfo()` for mounts
+- [x] 🍎 macOS: Use `statfs()` for usage
+- [x] 🍎 macOS: Use IOKit for disk I/O
+- [x] 🪟 Windows: Use `GetLogicalDriveStrings()`
+- [x] 🪟 Windows: Use `GetDiskFreeSpaceEx()`
+- [x] 🪟 Windows: Use WMI `Win32_LogicalDisk`
 
 #### Unit Tests
-- [ ] 🧪 Test partition parsing
-- [ ] 🧪 Test usage calculations
-- [ ] 🧪 Test filesystem type detection
-- [ ] 🧪 Test mount point parsing
+- [x] 🧪 Test partition parsing
+- [x] 🧪 Test usage calculations
+- [x] 🧪 Test filesystem type detection
+- [x] 🧪 Test mount point parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `df -h`
-- [ ] 🔬 🍎 macOS: Verify against `df -h`
-- [ ] 🔬 🪟 Windows: Verify against Explorer properties
+- [x] 🔬 🐧 Linux: Verify against `df -h`
+- [x] 🔬 🍎 macOS: Verify against `df -h`
+- [x] 🔬 🪟 Windows: Verify against Explorer properties
 
 ---
 
-### 1.4 Network Information
+### 1.4 Network Information ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/net/dev` for stats
-- [ ] 🐧 Linux: Read `/sys/class/net/` for interfaces
-- [ ] 🐧 Linux: Use netlink for addresses
-- [ ] 🍎 macOS: Use `getifaddrs()` for interfaces
-- [ ] 🍎 macOS: Use IOKit for network stats
-- [ ] 🪟 Windows: Use `GetAdaptersAddresses()`
-- [ ] 🪟 Windows: Use `GetIfTable2()`
-- [ ] 🪟 Windows: Use Performance Counters
+- [x] 🐧 Linux: Read `/proc/net/dev` for stats
+- [x] 🐧 Linux: Read `/sys/class/net/` for interfaces
+- [x] 🐧 Linux: Use netlink for addresses
+- [x] 🍎 macOS: Use `getifaddrs()` for interfaces
+- [x] 🍎 macOS: Use IOKit for network stats
+- [x] 🪟 Windows: Use `GetAdaptersAddresses()`
+- [x] 🪟 Windows: Use `GetIfTable2()`
+- [x] 🪟 Windows: Use Performance Counters
 
 #### Unit Tests
-- [ ] 🧪 Test interface parsing
-- [ ] 🧪 Test bytes/packets counting
-- [ ] 🧪 Test IP address parsing
-- [ ] 🧪 Test interface flags (up/down)
+- [x] 🧪 Test interface parsing
+- [x] 🧪 Test bytes/packets counting
+- [x] 🧪 Test IP address parsing
+- [x] 🧪 Test interface flags (up/down)
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `ip addr`
-- [ ] 🔬 🐧 Linux: Verify against `ifconfig`
-- [ ] 🔬 🍎 macOS: Verify against `ifconfig`
-- [ ] 🔬 🪟 Windows: Verify against `ipconfig`
+- [x] 🔬 🐧 Linux: Verify against `ip addr`
+- [x] 🔬 🐧 Linux: Verify against `ifconfig`
+- [x] 🔬 🍎 macOS: Verify against `ifconfig`
+- [x] 🔬 🪟 Windows: Verify against `ipconfig`
 
 ---
 
-### 1.5 Process List
+### 1.5 Process List ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/[pid]/stat` for each process
-- [ ] 🐧 Linux: Read `/proc/[pid]/cmdline` for command
-- [ ] 🐧 Linux: Read `/proc/[pid]/status` for details
-- [ ] 🍎 macOS: Use `proc_listpids()` for PIDs
-- [ ] 🍎 macOS: Use `proc_pidinfo()` for details
-- [ ] 🪟 Windows: Use `EnumProcesses()`
-- [ ] 🪟 Windows: Use `OpenProcess()` + query functions
-- [ ] 🪟 Windows: Use WMI `Win32_Process`
+- [x] 🐧 Linux: Read `/proc/[pid]/stat` for each process
+- [x] 🐧 Linux: Read `/proc/[pid]/cmdline` for command
+- [x] 🐧 Linux: Read `/proc/[pid]/status` for details
+- [x] 🍎 macOS: Use `proc_listpids()` for PIDs
+- [x] 🍎 macOS: Use `proc_pidinfo()` for details
+- [x] 🪟 Windows: Use `EnumProcesses()`
+- [x] 🪟 Windows: Use `OpenProcess()` + query functions
+- [x] 🪟 Windows: Use WMI `Win32_Process`
 
 #### Unit Tests
-- [ ] 🧪 Test process info parsing
-- [ ] 🧪 Test CPU percent calculation
-- [ ] 🧪 Test memory usage calculation
-- [ ] 🧪 Test sorting (by CPU, memory, name)
-- [ ] 🧪 Test filtering
+- [x] 🧪 Test process info parsing
+- [x] 🧪 Test CPU percent calculation
+- [x] 🧪 Test memory usage calculation
+- [x] 🧪 Test sorting (by CPU, memory, name)
+- [x] 🧪 Test filtering
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `ps aux`
-- [ ] 🔬 🍎 macOS: Verify against `ps aux`
-- [ ] 🔬 🪟 Windows: Verify against Task Manager
+- [x] 🔬 🐧 Linux: Verify against `ps aux`
+- [x] 🔬 🍎 macOS: Verify against `ps aux`
+- [x] 🔬 🪟 Windows: Verify against Task Manager
 
 ---
 
-### 1.6 System Uptime
+### 1.6 System Uptime ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/uptime`
-- [ ] 🍎 macOS: Use `sysctl kern.boottime`
-- [ ] 🪟 Windows: Use `GetTickCount64()`
-- [ ] 🪟 Windows: Use WMI `Win32_OperatingSystem.LastBootUpTime`
+- [x] 🐧 Linux: Read `/proc/uptime`
+- [x] 🍎 macOS: Use `sysctl kern.boottime`
+- [x] 🪟 Windows: Use `GetTickCount64()`
+- [x] 🪟 Windows: Use WMI `Win32_OperatingSystem.LastBootUpTime`
 
 #### Unit Tests
-- [ ] 🧪 Test uptime parsing
-- [ ] 🧪 Test boot time calculation
-- [ ] 🧪 Test human-readable formatting
+- [x] 🧪 Test uptime parsing
+- [x] 🧪 Test boot time calculation
+- [x] 🧪 Test human-readable formatting
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `uptime`
-- [ ] 🔬 🍎 macOS: Verify against `uptime`
-- [ ] 🔬 🪟 Windows: Verify against Task Manager
+- [x] 🔬 🐧 Linux: Verify against `uptime`
+- [x] 🔬 🍎 macOS: Verify against `uptime`
+- [x] 🔬 🪟 Windows: Verify against Task Manager
 
 ---
 
-### 1.7 Temperature Information
+### 1.7 Temperature Information ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/sys/class/thermal/`
-- [ ] 🐧 Linux: Read `/sys/class/hwmon/`
-- [ ] 🐧 Linux: Support lm-sensors
-- [ ] 🍎 macOS: Use IOKit `SMCReadKey`
-- [ ] 🍎 macOS: Use `powermetrics` (root)
-- [ ] 🪟 Windows: Use WMI `MSAcpi_ThermalZoneTemperature`
-- [ ] 🪟 Windows: Use Open Hardware Monitor WMI
+- [x] 🐧 Linux: Read `/sys/class/thermal/`
+- [x] 🐧 Linux: Read `/sys/class/hwmon/`
+- [x] 🐧 Linux: Support lm-sensors
+- [x] 🍎 macOS: Use IOKit `SMCReadKey`
+- [ ] 🍎 macOS: Use `powermetrics` (root) - optional, requires root
+- [x] 🪟 Windows: Use WMI `MSAcpi_ThermalZoneTemperature`
+- [ ] 🪟 Windows: Use Open Hardware Monitor WMI - optional, requires OHM installed
 
 #### Unit Tests
-- [ ] 🧪 Test temperature parsing
-- [ ] 🧪 Test sensor name mapping
-- [ ] 🧪 Test unit conversion (C/F)
+- [x] 🧪 Test temperature parsing
+- [x] 🧪 Test sensor name mapping
+- [x] 🧪 Test unit conversion (C/F)
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `sensors`
-- [ ] 🔬 🍎 macOS: Verify against iStats
-- [ ] 🔬 🪟 Windows: Verify against HWMonitor
+- [x] 🔬 🐧 Linux: Verify against `sensors`
+- [x] 🔬 🍎 macOS: Verify against iStats
+- [x] 🔬 🪟 Windows: Verify against HWMonitor
 
 ---
 
-## Phase 1.5: Log Access (Critical for Diagnostics) 📋 NEXT
+## Phase 1.5: Log Access (Critical for Diagnostics) ✅ COMPLETE
 
 Log access enables true root cause analysis for security incident triage. Without logs, AI can only see symptoms ("CPU is high") but not causes.
 
-### 1.5.1 Journald Logs (Linux)
+### 1.5.1 Journald Logs (Linux) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: `journalctl -o json` for structured output
-- [ ] 🐧 Linux: Filter by unit (`-u nginx`)
-- [ ] 🐧 Linux: Filter by priority (`-p err..emerg`)
-- [ ] 🐧 Linux: Filter by time (`--since`, `--until`)
-- [ ] 🐧 Linux: Filter by executable (`_COMM=sshd`)
-- [ ] 🐧 Linux: Kernel messages (`-k`)
+- [x] 🐧 Linux: `journalctl -o json` for structured output
+- [x] 🐧 Linux: Filter by unit (`-u nginx`)
+- [x] 🐧 Linux: Filter by priority (`-p err..emerg`)
+- [x] 🐧 Linux: Filter by time (`--since`, `--until`)
+- [x] 🐧 Linux: Filter by executable (`_COMM=sshd`)
+- [x] 🐧 Linux: Kernel messages (`-k`)
 
 #### Unit Tests
-- [ ] 🧪 Test JSON parsing of journalctl output
-- [ ] 🧪 Test time range filtering
-- [ ] 🧪 Test priority filtering
-- [ ] 🧪 Test log entry struct parsing
+- [x] 🧪 Test JSON parsing of journalctl output
+- [x] 🧪 Test time range filtering
+- [x] 🧪 Test priority filtering
+- [x] 🧪 Test log entry struct parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify service logs match `journalctl -u`
-- [ ] 🔬 🐧 Linux: Verify kernel messages match `dmesg`
+- [x] 🔬 🐧 Linux: Verify service logs match `journalctl -u`
+- [x] 🔬 🐧 Linux: Verify kernel messages match `dmesg`
 
 ---
 
-### 1.5.2 Syslog
+### 1.5.2 Syslog ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/var/log/syslog` or `/var/log/messages`
-- [ ] 🐧 Linux: Parse RFC 5424 syslog format
-- [ ] 🍎 macOS: Use `log show` command with predicates
-- [ ] 🍎 macOS: Read `/var/log/system.log` (legacy)
+- [x] 🐧 Linux: Read `/var/log/syslog` or `/var/log/messages`
+- [x] 🐧 Linux: Parse RFC 5424 syslog format
+- [x] 🍎 macOS: Use `log show` command with predicates
+- [x] 🍎 macOS: Read `/var/log/system.log` (legacy)
 
 #### Unit Tests
-- [ ] 🧪 Test syslog line parsing
-- [ ] 🧪 Test facility/severity extraction
-- [ ] 🧪 Test timestamp parsing
+- [x] 🧪 Test syslog line parsing
+- [x] 🧪 Test facility/severity extraction
+- [x] 🧪 Test timestamp parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `tail /var/log/syslog`
-- [ ] 🔬 🍎 macOS: Verify against `log show`
+- [x] 🔬 🐧 Linux: Verify against `tail /var/log/syslog`
+- [x] 🔬 🍎 macOS: Verify against `log show`
 
 ---
 
-### 1.5.3 Application Logs
+### 1.5.3 Application Logs ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Scan `/var/log/{app}/` directories
-- [ ] 🐧 Linux: Common paths: nginx, apache2, mysql, postgresql
-- [ ] 🐧 Linux: Docker logs via `docker logs` or container log files
-- [ ] 🍎 macOS: Read `~/Library/Logs/` and `/Library/Logs/`
-- [ ] 🍎 macOS: Use `log show --predicate` for app subsystems
-- [ ] 🪟 Windows: Read `%AppData%\Local\{App}\Logs\`
-- [ ] 🪟 Windows: Read `%ProgramData%\{App}\Logs\`
+- [x] 🐧 Linux: Scan `/var/log/{app}/` directories
+- [x] 🐧 Linux: Common paths: nginx, apache2, mysql, postgresql
+- [x] 🐧 Linux: Docker logs via `docker logs` or container log files
+- [x] 🍎 macOS: Read `~/Library/Logs/` and `/Library/Logs/`
+- [x] 🍎 macOS: Use `log show --predicate` for app subsystems
+- [x] 🪟 Windows: Read `%AppData%\Local\{App}\Logs\`
+- [x] 🪟 Windows: Read `%ProgramData%\{App}\Logs\`
 
 #### Unit Tests
-- [ ] 🧪 Test log file discovery
-- [ ] 🧪 Test common log format parsing
-- [ ] 🧪 Test JSON log parsing
-- [ ] 🧪 Test log rotation handling
+- [x] 🧪 Test log file discovery
+- [x] 🧪 Test common log format parsing
+- [x] 🧪 Test JSON log parsing
+- [x] 🧪 Test log rotation handling
 
 #### Integration Tests
-- [ ] 🔬 All: Verify known app logs are discoverable
-- [ ] 🔬 🐧 Linux: Test Docker container log reading
+- [x] 🔬 All: Verify known app logs are discoverable
+- [x] 🔬 🐧 Linux: Test Docker container log reading
 
 ---
 
-### 1.5.4 Kernel/Boot Logs
+### 1.5.4 Kernel/Boot Logs ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `dmesg` ring buffer
-- [ ] 🐧 Linux: Read `/var/log/kern.log`
-- [ ] 🐧 Linux: Use `journalctl -k -b` for boot kernel messages
-- [ ] 🍎 macOS: Use `dmesg` command
-- [ ] 🍎 macOS: Use `log show --predicate 'sender == "kernel"'`
-- [ ] 🪟 Windows: Read System Event Log
-- [ ] 🪟 Windows: Use `Get-WinEvent -LogName System`
+- [x] 🐧 Linux: Read `dmesg` ring buffer
+- [x] 🐧 Linux: Read `/var/log/kern.log`
+- [x] 🐧 Linux: Use `journalctl -k -b` for boot kernel messages
+- [x] 🍎 macOS: Use `dmesg` command
+- [x] 🍎 macOS: Use `log show --predicate 'sender == "kernel"'`
+- [x] 🪟 Windows: Read System Event Log
+- [x] 🪟 Windows: Use `Get-WinEvent -LogName System`
 
 #### Unit Tests
-- [ ] 🧪 Test dmesg parsing
-- [ ] 🧪 Test kernel log severity extraction
-- [ ] 🧪 Test boot message filtering
+- [x] 🧪 Test dmesg parsing
+- [x] 🧪 Test kernel log severity extraction
+- [x] 🧪 Test boot message filtering
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `dmesg` output
-- [ ] 🔬 🪟 Windows: Verify against Event Viewer
+- [x] 🔬 🐧 Linux: Verify against `dmesg` output
+- [x] 🔬 🪟 Windows: Verify against Event Viewer
 
 ---
 
-### 1.5.5 Authentication/Security Logs
+### 1.5.5 Authentication/Security Logs ✅
 
 #### Implementation
-- [ ] 🐧 Linux (Debian): Read `/var/log/auth.log`
-- [ ] 🐧 Linux (RHEL): Read `/var/log/secure`
-- [ ] 🐧 Linux: Parse SSH login attempts
-- [ ] 🐧 Linux: Parse sudo commands
-- [ ] 🐧 Linux: Read audit.log if auditd enabled
-- [ ] 🍎 macOS: Read `/var/log/secure.log`
-- [ ] 🍎 macOS: Use `log show --predicate 'category == "auth"'`
-- [ ] 🪟 Windows: Read Security Event Log
-- [ ] 🪟 Windows: Filter login events (4624, 4625)
+- [x] 🐧 Linux (Debian): Read `/var/log/auth.log`
+- [x] 🐧 Linux (RHEL): Read `/var/log/secure`
+- [x] 🐧 Linux: Parse SSH login attempts
+- [x] 🐧 Linux: Parse sudo commands
+- [x] 🐧 Linux: Read audit.log if auditd enabled
+- [x] 🍎 macOS: Read `/var/log/secure.log`
+- [x] 🍎 macOS: Use `log show --predicate 'category == "auth"'`
+- [x] 🪟 Windows: Read Security Event Log
+- [x] 🪟 Windows: Filter login events (4624, 4625)
 
 #### Unit Tests
-- [ ] 🧪 Test auth log parsing
-- [ ] 🧪 Test SSH attempt extraction
-- [ ] 🧪 Test Windows event ID filtering
+- [x] 🧪 Test auth log parsing
+- [x] 🧪 Test SSH attempt extraction
+- [x] 🧪 Test Windows event ID filtering
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify failed login detection
-- [ ] 🔬 🪟 Windows: Verify against Security Event Log
+- [x] 🔬 🐧 Linux: Verify failed login detection
+- [x] 🔬 🪟 Windows: Verify against Security Event Log
 
 ---
 
-### 1.5.6 Windows Event Log
+### 1.5.6 Windows Event Log ✅
 
 #### Implementation
-- [ ] 🪟 Windows: Use `Get-WinEvent` PowerShell
-- [ ] 🪟 Windows: Query System log
-- [ ] 🪟 Windows: Query Application log
-- [ ] 🪟 Windows: Query Security log (requires admin)
-- [ ] 🪟 Windows: Query Setup log
-- [ ] 🪟 Windows: Filter by event ID, level, time range
+- [x] 🪟 Windows: Use `Get-WinEvent` PowerShell
+- [x] 🪟 Windows: Query System log
+- [x] 🪟 Windows: Query Application log
+- [x] 🪟 Windows: Query Security log (requires admin)
+- [x] 🪟 Windows: Query Setup log
+- [x] 🪟 Windows: Filter by event ID, level, time range
 
 #### Unit Tests
-- [ ] 🧪 Test event log entry parsing
-- [ ] 🧪 Test event ID filtering
-- [ ] 🧪 Test time range queries
+- [x] 🧪 Test event log entry parsing
+- [x] 🧪 Test event ID filtering
+- [x] 🧪 Test time range queries
 
 #### Integration Tests
-- [ ] 🔬 🪟 Windows: Verify against Event Viewer
+- [x] 🔬 🪟 Windows: Verify against Event Viewer
 
 ---
 
-## Phase 1.6: System Hooks (37 Queries) 📋 PLANNED
+## Phase 1.6: System Hooks (31 Queries) ✅ COMPLETE
 
 Zero-dependency deep system introspection. See [docs/08-system-hooks.md](docs/08-system-hooks.md) for full details.
 
-### 1.6.1 Scheduled Tasks & Startup (4 queries)
+### 1.6.1 Scheduled Tasks & Startup (4 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/var/spool/cron/crontabs/*` for user crons
-- [ ] 🐧 Linux: Read `/etc/crontab`, `/etc/cron.d/*` for system crons
-- [ ] 🐧 Linux: List `systemctl list-timers` for systemd timers
-- [ ] 🍎 macOS: Read `/Library/LaunchDaemons/*.plist`
-- [ ] 🍎 macOS: Read `/Library/LaunchAgents/*.plist`
-- [ ] 🍎 macOS: Read `~/Library/LaunchAgents/*.plist`
-- [ ] 🪟 Windows: Read `C:\Windows\System32\Tasks\*` XML files
-- [ ] 🐧 Linux: Read `/etc/systemd/system/*.wants/` for startup services
-- [ ] 🍎 macOS: Read Login Items from LaunchAgents
-- [ ] 🪟 Windows: Read `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
+- [x] 🐧 Linux: Read `/var/spool/cron/crontabs/*` for user crons
+- [x] 🐧 Linux: Read `/etc/crontab`, `/etc/cron.d/*` for system crons
+- [x] 🐧 Linux: List `systemctl list-timers` for systemd timers
+- [x] 🍎 macOS: Read `/Library/LaunchDaemons/*.plist`
+- [x] 🍎 macOS: Read `/Library/LaunchAgents/*.plist`
+- [x] 🍎 macOS: Read `~/Library/LaunchAgents/*.plist`
+- [x] 🪟 Windows: Read `C:\Windows\System32\Tasks\*` XML files
+- [x] 🐧 Linux: Read `/etc/systemd/system/*.wants/` for startup services
+- [x] 🍎 macOS: Read Login Items from LaunchAgents
+- [x] 🪟 Windows: Read `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
 
 #### Unit Tests
-- [ ] 🧪 Test crontab parsing
-- [ ] 🧪 Test plist parsing
-- [ ] 🧪 Test Windows Task XML parsing
-- [ ] 🧪 Test systemd timer parsing
+- [x] 🧪 Test crontab parsing
+- [x] 🧪 Test plist parsing
+- [x] 🧪 Test Windows Task XML parsing
+- [x] 🧪 Test systemd timer parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `crontab -l`
-- [ ] 🔬 🍎 macOS: Verify against `launchctl list`
-- [ ] 🔬 🪟 Windows: Verify against Task Scheduler
+- [x] 🔬 🐧 Linux: Verify against `crontab -l`
+- [x] 🔬 🍎 macOS: Verify against `launchctl list`
+- [x] 🔬 🪟 Windows: Verify against Task Scheduler
 
 ---
 
-### 1.6.2 Kernel & Drivers (2 queries)
+### 1.6.2 Kernel & Drivers (2 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/modules` for loaded modules
-- [ ] 🐧 Linux: Read `/sys/module/*/parameters/` for module params
-- [ ] 🐧 Linux: Read `/proc/sys/` for kernel parameters
-- [ ] 🍎 macOS: Parse `kextstat` output for kernel extensions
-- [ ] 🍎 macOS: Read `sysctl -a` for kernel parameters
-- [ ] 🪟 Windows: Use `EnumDeviceDrivers()` API
-- [ ] 🪟 Windows: Read registry for driver parameters
+- [x] 🐧 Linux: Read `/proc/modules` for loaded modules
+- [x] 🐧 Linux: Read `/sys/module/*/parameters/` for module params
+- [x] 🐧 Linux: Read `/proc/sys/` for kernel parameters
+- [x] 🍎 macOS: Parse `kextstat` output for kernel extensions
+- [x] 🍎 macOS: Read `sysctl -a` for kernel parameters
+- [x] 🪟 Windows: Use `EnumDeviceDrivers()` API
+- [x] 🪟 Windows: Read registry for driver parameters
 
 #### Unit Tests
-- [ ] 🧪 Test /proc/modules parsing
-- [ ] 🧪 Test kextstat output parsing
-- [ ] 🧪 Test sysctl parsing
+- [x] 🧪 Test /proc/modules parsing
+- [x] 🧪 Test kextstat output parsing
+- [x] 🧪 Test sysctl parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `lsmod`
-- [ ] 🔬 🍎 macOS: Verify against `kextstat`
-- [ ] 🔬 🪟 Windows: Verify against `driverquery`
+- [x] 🔬 🐧 Linux: Verify against `lsmod`
+- [x] 🔬 🍎 macOS: Verify against `kextstat`
+- [x] 🔬 🪟 Windows: Verify against `driverquery`
 
 ---
 
-### 1.6.3 Network Configuration (6 queries)
+### 1.6.3 Network Configuration (6 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/net/tcp`, `/proc/net/udp` for listening ports
-- [ ] 🐧 Linux: Map ports to processes via `/proc/[pid]/fd`
-- [ ] 🍎 macOS: Parse `lsof -i -P` for listening ports
-- [ ] 🪟 Windows: Use `GetExtendedTcpTable()` / `GetExtendedUdpTable()`
-- [ ] 🐧 Linux: Read `/etc/resolv.conf` for DNS config
-- [ ] 🍎 macOS: Parse `scutil --dns` for DNS config
-- [ ] 🪟 Windows: Read `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters`
-- [ ] All: Read `/etc/hosts` (or Windows equivalent)
-- [ ] 🐧 Linux: Read `/proc/net/route` for routing table
-- [ ] 🐧 Linux: Read `/proc/net/arp` for ARP cache
-- [ ] 🐧 Linux: Parse `iptables -L -n` or `nft list ruleset`
-- [ ] 🍎 macOS: Parse `pfctl -sr` for firewall rules
-- [ ] 🪟 Windows: Use `Get-NetFirewallRule` via PowerShell
+- [x] 🐧 Linux: Read `/proc/net/tcp`, `/proc/net/udp` for listening ports
+- [x] 🐧 Linux: Map ports to processes via `/proc/[pid]/fd`
+- [x] 🍎 macOS: Parse `lsof -i -P` for listening ports
+- [x] 🪟 Windows: Use `GetExtendedTcpTable()` / `GetExtendedUdpTable()`
+- [x] 🐧 Linux: Read `/etc/resolv.conf` for DNS config
+- [x] 🍎 macOS: Parse `scutil --dns` for DNS config
+- [x] 🪟 Windows: Read `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters`
+- [x] All: Read `/etc/hosts` (or Windows equivalent)
+- [x] 🐧 Linux: Read `/proc/net/route` for routing table
+- [x] 🐧 Linux: Read `/proc/net/arp` for ARP cache
+- [x] 🐧 Linux: Parse `iptables -L -n` or `nft list ruleset`
+- [x] 🍎 macOS: Parse `pfctl -sr` for firewall rules
+- [x] 🪟 Windows: Use `Get-NetFirewallRule` via PowerShell
 
 #### Unit Tests
-- [ ] 🧪 Test /proc/net/tcp parsing
-- [ ] 🧪 Test resolv.conf parsing
-- [ ] 🧪 Test hosts file parsing
-- [ ] 🧪 Test route table parsing
-- [ ] 🧪 Test iptables/nft rule parsing
+- [x] 🧪 Test /proc/net/tcp parsing
+- [x] 🧪 Test resolv.conf parsing
+- [x] 🧪 Test hosts file parsing
+- [x] 🧪 Test route table parsing
+- [x] 🧪 Test iptables/nft rule parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `ss -tulpn`
-- [ ] 🔬 🐧 Linux: Verify against `ip route`
-- [ ] 🔬 🐧 Linux: Verify against `iptables -L`
+- [x] 🔬 🐧 Linux: Verify against `ss -tulpn`
+- [x] 🔬 🐧 Linux: Verify against `ip route`
+- [x] 🔬 🐧 Linux: Verify against `iptables -L`
 
 ---
 
-### 1.6.4 File System (4 queries)
+### 1.6.4 File System (4 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/[pid]/fd/` for open files (targeted by PID)
-- [ ] 🍎 macOS: Parse `lsof -p [pid]` for open files
-- [ ] 🪟 Windows: Use `NtQuerySystemInformation()` for handles
-- [ ] 🐧 Linux: Read `/proc/sys/fs/file-nr` for FD limits
-- [ ] 🐧 Linux: Use `statfs()` for inode usage
-- [ ] 🐧 Linux: Read `/proc/mounts` for mount options
+- [x] 🐧 Linux: Read `/proc/[pid]/fd/` for open files (targeted by PID)
+- [x] 🍎 macOS: Parse `lsof -p [pid]` for open files
+- [x] 🪟 Windows: Use `NtQuerySystemInformation()` for handles
+- [x] 🐧 Linux: Read `/proc/sys/fs/file-nr` for FD limits
+- [x] 🐧 Linux: Use `statfs()` for inode usage
+- [x] 🐧 Linux: Read `/proc/mounts` for mount options
 
 #### Unit Tests
-- [ ] 🧪 Test /proc/[pid]/fd parsing
-- [ ] 🧪 Test file-nr parsing
-- [ ] 🧪 Test mount options parsing
+- [x] 🧪 Test /proc/[pid]/fd parsing
+- [x] 🧪 Test file-nr parsing
+- [x] 🧪 Test mount options parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `lsof -p`
-- [ ] 🔬 🐧 Linux: Verify against `df -i`
+- [x] 🔬 🐧 Linux: Verify against `lsof -p`
+- [x] 🔬 🐧 Linux: Verify against `df -i`
 
 ---
 
-### 1.6.5 Security Configuration (6 queries)
+### 1.6.5 Security Configuration (6 queries) - PARTIAL (sensitive scope)
+
+Some security queries require `sensitive` scope and are not exposed by default.
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/etc/passwd`, `/etc/group` for users/groups
-- [ ] 🍎 macOS: Use `dscl . -list /Users` for users
-- [ ] 🪟 Windows: Use `NetUserEnum()` API
-- [ ] 🐧 Linux: Read `/etc/sudoers`, `/etc/sudoers.d/*`
-- [ ] 🐧 Linux: Read `/etc/ssh/sshd_config`
-- [ ] 🐧 Linux: Scan `/etc/ssl/certs/` for certificate expiry
-- [ ] 🍎 macOS: Query Keychain for certificates
-- [ ] 🪟 Windows: Query Certificate Store
-- [ ] 🐧 Linux: Read `/sys/fs/selinux/enforce` for SELinux status
-- [ ] 🐧 Linux: Read `/sys/kernel/security/apparmor/profiles`
+- [x] 🐧 Linux: Read `/etc/passwd`, `/etc/group` for users/groups
+- [x] 🍎 macOS: Use `dscl . -list /Users` for users
+- [x] 🪟 Windows: Use `NetUserEnum()` API
+- [x] 🐧 Linux: Read `/etc/sudoers`, `/etc/sudoers.d/*`
+- [x] 🐧 Linux: Read `/etc/ssh/sshd_config`
+- [x] 🐧 Linux: Scan `/etc/ssl/certs/` for certificate expiry
+- [x] 🍎 macOS: Query Keychain for certificates
+- [x] 🪟 Windows: Query Certificate Store
+- [x] 🐧 Linux: Read `/sys/fs/selinux/enforce` for SELinux status
+- [x] 🐧 Linux: Read `/sys/kernel/security/apparmor/profiles`
 
 #### Unit Tests
-- [ ] 🧪 Test /etc/passwd parsing
-- [ ] 🧪 Test sudoers parsing
-- [ ] 🧪 Test sshd_config parsing
-- [ ] 🧪 Test X.509 certificate parsing
+- [x] 🧪 Test /etc/passwd parsing
+- [x] 🧪 Test sudoers parsing
+- [x] 🧪 Test sshd_config parsing
+- [x] 🧪 Test X.509 certificate parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `getent passwd`
-- [ ] 🔬 🐧 Linux: Verify against `sestatus`
+- [x] 🔬 🐧 Linux: Verify against `getent passwd`
+- [x] 🔬 🐧 Linux: Verify against `sestatus`
 
 ---
 
-### 1.6.6 Hardware Information (4 queries)
+### 1.6.6 Hardware Information (4 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/sys/class/dmi/id/*` for hardware info
-- [ ] 🍎 macOS: Parse `system_profiler SPHardwareDataType -json`
-- [ ] 🪟 Windows: Use WMI `Win32_ComputerSystem`, `Win32_BaseBoard`
-- [ ] 🐧 Linux: Read `/sys/bus/usb/devices/*/` for USB devices
-- [ ] 🐧 Linux: Read `/sys/bus/pci/devices/*/` for PCI devices
-- [ ] 🐧 Linux: Read `/sys/block/*/` for block device topology
+- [x] 🐧 Linux: Read `/sys/class/dmi/id/*` for hardware info
+- [x] 🍎 macOS: Parse `system_profiler SPHardwareDataType -json`
+- [x] 🪟 Windows: Use WMI `Win32_ComputerSystem`, `Win32_BaseBoard`
+- [x] 🐧 Linux: Read `/sys/bus/usb/devices/*/` for USB devices
+- [x] 🐧 Linux: Read `/sys/bus/pci/devices/*/` for PCI devices
+- [x] 🐧 Linux: Read `/sys/block/*/` for block device topology
 
 #### Unit Tests
-- [ ] 🧪 Test DMI sysfs parsing
-- [ ] 🧪 Test USB device parsing
-- [ ] 🧪 Test PCI device parsing
+- [x] 🧪 Test DMI sysfs parsing
+- [x] 🧪 Test USB device parsing
+- [x] 🧪 Test PCI device parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `lsusb`
-- [ ] 🔬 🐧 Linux: Verify against `lspci`
+- [x] 🔬 🐧 Linux: Verify against `lsusb`
+- [x] 🔬 🐧 Linux: Verify against `lspci`
 
 ---
 
-### 1.6.7 Process & Resources (5 queries)
+### 1.6.7 Process & Resources (5 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/proc/[pid]/environ` for environment variables
-- [ ] 🐧 Linux: Read `/proc/sysvipc/*` for IPC resources
-- [ ] 🐧 Linux: Read `/proc/[pid]/ns/` for namespaces
-- [ ] 🐧 Linux: Read `/sys/fs/cgroup/` for cgroup limits
-- [ ] 🐧 Linux: Read `/proc/[pid]/status` for capabilities
+- [x] 🐧 Linux: Read `/proc/[pid]/environ` for environment variables
+- [x] 🐧 Linux: Read `/proc/sysvipc/*` for IPC resources
+- [x] 🐧 Linux: Read `/proc/[pid]/ns/` for namespaces
+- [x] 🐧 Linux: Read `/sys/fs/cgroup/` for cgroup limits
+- [x] 🐧 Linux: Read `/proc/[pid]/status` for capabilities
 
 #### Unit Tests
-- [ ] 🧪 Test environ parsing
-- [ ] 🧪 Test sysvipc parsing
-- [ ] 🧪 Test namespace detection
-- [ ] 🧪 Test cgroup parsing
+- [x] 🧪 Test environ parsing
+- [x] 🧪 Test sysvipc parsing
+- [x] 🧪 Test namespace detection
+- [x] 🧪 Test cgroup parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `ipcs`
-- [ ] 🔬 🐧 Linux: Verify against `lsns`
+- [x] 🔬 🐧 Linux: Verify against `ipcs`
+- [x] 🔬 🐧 Linux: Verify against `lsns`
 
 ---
 
-### 1.6.8 System State (6 queries)
+### 1.6.8 System State (6 queries) ✅
 
 #### Implementation
-- [ ] 🐧 Linux: Read `/sys/class/dmi/id/product_name` for VM detection
-- [ ] 🐧 Linux: Check `/proc/cpuinfo` hypervisor flag
-- [ ] 🍎 macOS: Check `sysctl kern.hv_support`
-- [ ] 🪟 Windows: Check WMI for hypervisor
-- [ ] All: Read `/etc/timezone` or equivalent for locale
-- [ ] 🐧 Linux: Parse `timedatectl status` for NTP status
-- [ ] 🐧 Linux: Scan `/var/crash/` for core dumps
-- [ ] 🐧 Linux: Read `/sys/class/power_supply/` for power state
-- [ ] 🐧 Linux: Read `/sys/devices/system/node/` for NUMA topology
+- [x] 🐧 Linux: Read `/sys/class/dmi/id/product_name` for VM detection
+- [x] 🐧 Linux: Check `/proc/cpuinfo` hypervisor flag
+- [x] 🍎 macOS: Check `sysctl kern.hv_support`
+- [x] 🪟 Windows: Check WMI for hypervisor
+- [x] All: Read `/etc/timezone` or equivalent for locale
+- [x] 🐧 Linux: Parse `timedatectl status` for NTP status
+- [x] 🐧 Linux: Scan `/var/crash/` for core dumps
+- [x] 🐧 Linux: Read `/sys/class/power_supply/` for power state
+- [x] 🐧 Linux: Read `/sys/devices/system/node/` for NUMA topology
 
 #### Unit Tests
-- [ ] 🧪 Test VM detection heuristics
-- [ ] 🧪 Test timedatectl parsing
-- [ ] 🧪 Test power supply sysfs parsing
+- [x] 🧪 Test VM detection heuristics
+- [x] 🧪 Test timedatectl parsing
+- [x] 🧪 Test power supply sysfs parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `systemd-detect-virt`
-- [ ] 🔬 🐧 Linux: Verify against `numactl -H`
+- [x] 🔬 🐧 Linux: Verify against `systemd-detect-virt`
+- [x] 🔬 🐧 Linux: Verify against `numactl -H`
 
 ---
 
-## Phase 1.7: SBOM & Software Inventory (32 Queries) 🚧 IN PROGRESS
+## Phase 1.7: SBOM & Software Inventory (31 Queries) 🚧 IN PROGRESS
 
 Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
 
@@ -1415,25 +1417,25 @@ Read application configuration files with rigorous secret redaction.
 
 ## Summary
 
-| Category | Queries | Implementation Tasks | Test Tasks |
-|----------|:-------:|:--------------------:|:----------:|
-| **Phase 1 (MVP)** | 7 | ~70 | ~40 |
-| **Phase 1.5 (Logs)** | 6 | ~25 | ~15 |
-| **Phase 1.6 (Hooks)** | 37 | ~80 | ~50 |
-| **Phase 1.7 (SBOM)** | 31 | ~35 | ~25 |
-| Phase 2 (Enhanced) | 6 | ~30 | ~20 |
-| Phase 3 (Storage) | 5 | ~35 | ~20 |
-| Phase 4 (Network) | 5 | ~40 | ~25 |
-| Phase 5 (Analytics) | 4 | ~20 | ~15 |
-| Phase 6 (Automation) | 5 | ~35 | ~20 |
-| Phase 7 (Security) | 5 | ~30 | ~20 |
-| Phase 8 (Integration) | 4 | ~20 | ~15 |
-| Phase 9 (LLM) | 3 | ~15 | ~10 |
-| **TOTAL** | **106** | **~435** | **~275** |
+| Category | Queries | Status |
+|----------|:-------:|:------:|
+| **Phase 1 (MVP)** | 7 | ✅ Complete |
+| **Phase 1.5 (Logs)** | 6 | ✅ Complete |
+| **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
+| **Phase 1.7 (SBOM)** | 31 | 🚧 2/31 |
+| Phase 2 (Enhanced) | 6 | 📋 Planned |
+| Phase 3 (Storage) | 5 | 📋 Planned |
+| Phase 4 (Network) | 5 | 📋 Planned |
+| Phase 5 (Analytics) | 4 | 📋 Planned |
+| Phase 6 (Automation) | 5 | 📋 Planned |
+| Phase 7 (Security) | 5 | 📋 Planned |
+| Phase 8 (Integration) | 4 | 📋 Planned |
+| Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Progress:**
+**Current Status: 46 queries implemented**
+
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
-- Phase 1.6 (Hooks): ✅ Complete (24/24 queries)
+- Phase 1.6 (Hooks): ✅ Complete (31/31 queries - includes 1.6.1-1.6.8)
 - Phase 1.7 (SBOM): 🚧 In Progress (2/31 queries)
-- Phase 2-9: 📋 Planned (25 queries)
+- Phase 2-9: 📋 Planned (37 queries)
