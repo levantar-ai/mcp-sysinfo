@@ -83,10 +83,8 @@ func (c *Collector) readSharedMemory() []types.SharedMemorySegment {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	// Skip header
-	if scanner.Scan() {
-		// Header line
-	}
+	// Skip header line
+	_ = scanner.Scan()
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -136,10 +134,8 @@ func (c *Collector) readSemaphores() []types.SemaphoreSet {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	// Skip header
-	if scanner.Scan() {
-		// Header line
-	}
+	// Skip header line
+	_ = scanner.Scan()
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -185,10 +181,8 @@ func (c *Collector) readMessageQueues() []types.MessageQueue {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	// Skip header
-	if scanner.Scan() {
-		// Header line
-	}
+	// Skip header line
+	_ = scanner.Scan()
 
 	for scanner.Scan() {
 		line := scanner.Text()
