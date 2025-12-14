@@ -15,6 +15,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
+	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
@@ -40,6 +41,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 1.6.8: System State (scope: state)
 	registerStateTools(s)
+
+	// Phase 1.7: SBOM & Software Inventory (scope: software)
+	registerSoftwareTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -829,6 +833,36 @@ func registerStateTools(s *Server) {
 	}, "state", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := state.NewCollector()
 		result, err := c.GetNUMATopology()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerSoftwareTools(s *Server) {
+	// PATH Executables
+	s.RegisterTool(Tool{
+		Name:        "get_path_executables",
+		Description: "Get executables found in PATH directories",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetPathExecutables()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// System Packages
+	s.RegisterTool(Tool{
+		Name:        "get_system_packages",
+		Description: "Get installed system packages (dpkg, rpm, apk, pacman, brew, chocolatey)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetSystemPackages()
 		if err != nil {
 			return nil, err
 		}

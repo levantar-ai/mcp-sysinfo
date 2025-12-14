@@ -24,6 +24,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
+	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
@@ -247,7 +248,7 @@ EXAMPLES:
     # Test a query directly
     mcp-sysinfo --query get_cpu_info --json
 
-AVAILABLE TOOLS (35):
+AVAILABLE TOOLS (37):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -264,6 +265,9 @@ AVAILABLE TOOLS (35):
     get_arp_table, get_network_stats, get_mounts, get_disk_io,
     get_open_files, get_inode_usage, get_env_vars, get_user_accounts,
     get_sudo_config, get_ssh_config, get_mac_status, get_certificates
+
+  Software Inventory (scope: software):
+    get_path_executables, get_system_packages
 
   Sensitive (scope: sensitive):
     get_auth_logs
@@ -485,6 +489,15 @@ func runQuery(queryName string, jsonOut bool, pid int32) {
 	case "get_numa_topology":
 		c := state.NewCollector()
 		result, err = c.GetNUMATopology()
+
+	// Software queries (Phase 1.7)
+	case "get_path_executables":
+		c := software.NewCollector()
+		result, err = c.GetPathExecutables()
+
+	case "get_system_packages":
+		c := software.NewCollector()
+		result, err = c.GetSystemPackages()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

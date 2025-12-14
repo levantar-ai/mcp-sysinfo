@@ -57,6 +57,9 @@ Each system metric category has its own collector in `internal/`:
 3. Handler instantiates the appropriate collector and returns JSON results
 4. Tools are organized by scope: `core`, `logs`, `hooks`, `sensitive`, `hardware`, `resources`, `state`
 
+### Command Execution (`internal/cmdexec/`)
+All shell command execution goes through `cmdexec.Command()` and `cmdexec.LookPath()`. This wrapper enables mocking in tests via `cmdexec.UseMocks()` and `cmdexec.SetMockOutput()`.
+
 ### Types (`pkg/types/`)
 Shared types for log queries and other cross-package structures.
 

@@ -1070,3 +1070,47 @@ type NUMANode struct {
 	MemoryUsed  uint64 `json:"memory_used"`
 	Distances   []int  `json:"distances,omitempty"` // Distance to other nodes
 }
+
+// ============================================================================
+// Phase 1.7: SBOM & Software Inventory Types
+// ============================================================================
+
+// PathExecutablesResult represents PATH executables query results.
+type PathExecutablesResult struct {
+	Executables []PathExecutable `json:"executables"`
+	Count       int              `json:"count"`
+	PathDirs    []string         `json:"path_dirs"`
+	Timestamp   time.Time        `json:"timestamp"`
+}
+
+// PathExecutable represents an executable found in PATH.
+type PathExecutable struct {
+	Name      string    `json:"name"`
+	Path      string    `json:"path"`
+	Size      int64     `json:"size"`
+	Mode      string    `json:"mode"`
+	ModTime   time.Time `json:"mod_time"`
+	IsSymlink bool      `json:"is_symlink"`
+	Target    string    `json:"target,omitempty"` // Symlink target
+	Version   string    `json:"version,omitempty"`
+}
+
+// SystemPackagesResult represents system packages query results.
+type SystemPackagesResult struct {
+	PackageManager string          `json:"package_manager"` // dpkg, rpm, apk, pacman, brew, chocolatey
+	Packages       []SystemPackage `json:"packages"`
+	Count          int             `json:"count"`
+	Timestamp      time.Time       `json:"timestamp"`
+}
+
+// SystemPackage represents an installed system package.
+type SystemPackage struct {
+	Name         string `json:"name"`
+	Version      string `json:"version"`
+	Architecture string `json:"architecture,omitempty"`
+	Description  string `json:"description,omitempty"`
+	InstallDate  string `json:"install_date,omitempty"`
+	Size         int64  `json:"size,omitempty"`
+	Status       string `json:"status,omitempty"` // installed, config-files, etc.
+	Source       string `json:"source,omitempty"` // Repository/source
+}
