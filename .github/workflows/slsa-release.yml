@@ -1,0 +1,290 @@
+name: SLSA Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: '1.22'
+
+jobs:
+  prepare-build-metadata:
+    name: Prepare Build Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.metadata.outputs.version }}
+      commit: ${{ steps.metadata.outputs.commit }}
+      build_date: ${{ steps.metadata.outputs.build_date }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Generate build metadata
+        id: metadata
+        run: |
+          # Extract version from release tag
+          VERSION="${{ github.event.release.tag_name }}"
+
+          # Get commit SHA from release
+          COMMIT="${{ github.event.release.target_commitish }}"
+
+          # Use ISO 8601 basic format without colons for SLSA compatibility
+          BUILD_DATE=$(date -u +%Y%m%dT%H%M%SZ)
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "commit=${COMMIT}" >> $GITHUB_OUTPUT
+          echo "build_date=${BUILD_DATE}" >> $GITHUB_OUTPUT
+          echo "Generated metadata: version=${VERSION}, commit=${COMMIT}, date=${BUILD_DATE}"
+
+  # ============================================
+  # mcp-sysinfo builds
+  # ============================================
+
+  slsa-mcp-sysinfo-linux-amd64:
+    name: SLSA Build mcp-sysinfo linux-amd64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-sysinfo-linux-amd64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-sysinfo-linux-arm64:
+    name: SLSA Build mcp-sysinfo linux-arm64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-sysinfo-linux-arm64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-sysinfo-darwin-amd64:
+    name: SLSA Build mcp-sysinfo darwin-amd64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-sysinfo-darwin-amd64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-sysinfo-darwin-arm64:
+    name: SLSA Build mcp-sysinfo darwin-arm64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-sysinfo-darwin-arm64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-sysinfo-windows-amd64:
+    name: SLSA Build mcp-sysinfo windows-amd64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-sysinfo-windows-amd64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  # ============================================
+  # mcp-token-server builds
+  # ============================================
+
+  slsa-mcp-token-server-linux-amd64:
+    name: SLSA Build mcp-token-server linux-amd64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-token-server-linux-amd64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-token-server-linux-arm64:
+    name: SLSA Build mcp-token-server linux-arm64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-token-server-linux-arm64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-token-server-darwin-amd64:
+    name: SLSA Build mcp-token-server darwin-amd64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-token-server-darwin-amd64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-token-server-darwin-arm64:
+    name: SLSA Build mcp-token-server darwin-arm64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-token-server-darwin-arm64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  slsa-mcp-token-server-windows-amd64:
+    name: SLSA Build mcp-token-server windows-amd64
+    needs: [prepare-build-metadata]
+    permissions:
+      id-token: write
+      contents: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
+    with:
+      go-version: "1.22"
+      config-file: .slsa-goreleaser/mcp-token-server-windows-amd64.yml
+      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
+      upload-assets: true
+
+  # ============================================
+  # GitHub Attestations
+  # ============================================
+
+  github-attestations:
+    name: Generate GitHub Attestations
+    runs-on: ubuntu-latest
+    needs:
+      - slsa-mcp-sysinfo-linux-amd64
+      - slsa-mcp-sysinfo-linux-arm64
+      - slsa-mcp-sysinfo-darwin-amd64
+      - slsa-mcp-sysinfo-darwin-arm64
+      - slsa-mcp-sysinfo-windows-amd64
+      - slsa-mcp-token-server-linux-amd64
+      - slsa-mcp-token-server-linux-arm64
+      - slsa-mcp-token-server-darwin-amd64
+      - slsa-mcp-token-server-darwin-arm64
+      - slsa-mcp-token-server-windows-amd64
+    permissions:
+      id-token: write
+      contents: write
+      attestations: write
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - name: Download release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Download all binary assets from the release (not .intoto.jsonl files)
+          gh release download ${{ github.event.release.tag_name }} \
+            --repo ${{ github.repository }} \
+            --pattern 'mcp-*' \
+            --skip-existing
+
+          # List downloaded files
+          ls -lh mcp-*
+
+          # Exclude .intoto.jsonl files from attestation (they're already attestations)
+          rm -f *.intoto.jsonl || true
+
+      # mcp-sysinfo attestations
+      - name: Attest mcp-sysinfo-linux-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-linux-amd64
+
+      - name: Attest mcp-sysinfo-linux-arm64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-linux-arm64
+
+      - name: Attest mcp-sysinfo-darwin-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-darwin-amd64
+
+      - name: Attest mcp-sysinfo-darwin-arm64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-darwin-arm64
+
+      - name: Attest mcp-sysinfo-windows-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-windows-amd64
+
+      # mcp-token-server attestations
+      - name: Attest mcp-token-server-linux-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-linux-amd64
+
+      - name: Attest mcp-token-server-linux-arm64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-linux-arm64
+
+      - name: Attest mcp-token-server-darwin-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-darwin-amd64
+
+      - name: Attest mcp-token-server-darwin-arm64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-darwin-arm64
+
+      - name: Attest mcp-token-server-windows-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-windows-amd64
