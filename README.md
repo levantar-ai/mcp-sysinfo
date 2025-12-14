@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.7 In Progress (39 queries implemented)**
+**Status: Phase 1.7 In Progress (46 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -77,7 +77,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_app_logs` | Application-specific logs | ✅ | ✅ | ✅ |
 | `get_event_log` | Windows Event Log | - | - | ✅ |
 
-### Phase 1.6: System Hooks (16/37)
+### Phase 1.6: System Hooks (31/31)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -97,6 +97,21 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_disk_io` | Disk I/O statistics | ✅ | ✅ | ✅ |
 | `get_open_files` | Open file descriptors | ✅ | ✅ | ✅ |
 | `get_inode_usage` | Inode usage | ✅ | ✅ | - |
+| `get_hardware_info` | System/BIOS/motherboard info | ✅ | ✅ | ✅ |
+| `get_usb_devices` | Connected USB devices | ✅ | ✅ | ✅ |
+| `get_pci_devices` | PCI devices | ✅ | ✅ | ✅ |
+| `get_block_devices` | Block device topology | ✅ | ✅ | ✅ |
+| `get_process_environ` | Process environment variables | ✅ | - | - |
+| `get_ipc_resources` | IPC resources (shm, sem, msg) | ✅ | - | - |
+| `get_namespaces` | Linux namespaces | ✅ | - | - |
+| `get_cgroups` | Cgroup limits and usage | ✅ | - | - |
+| `get_capabilities` | Process capabilities | ✅ | - | - |
+| `get_vm_info` | VM/container detection | ✅ | ✅ | ✅ |
+| `get_timezone` | Timezone and locale info | ✅ | ✅ | ✅ |
+| `get_ntp_status` | NTP synchronization status | ✅ | ✅ | ✅ |
+| `get_core_dumps` | Core dump information | ✅ | ✅ | ✅ |
+| `get_power_state` | Power/battery state | ✅ | ✅ | ✅ |
+| `get_numa_topology` | NUMA topology | ✅ | - | - |
 
 ### Phase 1.7: Software Inventory (2/31)
 
@@ -370,7 +385,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 |----------|-------------|
 | **[SECURITY.md](SECURITY.md)** | Security architecture, auth, deployment |
 | [docs/00-overview.md](docs/00-overview.md) | Architecture and design rationale |
-| [docs/08-system-hooks.md](docs/08-system-hooks.md) | Phase 1.6: 37 deep introspection queries |
+| [docs/08-system-hooks.md](docs/08-system-hooks.md) | Phase 1.6: 31 deep introspection queries |
 | [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) | Phase 1.7: Software inventory |
 | [docs/10-query-profiles.md](docs/10-query-profiles.md) | Query profiles for efficient investigations |
 | [docs/11-platform-native-features.md](docs/11-platform-native-features.md) | Platform-specific native APIs (WMI, procfs, IOKit) |
@@ -382,7 +397,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 ```
 Phase 1 (MVP)       ████████████████████  100%  (7/7 queries)
 Phase 1.5 (Logs)    ████████████████████  100%  (6/6 queries)
-Phase 1.6 (Hooks)   ████████████████████  100%  (24/24 queries)
+Phase 1.6 (Hooks)   ████████████████████  100%  (31/31 queries)
 Phase 1.7 (SBOM)    █░░░░░░░░░░░░░░░░░░░    6%  (2/31 queries)
 ```
 
