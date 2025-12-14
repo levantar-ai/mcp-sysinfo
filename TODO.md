@@ -653,6 +653,122 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
+## Phase 1.8: Application Discovery & Configuration (2 Queries) 📋 PLANNED
+
+Dynamic application discovery and secure configuration reading with rigorous redaction.
+
+### 1.8.1 Application Discovery (1 query: `get_applications`)
+
+Automatically discover installed/running applications and their metadata.
+
+#### Implementation
+- [ ] 🐧 Linux: Scan systemd services (`systemctl list-units`)
+- [ ] 🐧 Linux: Check running processes and map to known applications
+- [ ] 🐧 Linux: Probe well-known config paths (`/etc/nginx`, `/etc/apache2`, `/etc/mysql`, etc.)
+- [ ] 🐧 Linux: Check listening ports and correlate to services
+- [ ] 🐧 Linux: Parse package manager for installed server software
+- [ ] 🍎 macOS: Scan launchd services (`launchctl list`)
+- [ ] 🍎 macOS: Check Homebrew services (`brew services list`)
+- [ ] 🍎 macOS: Scan `/Applications` for installed apps
+- [ ] 🍎 macOS: Check running processes
+- [ ] 🪟 Windows: Scan Windows Services (`Get-Service`)
+- [ ] 🪟 Windows: Query IIS metabase for web apps
+- [ ] 🪟 Windows: Check registry for installed applications
+- [ ] 🪟 Windows: Scan running processes
+- [ ] 🪟 Windows: Check SQL Server instances
+- [ ] All: Return structured data: name, type, version, service, status, config_paths, log_paths
+
+#### Application Types to Detect
+- Web Servers: nginx, Apache, IIS, Tomcat, Caddy
+- Databases: MySQL/MariaDB, PostgreSQL, SQL Server, MongoDB, Redis, Elasticsearch
+- Message Queues: RabbitMQ, Kafka, ActiveMQ
+- App Runtimes: PHP-FPM, Node.js, .NET, JVM apps
+- Caching: Memcached, Varnish
+- Mail: Postfix, Exchange
+- Directory: Active Directory, OpenLDAP
+- Containers: Docker, Podman
+- Security: Fail2ban, ModSecurity
+
+#### Unit Tests
+- [ ] 🧪 Test service enumeration parsing
+- [ ] 🧪 Test process-to-application mapping
+- [ ] 🧪 Test config path detection
+- [ ] 🧪 Test version extraction
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify nginx detection when installed
+- [ ] 🔬 🐧 Linux: Verify MySQL detection when installed
+- [ ] 🔬 🪟 Windows: Verify IIS detection when installed
+- [ ] 🔬 🪟 Windows: Verify SQL Server detection when installed
+
+---
+
+### 1.8.2 Application Configuration (1 query: `get_app_config`)
+
+Read application configuration files with rigorous secret redaction.
+
+#### Implementation
+- [ ] All: Accept app name (uses discovered paths) or explicit file path
+- [ ] All: Auto-detect config format by extension and content
+- [ ] All: Parse and validate config structure where possible
+- [ ] All: Apply comprehensive redaction before returning
+- [ ] All: Return: path, format, content (redacted), redaction summary
+
+#### Config Format Parsers
+- [ ] INI / properties files
+- [ ] XML (IIS, Tomcat, .NET web.config)
+- [ ] JSON
+- [ ] YAML
+- [ ] TOML
+- [ ] Nginx conf format
+- [ ] Apache conf format
+- [ ] Key=value / environment files
+
+#### Redaction Patterns (CRITICAL - must be rigorous)
+
+**Key Name Patterns** (case-insensitive):
+- [ ] `password`, `passwd`, `pwd`
+- [ ] `secret`, `private`
+- [ ] `token`, `apikey`, `api_key`, `api-key`
+- [ ] `credential`, `cred`
+- [ ] `auth`, `authentication`
+- [ ] `key` (when followed by `=` or `:`)
+- [ ] `certificate`, `cert` (for private keys)
+- [ ] `connection_string`, `connectionstring`, `connstr`
+
+**Value Patterns**:
+- [ ] Connection strings: `mongodb://`, `mysql://`, `postgres://`, `redis://`, `amqp://`
+- [ ] AWS credentials: `AKIA[A-Z0-9]{16}`, `aws_secret_access_key`
+- [ ] Azure: `AccountKey=`, `SharedAccessSignature=`
+- [ ] GCP: `private_key_id`, `private_key` in JSON
+- [ ] JWT tokens: `eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+`
+- [ ] Bearer tokens: `Bearer [A-Za-z0-9_-]+`
+- [ ] PEM blocks: `-----BEGIN.*PRIVATE KEY-----`
+- [ ] Base64 blobs (long strings that decode to binary)
+- [ ] Hex-encoded secrets (32+ char hex strings)
+
+**Environment Variable References** (flag but don't redact):
+- [ ] `${VAR}`, `$VAR`
+- [ ] `%VAR%` (Windows)
+- [ ] `{{VAR}}` (templates)
+
+#### Unit Tests
+- [ ] 🧪 Test each config format parser
+- [ ] 🧪 Test key name redaction patterns
+- [ ] 🧪 Test value pattern redaction (AWS, connection strings, etc.)
+- [ ] 🧪 Test PEM block redaction
+- [ ] 🧪 Test JWT redaction
+- [ ] 🧪 Test redaction doesn't break config structure
+- [ ] 🧪 Test redaction summary accuracy
+
+#### Integration Tests
+- [ ] 🔬 All: Read nginx.conf and verify passwords redacted
+- [ ] 🔬 All: Read database config and verify credentials redacted
+- [ ] 🔬 🪟 Windows: Read IIS web.config and verify connection strings redacted
+- [ ] 🔬 All: Verify non-sensitive values are NOT redacted
+
+---
+
 ## Phase 2: Enhanced Diagnostics
 
 ### 2.1 GPU Diagnostics
