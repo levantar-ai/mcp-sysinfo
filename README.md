@@ -405,6 +405,8 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.5** | Log Access | ✅ Complete | 6/6 |
 | **1.6** | System Hooks | ✅ Complete | 31/31 |
 | **1.7** | SBOM & Inventory | 🚧 In Progress | 7/31 |
+| **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
+| **1.9** | Triage & Summary | 📋 Planned | 0/25 |
 | 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
@@ -414,9 +416,20 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 51/107 queries (48%)**
+**Implemented: 51/134 queries (38%)**
 
-See [TODO.md](TODO.md) for implementation details.
+### Cross-Platform Architecture
+
+All queries are cross-platform (Linux, macOS, Windows) using only native OS APIs:
+
+| Category | Linux | macOS | Windows |
+|----------|-------|-------|---------|
+| System Info | `/proc`, sysctl | sysctl, IOKit | WMI, Registry |
+| Services | systemd, sysvinit | launchd | SCM, Event Log |
+| Logs | journald, syslog | unified logs | Event Log |
+| Firewall | iptables/nftables | pfctl | NetFirewallRule |
+
+**No external dependencies required.** See [TODO.md](TODO.md) for full implementation details.
 
 ---
 
