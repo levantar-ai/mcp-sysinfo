@@ -399,14 +399,22 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 
 ## Project Status
 
-```
-Phase 1 (MVP)       ████████████████████  100%  (7/7 queries)
-Phase 1.5 (Logs)    ████████████████████  100%  (6/6 queries)
-Phase 1.6 (Hooks)   ████████████████████  100%  (31/31 queries)
-Phase 1.7 (SBOM)    ████░░░░░░░░░░░░░░░░   23%  (7/31 queries)
-```
+| Phase | Focus | Progress | Queries |
+|-------|-------|----------|---------|
+| **1.0** | Core Metrics | ✅ Complete | 7/7 |
+| **1.5** | Log Access | ✅ Complete | 6/6 |
+| **1.6** | System Hooks | ✅ Complete | 31/31 |
+| **1.7** | SBOM & Inventory | 🚧 In Progress | 7/31 |
+| 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
+| 3 | Storage Deep Dive | 📋 Planned | 0/5 |
+| 4 | Network Intelligence | 📋 Planned | 0/5 |
+| 5 | Analytics & Trends | 📋 Planned | 0/4 |
+| 6 | Automation & Alerting | 📋 Planned | 0/5 |
+| 7 | Security & Compliance | 📋 Planned | 0/5 |
+| 8 | Integration & Plugins | 📋 Planned | 0/4 |
+| 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Total: 51 queries implemented**
+**Implemented: 51/107 queries (48%)**
 
 See [TODO.md](TODO.md) for implementation details.
 
