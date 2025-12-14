@@ -520,9 +520,32 @@ Zero-dependency deep system introspection. See [docs/08-system-hooks.md](docs/08
 
 ---
 
-## Phase 1.7: SBOM & Software Inventory (31 Queries) 📋 PLANNED
+## Phase 1.7: SBOM & Software Inventory (32 Queries) 📋 PLANNED
 
 Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
+
+### 1.7.0 PATH Executables (1 query)
+
+#### Implementation
+- [ ] All: Iterate directories in PATH environment variable
+- [ ] All: Find all executable files in each directory
+- [ ] All: Deduplicate (first occurrence wins, like shell behavior)
+- [ ] All: Return list with name, path, and file metadata (size, mtime)
+- [ ] Optional: Attempt version detection via `--version` with timeout
+- [ ] Optional: Categorize by type (script, binary, symlink)
+
+#### Unit Tests
+- [ ] 🧪 Test PATH parsing (colon-separated on Unix, semicolon on Windows)
+- [ ] 🧪 Test executable detection (file permissions on Unix, extensions on Windows)
+- [ ] 🧪 Test deduplication logic
+- [ ] 🧪 Test handling of non-existent PATH directories
+
+#### Integration Tests
+- [ ] 🔬 🐧 Linux: Verify against `which -a` for common commands
+- [ ] 🔬 🍎 macOS: Verify against `which -a` for common commands
+- [ ] 🔬 🪟 Windows: Verify against `where.exe` for common commands
+
+---
 
 ### 1.7.1 System Package Managers (6 queries)
 
