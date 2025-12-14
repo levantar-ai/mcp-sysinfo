@@ -10,6 +10,42 @@ A comprehensive checklist for implementing all features across Linux, macOS, and
 
 ---
 
+## Cross-Platform Architecture
+
+All queries are designed to be **cross-platform** (Linux, macOS, Windows) using only native OS APIs and built-in tools. No external dependencies required.
+
+### Implementation Approach
+
+| Category | Linux | macOS | Windows |
+|----------|-------|-------|---------|
+| **System Info** | `/proc`, `sysctl` | `sysctl`, IOKit | WMI, Registry |
+| **Services** | systemd, sysvinit | launchd | SCM, Event Log |
+| **Logs** | journald, syslog | unified logs | Event Log |
+| **Auth Logs** | `/var/log/auth.log` | unified logs | Security Event Log |
+| **Kernel Events** | `dmesg`, journal | unified logs | System Event Log |
+| **Firewall** | iptables/nftables/ufw | pfctl | `Get-NetFirewallRule` |
+| **Packages** | dpkg/rpm/apk/pacman | brew/pkgutil | choco/winget/wmic |
+
+### Cross-Platform Guarantees
+
+**All queries rely only on:**
+- Native OS logs and APIs
+- Built-in commands (no external binaries)
+- Structured APIs (systemd/dbus, launchd, WMI/PowerShell)
+- Cloud metadata endpoints
+- Reading config files
+
+**No queries require:**
+- Third-party packages or binaries
+- Kernel modules or extensions
+- Background daemons
+- Filesystem indexing
+- Driver-level probing
+
+This is the exact same architectural pattern used for existing CPU/memory/disk/network queries.
+
+---
+
 ## Phase 1: MVP - Core Diagnostics ✅ COMPLETE
 
 ### 1.0.1 CPU Information ✅
@@ -780,6 +816,119 @@ Read application configuration files with rigorous secret redaction.
 
 ---
 
+## Phase 1.9: Triage & Summary Queries (25 Queries) 📋 PLANNED
+
+High-level queries for incident triage, providing summarized views and snapshots. All queries are cross-platform with OS-specific backends.
+
+### 1.9.1 System Overview (4 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_os_info` | OS version, build, kernel | ✅ | ✅ | ✅ |
+| `get_system_profile` | CPU/RAM/disk summary | ✅ | ✅ | ✅ |
+| `get_service_manager_info` | Service manager status | ⚠️ | ⚠️ | ⚠️ |
+| `get_cloud_environment` | Cloud provider detection | ⚠️ | ⚠️ | ⚠️ |
+
+#### Implementation
+- [ ] 🐧 Linux: `/etc/os-release`, `uname`, `/proc`
+- [ ] 🍎 macOS: `sw_vers`, `sysctl`, `system_profiler`
+- [ ] 🪟 Windows: WMI `Win32_OperatingSystem`, Registry
+- [ ] All: Cloud metadata endpoints (169.254.169.254, DMI strings)
+
+---
+
+### 1.9.2 Recent Events (6 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_recent_reboots` | Recent system reboots | ✅ | ✅ | ⚠️ |
+| `get_recent_service_failures` | Failed service restarts | ⚠️ | ⚠️ | ⚠️ |
+| `get_recent_kernel_events` | Kernel warnings/errors | ⚠️ | ⚠️ | ⚠️ |
+| `get_recent_resource_incidents` | OOM, CPU throttle events | ⚠️ | ⚠️ | ⚠️ |
+| `get_recent_config_changes` | Package/config changes | ⚠️ | ⚠️ | ⚠️ |
+| `get_recent_critical_events` | Critical log entries | ⚠️ | ⚠️ | ⚠️ |
+
+#### Implementation
+- [ ] 🐧 Linux: `last`, journald, `dmesg`, package logs
+- [ ] 🍎 macOS: `last`, unified logs, `dmesg`
+- [ ] 🪟 Windows: Event Log (System, Application, Security)
+
+---
+
+### 1.9.3 Service & Scheduling (4 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_failed_units` | Failed services/units | ⚠️ | ⚠️ | ⚠️ |
+| `get_timer_jobs` | Scheduled timers/jobs | ⚠️ | ⚠️ | ⚠️ |
+| `get_service_log_view` | Service-specific logs | ⚠️ | ⚠️ | ⚠️ |
+| `get_deployment_events` | Package install/update logs | ⚠️ | ⚠️ | ⚠️ |
+
+#### Implementation
+- [ ] 🐧 Linux: `systemctl --failed`, `systemctl list-timers`, journald
+- [ ] 🍎 macOS: `launchctl list`, `log show --predicate`
+- [ ] 🪟 Windows: `Get-Service`, Task Scheduler, Event Log
+
+---
+
+### 1.9.4 Security Summary (6 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_auth_failure_summary` | Failed auth attempts | ⚠️ | ⚠️ | ⚠️ |
+| `get_security_basics` | Firewall/SELinux status | ⚠️ | ⚠️ | ⚠️ |
+| `get_ssh_security_summary` | SSH config analysis | ⚠️ | ⚠️ | ⚠️ |
+| `get_admin_account_summary` | Admin/sudo users | ⚠️ | ⚠️ | ⚠️ |
+| `get_exposed_services_summary` | Listening services | ⚠️ | ⚠️ | ⚠️ |
+| `get_top_resource_limits` | ulimit/quota summary | ⚠️ | ⚠️ | ⚠️ |
+
+#### Implementation
+- [ ] 🐧 Linux: `/var/log/auth.log`, `iptables`, `/etc/ssh/sshd_config`, `getent`
+- [ ] 🍎 macOS: unified logs, `pfctl`, `/etc/ssh/sshd_config`, `dscl`
+- [ ] 🪟 Windows: Security Event Log, `Get-NetFirewallRule`, OpenSSH config, `net user`
+
+---
+
+### 1.9.5 Software & Runtime (3 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_recently_installed_software` | Recent package installs | ⚠️ | ⚠️ | ⚠️ |
+| `get_language_runtime_versions` | Python/Node/Go/etc versions | ✅ | ✅ | ✅ |
+| `get_fs_health_summary` | Filesystem health overview | ⚠️ | ⚠️ | ⚠️ |
+
+#### Implementation
+- [ ] 🐧 Linux: dpkg/rpm logs, `python --version`, `df`
+- [ ] 🍎 macOS: brew logs, pkgutil history, `diskutil`
+- [ ] 🪟 Windows: MSI logs, `wmic`, `fsutil`
+
+---
+
+### 1.9.6 Meta Queries (2 queries)
+
+Composite queries that orchestrate multiple sub-queries for comprehensive snapshots.
+
+| Query | Description | Components |
+|-------|-------------|------------|
+| `get_incident_triage_snapshot` | Full incident context | os_info, recent_events, service_failures, auth_failures |
+| `get_security_posture_snapshot` | Security overview | security_basics, exposed_services, admin_accounts, ssh_config |
+
+#### Implementation
+- [ ] All: Orchestrate OS-specific sub-queries
+- [ ] All: Return unified JSON schema across platforms
+- [ ] All: Include cross-references between related data
+
+---
+
+### Cross-Platform Support Legend
+
+- **✅ Fully identical behaviour** - Same output schema, same data sources
+- **⚠️ OS-specific backends** - Same output schema, different implementation per OS
+
+All ⚠️ queries follow the existing pattern used for CPU/memory/disk/network queries.
+
+---
+
 ## Phase 2: Enhanced Diagnostics
 
 ### 2.1 GPU Diagnostics
@@ -1423,6 +1572,8 @@ Read application configuration files with rigorous secret redaction.
 | **Phase 1.5 (Logs)** | 6 | ✅ Complete |
 | **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
 | **Phase 1.7 (SBOM)** | 31 | 🚧 7/31 |
+| **Phase 1.8 (App Config)** | 2 | 📋 Planned |
+| **Phase 1.9 (Triage)** | 25 | 📋 Planned |
 | Phase 2 (Enhanced) | 6 | 📋 Planned |
 | Phase 3 (Storage) | 5 | 📋 Planned |
 | Phase 4 (Network) | 5 | 📋 Planned |
@@ -1432,10 +1583,11 @@ Read application configuration files with rigorous secret redaction.
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 51 queries implemented**
+**Current Status: 51/134 queries implemented**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
-- Phase 1.6 (Hooks): ✅ Complete (31/31 queries - includes 1.6.1-1.6.8)
+- Phase 1.6 (Hooks): ✅ Complete (31/31 queries)
 - Phase 1.7 (SBOM): 🚧 In Progress (7/31 queries)
+- Phase 1.8-1.9: 📋 Planned (27 queries)
 - Phase 2-9: 📋 Planned (37 queries)
