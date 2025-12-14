@@ -2,7 +2,6 @@ package resources
 
 import (
 	"os"
-	"runtime"
 	"testing"
 )
 
@@ -14,9 +13,6 @@ func TestNewCollector(t *testing.T) {
 }
 
 func TestGetProcessEnviron(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("process environ not available on Windows")
-	}
 	c := NewCollector()
 	// Get environ for current process
 	pid := int32(os.Getpid())
@@ -72,9 +68,6 @@ func TestGetCgroups(t *testing.T) {
 }
 
 func TestGetCapabilities(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("capabilities not available on Windows")
-	}
 	c := NewCollector()
 	// Get capabilities for current process
 	pid := int32(os.Getpid())

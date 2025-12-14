@@ -3,15 +3,18 @@
 package resources
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
-// getProcessEnviron returns a not implemented error on Windows.
+// getProcessEnviron returns empty result on Windows (Linux-specific feature).
 func (c *Collector) getProcessEnviron(pid int32) (*types.ProcessEnvironResult, error) {
-	return nil, fmt.Errorf("process environ not available on Windows")
+	return &types.ProcessEnvironResult{
+		PID:       pid,
+		Environ:   make(map[string]string),
+		Timestamp: time.Now(),
+	}, nil
 }
 
 // getIPCResources returns empty result on Windows.
@@ -39,7 +42,10 @@ func (c *Collector) getCgroups() (*types.CgroupsResult, error) {
 	}, nil
 }
 
-// getCapabilities returns a not implemented error on Windows.
+// getCapabilities returns empty result on Windows (Linux-specific feature).
 func (c *Collector) getCapabilities(pid int32) (*types.CapabilitiesResult, error) {
-	return nil, fmt.Errorf("capabilities not available on Windows")
+	return &types.CapabilitiesResult{
+		PID:       pid,
+		Timestamp: time.Now(),
+	}, nil
 }
