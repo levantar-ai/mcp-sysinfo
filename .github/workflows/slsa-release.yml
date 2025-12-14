@@ -85,9 +85,86 @@ jobs:
       upload-assets: true
       private-repository: true
 
-  # NOTE: Darwin builds removed from SLSA workflow - SLSA builder runs on Ubuntu
-  # and cannot cross-compile darwin with CGO. Darwin builds are done natively
-  # in ci.yml on macOS runners.
+  # ============================================
+  # Darwin builds (native on macOS - no SLSA provenance)
+  # SLSA builder only runs on Ubuntu, can't cross-compile CGO
+  # ============================================
+
+  build-mcp-sysinfo-darwin-amd64:
+    name: Build mcp-sysinfo darwin-amd64
+    runs-on: macos-latest
+    needs: [prepare-build-metadata]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build
+        env:
+          CGO_ENABLED: 1
+          GOOS: darwin
+          GOARCH: amd64
+        run: |
+          go build -trimpath \
+            -ldflags="-s -w -X main.version=${{ needs.prepare-build-metadata.outputs.version }} -X main.commit=${{ needs.prepare-build-metadata.outputs.commit }} -X main.date=${{ needs.prepare-build-metadata.outputs.build_date }}" \
+            -o mcp-sysinfo-darwin-amd64 \
+            ./cmd/mcp-sysinfo
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name || inputs.tag }} \
+            mcp-sysinfo-darwin-amd64 \
+            --repo ${{ github.repository }} \
+            --clobber
+
+  build-mcp-sysinfo-darwin-arm64:
+    name: Build mcp-sysinfo darwin-arm64
+    runs-on: macos-latest
+    needs: [prepare-build-metadata]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build
+        env:
+          CGO_ENABLED: 1
+          GOOS: darwin
+          GOARCH: arm64
+        run: |
+          go build -trimpath \
+            -ldflags="-s -w -X main.version=${{ needs.prepare-build-metadata.outputs.version }} -X main.commit=${{ needs.prepare-build-metadata.outputs.commit }} -X main.date=${{ needs.prepare-build-metadata.outputs.build_date }}" \
+            -o mcp-sysinfo-darwin-arm64 \
+            ./cmd/mcp-sysinfo
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name || inputs.tag }} \
+            mcp-sysinfo-darwin-arm64 \
+            --repo ${{ github.repository }} \
+            --clobber
 
   slsa-mcp-sysinfo-windows-amd64:
     name: SLSA Build mcp-sysinfo windows-amd64
@@ -138,7 +215,81 @@ jobs:
       upload-assets: true
       private-repository: true
 
-  # NOTE: Darwin builds removed - see note above
+  build-mcp-token-server-darwin-amd64:
+    name: Build mcp-token-server darwin-amd64
+    runs-on: macos-latest
+    needs: [prepare-build-metadata]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build
+        env:
+          CGO_ENABLED: 1
+          GOOS: darwin
+          GOARCH: amd64
+        run: |
+          go build -trimpath \
+            -ldflags="-s -w -X main.version=${{ needs.prepare-build-metadata.outputs.version }} -X main.commit=${{ needs.prepare-build-metadata.outputs.commit }} -X main.date=${{ needs.prepare-build-metadata.outputs.build_date }}" \
+            -o mcp-token-server-darwin-amd64 \
+            ./cmd/mcp-token-server
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name || inputs.tag }} \
+            mcp-token-server-darwin-amd64 \
+            --repo ${{ github.repository }} \
+            --clobber
+
+  build-mcp-token-server-darwin-arm64:
+    name: Build mcp-token-server darwin-arm64
+    runs-on: macos-latest
+    needs: [prepare-build-metadata]
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Build
+        env:
+          CGO_ENABLED: 1
+          GOOS: darwin
+          GOARCH: arm64
+        run: |
+          go build -trimpath \
+            -ldflags="-s -w -X main.version=${{ needs.prepare-build-metadata.outputs.version }} -X main.commit=${{ needs.prepare-build-metadata.outputs.commit }} -X main.date=${{ needs.prepare-build-metadata.outputs.build_date }}" \
+            -o mcp-token-server-darwin-arm64 \
+            ./cmd/mcp-token-server
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name || inputs.tag }} \
+            mcp-token-server-darwin-arm64 \
+            --repo ${{ github.repository }} \
+            --clobber
 
   slsa-mcp-token-server-windows-amd64:
     name: SLSA Build mcp-token-server windows-amd64
@@ -156,6 +307,224 @@ jobs:
       private-repository: true
 
   # ============================================
+  # Smoke Tests - verify binaries work on each platform
+  # ============================================
+
+  smoke-test-linux:
+    name: Smoke Test Linux
+    runs-on: ubuntu-latest
+    needs:
+      - slsa-mcp-sysinfo-linux-amd64
+    steps:
+      - name: Download binary from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download ${{ github.event.release.tag_name || inputs.tag }} \
+            --repo ${{ github.repository }} \
+            --pattern 'mcp-sysinfo-linux-amd64' \
+            --skip-existing
+          chmod +x mcp-sysinfo-linux-amd64
+
+      - name: Test version
+        run: ./mcp-sysinfo-linux-amd64 --version
+
+      - name: Test core metrics
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_cpu_info --json
+          ./mcp-sysinfo-linux-amd64 --query get_memory_info --json
+          ./mcp-sysinfo-linux-amd64 --query get_disk_info --json
+          ./mcp-sysinfo-linux-amd64 --query get_network_info --json
+          ./mcp-sysinfo-linux-amd64 --query get_processes --json
+          ./mcp-sysinfo-linux-amd64 --query get_uptime --json
+          ./mcp-sysinfo-linux-amd64 --query get_temperature --json || true
+
+      - name: Test log access
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_journal_logs --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_syslog --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_kernel_logs --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_auth_logs --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_app_logs --json || true
+
+      - name: Test scheduled tasks
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_cron_jobs --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_startup_items --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_systemd_services --json || true
+
+      - name: Test kernel
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_kernel_modules --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_loaded_drivers --json || true
+
+      - name: Test network config
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_dns_servers --json
+          ./mcp-sysinfo-linux-amd64 --query get_routes --json
+          ./mcp-sysinfo-linux-amd64 --query get_firewall_rules --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_listening_ports --json
+          ./mcp-sysinfo-linux-amd64 --query get_arp_table --json
+          ./mcp-sysinfo-linux-amd64 --query get_network_stats --json
+
+      - name: Test filesystem
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_mounts --json
+          ./mcp-sysinfo-linux-amd64 --query get_disk_io --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_open_files --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_inode_usage --json
+
+      - name: Test security config
+        run: |
+          ./mcp-sysinfo-linux-amd64 --query get_env_vars --json
+          ./mcp-sysinfo-linux-amd64 --query get_user_accounts --json
+          ./mcp-sysinfo-linux-amd64 --query get_sudo_config --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_ssh_config --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_mac_status --json || true
+          ./mcp-sysinfo-linux-amd64 --query get_certificates --json || true
+
+  smoke-test-darwin:
+    name: Smoke Test Darwin
+    runs-on: macos-latest
+    needs:
+      - build-mcp-sysinfo-darwin-arm64
+    steps:
+      - name: Download binary from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download ${{ github.event.release.tag_name || inputs.tag }} \
+            --repo ${{ github.repository }} \
+            --pattern 'mcp-sysinfo-darwin-arm64' \
+            --skip-existing
+          chmod +x mcp-sysinfo-darwin-arm64
+
+      - name: Test version
+        run: ./mcp-sysinfo-darwin-arm64 --version
+
+      - name: Test core metrics
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_cpu_info --json
+          ./mcp-sysinfo-darwin-arm64 --query get_memory_info --json
+          ./mcp-sysinfo-darwin-arm64 --query get_disk_info --json
+          ./mcp-sysinfo-darwin-arm64 --query get_network_info --json
+          ./mcp-sysinfo-darwin-arm64 --query get_processes --json
+          ./mcp-sysinfo-darwin-arm64 --query get_uptime --json
+          ./mcp-sysinfo-darwin-arm64 --query get_temperature --json || true
+
+      - name: Test log access
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_syslog --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_kernel_logs --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_auth_logs --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_app_logs --json || true
+
+      - name: Test scheduled tasks
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_cron_jobs --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_startup_items --json || true
+
+      - name: Test kernel
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_loaded_drivers --json || true
+
+      - name: Test network config
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_dns_servers --json
+          ./mcp-sysinfo-darwin-arm64 --query get_routes --json
+          ./mcp-sysinfo-darwin-arm64 --query get_firewall_rules --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_listening_ports --json
+          ./mcp-sysinfo-darwin-arm64 --query get_arp_table --json
+          ./mcp-sysinfo-darwin-arm64 --query get_network_stats --json
+
+      - name: Test filesystem
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_mounts --json
+          ./mcp-sysinfo-darwin-arm64 --query get_disk_io --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_open_files --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_inode_usage --json
+
+      - name: Test security config
+        run: |
+          ./mcp-sysinfo-darwin-arm64 --query get_env_vars --json
+          ./mcp-sysinfo-darwin-arm64 --query get_user_accounts --json
+          ./mcp-sysinfo-darwin-arm64 --query get_sudo_config --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_ssh_config --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_mac_status --json || true
+          ./mcp-sysinfo-darwin-arm64 --query get_certificates --json || true
+
+  smoke-test-windows:
+    name: Smoke Test Windows
+    runs-on: windows-latest
+    needs:
+      - slsa-mcp-sysinfo-windows-amd64
+    steps:
+      - name: Download binary from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release download ${{ github.event.release.tag_name || inputs.tag }} \
+            --repo ${{ github.repository }} \
+            --pattern 'mcp-sysinfo-windows-amd64' \
+            --skip-existing
+
+      - name: Test version
+        run: .\mcp-sysinfo-windows-amd64 --version
+
+      - name: Test core metrics
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_cpu_info --json
+          .\mcp-sysinfo-windows-amd64 --query get_memory_info --json
+          .\mcp-sysinfo-windows-amd64 --query get_disk_info --json
+          .\mcp-sysinfo-windows-amd64 --query get_network_info --json
+          .\mcp-sysinfo-windows-amd64 --query get_processes --json
+          .\mcp-sysinfo-windows-amd64 --query get_uptime --json
+          .\mcp-sysinfo-windows-amd64 --query get_temperature --json
+        continue-on-error: true
+
+      - name: Test log access
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_event_log --json
+          .\mcp-sysinfo-windows-amd64 --query get_app_logs --json
+        continue-on-error: true
+
+      - name: Test scheduled tasks
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_scheduled_tasks --json
+          .\mcp-sysinfo-windows-amd64 --query get_startup_items --json
+        continue-on-error: true
+
+      - name: Test kernel/drivers
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_loaded_drivers --json
+        continue-on-error: true
+
+      - name: Test network config
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_dns_servers --json
+          .\mcp-sysinfo-windows-amd64 --query get_routes --json
+          .\mcp-sysinfo-windows-amd64 --query get_firewall_rules --json
+          .\mcp-sysinfo-windows-amd64 --query get_listening_ports --json
+          .\mcp-sysinfo-windows-amd64 --query get_arp_table --json
+          .\mcp-sysinfo-windows-amd64 --query get_network_stats --json
+        continue-on-error: true
+
+      - name: Test filesystem
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_mounts --json
+          .\mcp-sysinfo-windows-amd64 --query get_disk_io --json
+          .\mcp-sysinfo-windows-amd64 --query get_open_files --json
+        continue-on-error: true
+
+      - name: Test security config
+        run: |
+          .\mcp-sysinfo-windows-amd64 --query get_env_vars --json
+          .\mcp-sysinfo-windows-amd64 --query get_user_accounts --json
+          .\mcp-sysinfo-windows-amd64 --query get_certificates --json
+        continue-on-error: true
+
+  # ============================================
   # GitHub Attestations
   # ============================================
 
@@ -166,9 +535,16 @@ jobs:
       - slsa-mcp-sysinfo-linux-amd64
       - slsa-mcp-sysinfo-linux-arm64
       - slsa-mcp-sysinfo-windows-amd64
+      - build-mcp-sysinfo-darwin-amd64
+      - build-mcp-sysinfo-darwin-arm64
       - slsa-mcp-token-server-linux-amd64
       - slsa-mcp-token-server-linux-arm64
       - slsa-mcp-token-server-windows-amd64
+      - build-mcp-token-server-darwin-amd64
+      - build-mcp-token-server-darwin-arm64
+      - smoke-test-linux
+      - smoke-test-darwin
+      - smoke-test-windows
     permissions:
       id-token: write
       contents: write
@@ -206,7 +582,15 @@ jobs:
         with:
           subject-path: mcp-sysinfo-linux-arm64
 
-      # NOTE: Darwin attestations removed - darwin builds not in SLSA workflow
+      - name: Attest mcp-sysinfo-darwin-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-darwin-amd64
+
+      - name: Attest mcp-sysinfo-darwin-arm64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-sysinfo-darwin-arm64
 
       - name: Attest mcp-sysinfo-windows-amd64
         uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
@@ -224,7 +608,15 @@ jobs:
         with:
           subject-path: mcp-token-server-linux-arm64
 
-      # NOTE: Darwin attestations removed - darwin builds not in SLSA workflow
+      - name: Attest mcp-token-server-darwin-amd64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-darwin-amd64
+
+      - name: Attest mcp-token-server-darwin-arm64
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: mcp-token-server-darwin-arm64
 
       - name: Attest mcp-token-server-windows-amd64
         uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
