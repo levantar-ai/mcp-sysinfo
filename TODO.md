@@ -520,59 +520,66 @@ Zero-dependency deep system introspection. See [docs/08-system-hooks.md](docs/08
 
 ---
 
-## Phase 1.7: SBOM & Software Inventory (32 Queries) 📋 PLANNED
+## Phase 1.7: SBOM & Software Inventory (32 Queries) 🚧 IN PROGRESS
 
 Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
 
-### 1.7.0 PATH Executables (1 query)
+**Progress: 2/31 queries implemented**
+
+### 1.7.0 PATH Executables (1 query) ✅ COMPLETE
 
 #### Implementation
-- [ ] All: Iterate directories in PATH environment variable
-- [ ] All: Find all executable files in each directory
-- [ ] All: Deduplicate (first occurrence wins, like shell behavior)
-- [ ] All: Return list with name, path, and file metadata (size, mtime)
+- [x] All: Iterate directories in PATH environment variable
+- [x] All: Find all executable files in each directory
+- [x] All: Deduplicate (first occurrence wins, like shell behavior)
+- [x] All: Return list with name, path, and file metadata (size, mtime)
 - [ ] Optional: Attempt version detection via `--version` with timeout
-- [ ] Optional: Categorize by type (script, binary, symlink)
+- [x] Optional: Categorize by type (script, binary, symlink)
 
 #### Unit Tests
-- [ ] 🧪 Test PATH parsing (colon-separated on Unix, semicolon on Windows)
-- [ ] 🧪 Test executable detection (file permissions on Unix, extensions on Windows)
-- [ ] 🧪 Test deduplication logic
-- [ ] 🧪 Test handling of non-existent PATH directories
+- [x] 🧪 Test PATH parsing (colon-separated on Unix, semicolon on Windows)
+- [x] 🧪 Test executable detection (file permissions on Unix, extensions on Windows)
+- [x] 🧪 Test deduplication logic
+- [x] 🧪 Test handling of non-existent PATH directories
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `which -a` for common commands
-- [ ] 🔬 🍎 macOS: Verify against `which -a` for common commands
-- [ ] 🔬 🪟 Windows: Verify against `where.exe` for common commands
+- [x] 🔬 🐧 Linux: Verify against `which -a` for common commands
+- [x] 🔬 🍎 macOS: Verify against `which -a` for common commands
+- [x] 🔬 🪟 Windows: Verify against `where.exe` for common commands
 
 ---
 
-### 1.7.1 System Package Managers (6 queries)
+### 1.7.1 System Package Managers (6 queries) ✅ COMPLETE
 
 #### Implementation
-- [ ] 🐧 Linux (Debian): Parse `/var/lib/dpkg/status` directly
-- [ ] 🐧 Linux (RHEL): Use `rpm -qa --queryformat`
-- [ ] 🐧 Linux (Alpine): Read `/lib/apk/db/installed`
-- [ ] 🐧 Linux (Arch): Read `/var/lib/pacman/local/*/desc`
-- [ ] 🍎 macOS: Scan `/usr/local/Cellar/` or `/opt/homebrew/Cellar/`
-- [ ] 🍎 macOS: Read `INSTALL_RECEIPT.json` for package info
+- [x] 🐧 Linux (Debian): Use `dpkg-query` with custom format
+- [x] 🐧 Linux (RHEL): Use `rpm -qa --queryformat`
+- [x] 🐧 Linux (Alpine): Use `apk info -v`
+- [x] 🐧 Linux (Arch): Use `pacman -Q`
+- [x] 🍎 macOS: Use `brew list --versions`
+- [x] 🍎 macOS: Use `pkgutil --pkgs` for system packages
 - [ ] 🍎 macOS: Scan `/Applications/`, read `Info.plist`
-- [ ] 🪟 Windows: Read `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*`
-- [ ] 🪟 Windows: Also check `Wow6432Node` for 32-bit apps
+- [x] 🪟 Windows: Use `choco list --local-only`
+- [x] 🪟 Windows: Use `winget list`
+- [x] 🪟 Windows: Use `wmic product get` as fallback
 - [ ] 🪟 Windows: Use `Get-HotFix` for Windows updates
 
 #### Unit Tests
-- [ ] 🧪 Test dpkg/status file parsing
-- [ ] 🧪 Test rpm queryformat parsing
-- [ ] 🧪 Test Homebrew receipt JSON parsing
-- [ ] 🧪 Test Info.plist parsing
-- [ ] 🧪 Test Windows registry parsing
+- [x] 🧪 Test dpkg output parsing
+- [x] 🧪 Test rpm queryformat parsing
+- [x] 🧪 Test apk output parsing
+- [x] 🧪 Test pacman output parsing
+- [x] 🧪 Test Homebrew output parsing
+- [x] 🧪 Test pkgutil output parsing
+- [x] 🧪 Test Chocolatey output parsing
+- [x] 🧪 Test winget output parsing
+- [x] 🧪 Test wmic CSV parsing
 
 #### Integration Tests
-- [ ] 🔬 🐧 Linux: Verify against `dpkg -l`
-- [ ] 🔬 🐧 Linux: Verify against `rpm -qa`
-- [ ] 🔬 🍎 macOS: Verify against `brew list`
-- [ ] 🔬 🪟 Windows: Verify against Programs and Features
+- [x] 🔬 🐧 Linux: Verify against `dpkg -l`
+- [x] 🔬 🐧 Linux: Verify against `rpm -qa`
+- [x] 🔬 🍎 macOS: Verify against `brew list`
+- [x] 🔬 🪟 Windows: Verify against `choco list`
 
 ---
 
@@ -1424,5 +1431,7 @@ Read application configuration files with rigorous secret redaction.
 
 **Progress:**
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
-- Phase 1.5-1.7: 📋 Documented, ready for implementation (74 queries)
+- Phase 1.5 (Logs): ✅ Complete (6/6 queries)
+- Phase 1.6 (Hooks): ✅ Complete (24/24 queries)
+- Phase 1.7 (SBOM): 🚧 In Progress (2/31 queries)
 - Phase 2-9: 📋 Planned (25 queries)

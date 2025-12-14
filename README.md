@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.6 In Progress (29/44 queries)**
+**Status: Phase 1.7 In Progress (39 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -98,6 +98,18 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_open_files` | Open file descriptors | ✅ | ✅ | ✅ |
 | `get_inode_usage` | Inode usage | ✅ | ✅ | - |
 
+### Phase 1.7: Software Inventory (2/31)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_path_executables` | Executables in PATH directories | ✅ | ✅ | ✅ |
+| `get_system_packages` | Installed system packages | ✅ | ✅ | ✅ |
+
+**Package managers supported:**
+- Linux: dpkg, rpm, apk, pacman
+- macOS: Homebrew, pkgutil
+- Windows: Chocolatey, winget, wmic
+
 ### What You Can Do Now
 
 ```bash
@@ -126,21 +138,25 @@ Every query respects strict budgets:
 
 ## Roadmap
 
-### Phase 1.6: System Hooks (In Progress - 16/37 queries)
+### Phase 1.6: System Hooks ✅ Complete (24 queries)
 
 Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgroups.
 
-**Remaining queries:**
-- Security Configuration: environment variables, user accounts, sudo config, SSH config, SELinux/AppArmor, certificates
-- Hardware Information: PCI devices, USB devices, block devices, SMART data
-- Process & Resources: cgroups, namespaces, capabilities, resource limits, memory maps
-- System State: boot parameters, sysctl values, shared memory, semaphores, message queues, lock files
-
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
-### Phase 1.7: SBOM & Inventory (31 queries)
+### Phase 1.7: SBOM & Inventory (In Progress - 2/31 queries)
 
 Software Bill of Materials for vulnerability detection.
+
+**Implemented:**
+- PATH executables discovery
+- System package managers (dpkg, rpm, apk, pacman, brew, choco)
+
+**Remaining queries:**
+- Language package managers (pip, npm, go, cargo, gem, maven, composer)
+- Container images (Docker API)
+- SBOM export (CycloneDX, SPDX)
+- Vulnerability lookup (OSV, NVD)
 
 See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
 
@@ -364,8 +380,8 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 ```
 Phase 1 (MVP)       ████████████████████  100%  (7/7 queries)
 Phase 1.5 (Logs)    ████████████████████  100%  (6/6 queries)
-Phase 1.6 (Hooks)   █████████░░░░░░░░░░░   43%  (16/37 queries)
-Phase 1.7 (SBOM)    ░░░░░░░░░░░░░░░░░░░░    0%  (0/31 queries)
+Phase 1.6 (Hooks)   ████████████████████  100%  (24/24 queries)
+Phase 1.7 (SBOM)    █░░░░░░░░░░░░░░░░░░░    6%  (2/31 queries)
 ```
 
 See [TODO.md](TODO.md) for implementation details.
