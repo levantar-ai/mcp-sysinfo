@@ -68,6 +68,7 @@ jobs:
       config-file: .slsa-goreleaser/mcp-sysinfo-linux-amd64.yml
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
+      private-repository: true
 
   slsa-mcp-sysinfo-linux-arm64:
     name: SLSA Build mcp-sysinfo linux-arm64
@@ -82,6 +83,7 @@ jobs:
       config-file: .slsa-goreleaser/mcp-sysinfo-linux-arm64.yml
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
+      private-repository: true
 
   # NOTE: Darwin builds removed from SLSA workflow - SLSA builder runs on Ubuntu
   # and cannot cross-compile darwin with CGO. Darwin builds are done natively
@@ -100,6 +102,7 @@ jobs:
       config-file: .slsa-goreleaser/mcp-sysinfo-windows-amd64.yml
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
+      private-repository: true
 
   # ============================================
   # mcp-token-server builds
@@ -118,6 +121,7 @@ jobs:
       config-file: .slsa-goreleaser/mcp-token-server-linux-amd64.yml
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
+      private-repository: true
 
   slsa-mcp-token-server-linux-arm64:
     name: SLSA Build mcp-token-server linux-arm64
@@ -132,6 +136,7 @@ jobs:
       config-file: .slsa-goreleaser/mcp-token-server-linux-arm64.yml
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
+      private-repository: true
 
   # NOTE: Darwin builds removed - see note above
 
@@ -148,6 +153,7 @@ jobs:
       config-file: .slsa-goreleaser/mcp-token-server-windows-amd64.yml
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
+      private-repository: true
 
   # ============================================
   # GitHub Attestations
