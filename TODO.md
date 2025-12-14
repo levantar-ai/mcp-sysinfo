@@ -528,6 +528,8 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ### 1.7.0 PATH Executables (1 query) ✅ COMPLETE
 
+> ⚠️ **Scope Limitation**: This query only scans directories in the PATH environment variable. It does **not** perform a deep filesystem scan or index all executables on the system. This is intentional for performance and security reasons. For complete software inventory, use `get_system_packages`.
+
 #### Implementation
 - [x] All: Iterate directories in PATH environment variable
 - [x] All: Find all executable files in each directory
