@@ -78,7 +78,11 @@ func main() {
 
 	// Direct query mode (for testing/debugging)
 	if *query != "" {
-		runQuery(*query, *jsonOutput, int32(*pid))
+		pidVal := int32(0)
+		if *pid > 0 {
+			pidVal = int32(*pid) // #nosec G115 -- checked for positive
+		}
+		runQuery(*query, *jsonOutput, pidVal)
 		os.Exit(0)
 	}
 
