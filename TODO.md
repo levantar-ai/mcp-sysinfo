@@ -929,6 +929,100 @@ All ⚠️ queries follow the existing pattern used for CPU/memory/disk/network 
 
 ---
 
+## Phase 1.10: Windows Enterprise Features (15 Queries) 📋 PLANNED
+
+Windows-specific queries for enterprise environments. These queries are Windows-only but follow the same zero-dependency architecture using native APIs (WMI, Registry, COM).
+
+### 1.10.1 Registry Queries (3 queries)
+
+| Query | Description | API |
+|-------|-------------|-----|
+| `get_registry_key` | Read registry key and values | `RegOpenKeyEx`, `RegQueryValueEx` |
+| `get_registry_tree` | Enumerate subkeys recursively | `RegEnumKeyEx`, `RegEnumValue` |
+| `get_registry_security` | Key permissions and ownership | `RegGetKeySecurity` |
+
+#### Implementation
+- [ ] 🪟 Read from HKLM, HKCU, HKCR, HKU hives
+- [ ] 🪟 Support REG_SZ, REG_DWORD, REG_BINARY, REG_MULTI_SZ types
+- [ ] 🪟 Parse security descriptors (owner, DACL, SACL)
+- [ ] 🪟 Handle access denied gracefully
+- [ ] 🪟 Support path wildcards for discovery
+
+#### Common Registry Paths for Diagnostics
+- `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run` - Startup programs
+- `HKLM\SYSTEM\CurrentControlSet\Services` - Windows services
+- `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion` - OS version details
+- `HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment` - System environment
+
+---
+
+### 1.10.2 DCOM/COM Security (4 queries)
+
+| Query | Description | API |
+|-------|-------------|-----|
+| `get_dcom_applications` | List registered DCOM apps | Registry + `CoGetClassObject` |
+| `get_dcom_permissions` | Launch/access permissions | `CoGetSecurityDescriptor` |
+| `get_dcom_identities` | RunAs identities per app | Registry `AppID` keys |
+| `get_com_security_defaults` | Machine-wide COM security | `CoGetDefaultSecurity` |
+
+#### Implementation
+- [ ] 🪟 Read `HKCR\AppID\{GUID}` for DCOM application registration
+- [ ] 🪟 Parse `LaunchPermission` and `AccessPermission` binary values
+- [ ] 🪟 Read `RunAs` identity (Interactive User, Launching User, specific account)
+- [ ] 🪟 Check `HKLM\SOFTWARE\Microsoft\Ole` for machine defaults
+- [ ] 🪟 Decode security descriptors to human-readable ACLs
+- [ ] 🪟 Identify DCOM apps running as SYSTEM or with elevated privileges
+
+#### Security Considerations
+- Flag DCOM apps with weak permissions (Everyone: Allow)
+- Identify apps running as LocalSystem unnecessarily
+- Check for anonymous access enabled
+
+---
+
+### 1.10.3 IIS Web Server (8 queries)
+
+| Query | Description | API |
+|-------|-------------|-----|
+| `get_iis_sites` | List all IIS websites | `Microsoft.Web.Administration` / WMI |
+| `get_iis_app_pools` | Application pool configuration | `Microsoft.Web.Administration` |
+| `get_iis_bindings` | Site bindings (ports, hostnames, SSL) | WMI `IIsWebServerSetting` |
+| `get_iis_virtual_dirs` | Virtual directories and applications | `Microsoft.Web.Administration` |
+| `get_iis_handlers` | Handler mappings | `applicationHost.config` |
+| `get_iis_modules` | Installed IIS modules | `applicationHost.config` |
+| `get_iis_ssl_certs` | SSL certificate bindings | `netsh http show sslcert` |
+| `get_iis_auth_config` | Authentication settings per site | `web.config` parsing |
+
+#### Implementation
+- [ ] 🪟 Read `%SystemRoot%\System32\inetsrv\config\applicationHost.config`
+- [ ] 🪟 Parse site bindings, protocols, physical paths
+- [ ] 🪟 Read app pool identity, recycling settings, process model
+- [ ] 🪟 Check handler mappings for security (CGI, ISAPI)
+- [ ] 🪟 Enumerate installed modules (authentication, compression, etc.)
+- [ ] 🪟 Parse `web.config` files with redaction of connection strings
+- [ ] 🪟 Check SSL certificate expiry and binding configuration
+- [ ] 🪟 Support IIS 7.5, 8.0, 8.5, 10.0
+
+#### IIS Security Checks
+- [ ] 🪟 Identify sites running as LocalSystem
+- [ ] 🪟 Check for directory browsing enabled
+- [ ] 🪟 Verify SSL/TLS configuration (weak ciphers)
+- [ ] 🪟 Check authentication modes (Anonymous, Windows, Basic)
+- [ ] 🪟 Identify handler mappings allowing script execution
+
+#### Unit Tests
+- [ ] 🧪 Test applicationHost.config parsing
+- [ ] 🧪 Test web.config parsing with redaction
+- [ ] 🧪 Test binding parsing (HTTP, HTTPS, net.tcp)
+- [ ] 🧪 Test app pool identity parsing
+
+#### Integration Tests
+- [ ] 🔬 🪟 Verify against IIS Manager UI
+- [ ] 🔬 🪟 Verify against `appcmd list site`
+- [ ] 🔬 🪟 Verify SSL bindings against `netsh http show sslcert`
+
+---
+
 ## Phase 2: Enhanced Diagnostics
 
 ### 2.1 GPU Diagnostics
@@ -1574,6 +1668,7 @@ All ⚠️ queries follow the existing pattern used for CPU/memory/disk/network 
 | **Phase 1.7 (SBOM)** | 31 | 🚧 7/31 |
 | **Phase 1.8 (App Config)** | 2 | 📋 Planned |
 | **Phase 1.9 (Triage)** | 25 | 📋 Planned |
+| **Phase 1.10 (Windows)** | 15 | 📋 Planned |
 | Phase 2 (Enhanced) | 6 | 📋 Planned |
 | Phase 3 (Storage) | 5 | 📋 Planned |
 | Phase 4 (Network) | 5 | 📋 Planned |
@@ -1583,11 +1678,11 @@ All ⚠️ queries follow the existing pattern used for CPU/memory/disk/network 
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 51/134 queries implemented**
+**Current Status: 51/149 queries implemented**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
 - Phase 1.6 (Hooks): ✅ Complete (31/31 queries)
 - Phase 1.7 (SBOM): 🚧 In Progress (7/31 queries)
-- Phase 1.8-1.9: 📋 Planned (27 queries)
+- Phase 1.8-1.10: 📋 Planned (42 queries) - includes Windows Enterprise
 - Phase 2-9: 📋 Planned (37 queries)

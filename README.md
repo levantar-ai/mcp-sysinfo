@@ -407,6 +407,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.7** | SBOM & Inventory | 🚧 In Progress | 7/31 |
 | **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
 | **1.9** | Triage & Summary | 📋 Planned | 0/25 |
+| **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
 | 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
@@ -416,7 +417,12 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 51/134 queries (38%)**
+**Implemented: 51/149 queries (34%)**
+
+**Phase 1.10 Windows Enterprise Features:**
+- Registry queries (read keys, enumerate, security descriptors)
+- DCOM/COM security (applications, permissions, identities)
+- IIS web server (sites, app pools, bindings, SSL, handlers)
 
 ### Cross-Platform Architecture
 
