@@ -83,33 +83,9 @@ jobs:
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
 
-  slsa-mcp-sysinfo-darwin-amd64:
-    name: SLSA Build mcp-sysinfo darwin-amd64
-    needs: [prepare-build-metadata]
-    permissions:
-      id-token: write
-      contents: write
-      actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
-    with:
-      go-version: "1.22"
-      config-file: .slsa-goreleaser/mcp-sysinfo-darwin-amd64.yml
-      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
-      upload-assets: true
-
-  slsa-mcp-sysinfo-darwin-arm64:
-    name: SLSA Build mcp-sysinfo darwin-arm64
-    needs: [prepare-build-metadata]
-    permissions:
-      id-token: write
-      contents: write
-      actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
-    with:
-      go-version: "1.22"
-      config-file: .slsa-goreleaser/mcp-sysinfo-darwin-arm64.yml
-      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
-      upload-assets: true
+  # NOTE: Darwin builds removed from SLSA workflow - SLSA builder runs on Ubuntu
+  # and cannot cross-compile darwin with CGO. Darwin builds are done natively
+  # in ci.yml on macOS runners.
 
   slsa-mcp-sysinfo-windows-amd64:
     name: SLSA Build mcp-sysinfo windows-amd64
@@ -157,33 +133,7 @@ jobs:
       evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
       upload-assets: true
 
-  slsa-mcp-token-server-darwin-amd64:
-    name: SLSA Build mcp-token-server darwin-amd64
-    needs: [prepare-build-metadata]
-    permissions:
-      id-token: write
-      contents: write
-      actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
-    with:
-      go-version: "1.22"
-      config-file: .slsa-goreleaser/mcp-token-server-darwin-amd64.yml
-      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
-      upload-assets: true
-
-  slsa-mcp-token-server-darwin-arm64:
-    name: SLSA Build mcp-token-server darwin-arm64
-    needs: [prepare-build-metadata]
-    permissions:
-      id-token: write
-      contents: write
-      actions: read
-    uses: slsa-framework/slsa-github-generator/.github/workflows/builder_go_slsa3.yml@v2.1.0
-    with:
-      go-version: "1.22"
-      config-file: .slsa-goreleaser/mcp-token-server-darwin-arm64.yml
-      evaluated-envs: "VERSION:${{ needs.prepare-build-metadata.outputs.version }}, COMMIT:${{ needs.prepare-build-metadata.outputs.commit }}, BUILD_DATE:${{ needs.prepare-build-metadata.outputs.build_date }}"
-      upload-assets: true
+  # NOTE: Darwin builds removed - see note above
 
   slsa-mcp-token-server-windows-amd64:
     name: SLSA Build mcp-token-server windows-amd64
@@ -209,13 +159,9 @@ jobs:
     needs:
       - slsa-mcp-sysinfo-linux-amd64
       - slsa-mcp-sysinfo-linux-arm64
-      - slsa-mcp-sysinfo-darwin-amd64
-      - slsa-mcp-sysinfo-darwin-arm64
       - slsa-mcp-sysinfo-windows-amd64
       - slsa-mcp-token-server-linux-amd64
       - slsa-mcp-token-server-linux-arm64
-      - slsa-mcp-token-server-darwin-amd64
-      - slsa-mcp-token-server-darwin-arm64
       - slsa-mcp-token-server-windows-amd64
     permissions:
       id-token: write
@@ -254,15 +200,7 @@ jobs:
         with:
           subject-path: mcp-sysinfo-linux-arm64
 
-      - name: Attest mcp-sysinfo-darwin-amd64
-        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-        with:
-          subject-path: mcp-sysinfo-darwin-amd64
-
-      - name: Attest mcp-sysinfo-darwin-arm64
-        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-        with:
-          subject-path: mcp-sysinfo-darwin-arm64
+      # NOTE: Darwin attestations removed - darwin builds not in SLSA workflow
 
       - name: Attest mcp-sysinfo-windows-amd64
         uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
@@ -280,15 +218,7 @@ jobs:
         with:
           subject-path: mcp-token-server-linux-arm64
 
-      - name: Attest mcp-token-server-darwin-amd64
-        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-        with:
-          subject-path: mcp-token-server-darwin-amd64
-
-      - name: Attest mcp-token-server-darwin-arm64
-        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-        with:
-          subject-path: mcp-token-server-darwin-arm64
+      # NOTE: Darwin attestations removed - darwin builds not in SLSA workflow
 
       - name: Attest mcp-token-server-windows-amd64
         uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
