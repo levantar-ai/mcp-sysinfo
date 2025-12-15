@@ -12,12 +12,12 @@ MCP System Info is a **security product first**, diagnostics tool second. Every 
 
 | Threat | Mitigation | Status |
 |--------|------------|--------|
-| Credential/secret exfiltration via queries | Query classification + redaction + disabled-by-default | 🚧 Redaction planned |
+| Credential/secret exfiltration via queries | Query classification + redaction + disabled-by-default | ✅ |
 | Unauthorized remote access | Localhost-only default + explicit remote enablement | ✅ |
 | Resource exhaustion / DoS | Hard limits on output size, runtime, concurrency | 🚧 Planned |
 | Replay attacks | JWT with short TTL + JTI cache + audience binding | 🚧 JTI cache planned |
 | Privilege escalation | Read-only operations, no arbitrary command execution | ✅ |
-| Data exfil via verbose output | Output size caps + field-level redaction | 🚧 Planned |
+| Data exfil via verbose output | Output size caps + field-level redaction | ✅ Redaction implemented |
 | Arbitrary command injection | Allowlisted commands only, parameterized, no raw user input | ✅ |
 
 ### What This Is NOT
@@ -250,16 +250,39 @@ Scopes are extracted from JWT tokens (from `scope` or `scp` claims) and checked 
 
 ---
 
-## Output Security 🚧
+## Output Security ✅
 
 ### Redaction
 
-> **Not implemented.** Output is returned as-is from system commands. No automatic redaction of secrets, credentials, or sensitive data.
+Automatic redaction of sensitive data is available via the provider-based redaction system. Redaction is **opt-in** and disabled by default.
 
-**Recommendations until redaction is implemented:**
-- Don't enable sensitive queries in untrusted environments
-- Review tool output before exposing to external systems
-- Use network segmentation to limit exposure
+```bash
+# Enable redaction with default provider
+mcp-sysinfo --redact
+
+# Enable with GitGuardian provider
+mcp-sysinfo --redact --redact-provider gitguardian
+```
+
+**Available Providers:**
+
+| Provider | Description |
+|----------|-------------|
+| `default` | Built-in pattern matching (fast, offline) |
+| `gitguardian` | GitGuardian integration (350+ detectors, API or CLI) |
+
+**Detection Methods:**
+
+1. **Field-Level** - Redacts values with sensitive field names (`password`, `secret`, `token`, `key`, `auth`, `credential`)
+
+2. **Pattern-Based** - Redacts values matching sensitive patterns regardless of field name:
+   - Connection strings with credentials
+   - AWS keys and secrets
+   - JWT tokens, GitHub tokens, Slack tokens, Stripe keys
+   - Private keys (PEM format)
+   - And 350+ more patterns with GitGuardian provider
+
+See [docs/security/redaction.md](docs/security/redaction.md) for full documentation.
 
 ### Output Limits 🚧
 
@@ -383,7 +406,7 @@ ssh user@server "mcp-sysinfo --transport stdio"
 | Unix socket transport | 🚧 |
 | mTLS client certs | 🚧 |
 | Rate limiting | 🚧 |
-| Output redaction | 🚧 |
+| Output redaction | ✅ |
 | Output limits | 🚧 |
 | Resource limits | 🚧 |
 | Audit logging | 🚧 |

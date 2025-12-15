@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
+	"github.com/levantar-ai/mcp-sysinfo/internal/redact"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -22,14 +23,8 @@ func (c *Collector) getEnvVars() (*types.EnvVarsResult, error) {
 	for _, env := range os.Environ() {
 		parts := strings.SplitN(env, "=", 2)
 		if len(parts) == 2 {
-			// Redact sensitive values
-			value := parts[1]
-			name := strings.ToUpper(parts[0])
-			if strings.Contains(name, "PASSWORD") || strings.Contains(name, "SECRET") ||
-				strings.Contains(name, "TOKEN") || strings.Contains(name, "KEY") ||
-				strings.Contains(name, "CREDENTIAL") {
-				value = "[REDACTED]"
-			}
+			// Use centralized redaction for sensitive values
+			value := redact.RedactValue(parts[0], parts[1])
 			vars = append(vars, types.EnvVar{
 				Name:   parts[0],
 				Value:  value,

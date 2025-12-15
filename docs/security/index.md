@@ -20,12 +20,27 @@ All queries are strictly read-only. There are no commands that modify system sta
 
 ### Automatic Redaction
 
-Sensitive values are automatically redacted from output:
+Sensitive values can be automatically redacted from output. Redaction is **opt-in** and supports multiple providers:
 
-- AWS access keys and secrets
-- API tokens and passwords
-- Private keys
-- Database connection strings
+```bash
+# Enable with default provider
+mcp-sysinfo --redact
+
+# Enable with GitGuardian
+mcp-sysinfo --redact --redact-provider gitguardian
+```
+
+**Detection Methods:**
+
+- **Field-Level** - Redacts values with sensitive field names (`password`, `secret`, `token`, `key`, `auth`, `credential`)
+- **Pattern-Based** - Redacts values matching sensitive patterns (connection strings, AWS keys, JWT tokens, private keys, etc.)
+
+**Available Providers:**
+
+- `default` - Built-in pattern matching (fast, offline, no dependencies)
+- `gitguardian` - GitGuardian integration with 350+ secret detectors
+
+See [Redaction](redaction.md) for full documentation.
 
 ### Scoped Access
 

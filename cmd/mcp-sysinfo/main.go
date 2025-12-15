@@ -21,6 +21,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
+	"github.com/levantar-ai/mcp-sysinfo/internal/redact"
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
@@ -64,6 +65,10 @@ func main() {
 	tlsCert := flag.String("tls-cert", "", "TLS certificate file")
 	tlsKey := flag.String("tls-key", "", "TLS key file")
 
+	// Redaction flags
+	enableRedaction := flag.Bool("redact", false, "Enable output redaction of sensitive data")
+	redactProvider := flag.String("redact-provider", "default", "Redaction provider: default, gitguardian")
+
 	flag.Usage = printHelp
 	flag.Parse()
 
@@ -75,6 +80,11 @@ func main() {
 	if *showVersion {
 		printVersion()
 		os.Exit(0)
+	}
+
+	// Configure redaction if enabled
+	if *enableRedaction {
+		redact.Enable(*redactProvider)
 	}
 
 	// Direct query mode (for testing/debugging)
