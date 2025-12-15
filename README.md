@@ -431,7 +431,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.0** | Core Metrics | ✅ Complete | 7/7 |
 | **1.5** | Log Access | ✅ Complete | 6/6 |
 | **1.6** | System Hooks | ✅ Complete | 31/31 |
-| **1.7** | SBOM & Inventory | 🚧 In Progress | 7/31 |
+| **1.7** | SBOM & Inventory | 🚧 In Progress | 13/31 |
 | **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
 | **1.9** | Triage & Summary | 🚧 In Progress | 5/25 |
 | **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
@@ -444,7 +444,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 56/149 queries (38%)**
+**Implemented: 62/149 queries (42%)**
 
 **Phase 1.10 Windows Enterprise Features:**
 - Registry queries (read keys, enumerate, security descriptors)

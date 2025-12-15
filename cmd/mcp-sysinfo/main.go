@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
+	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
@@ -51,6 +52,7 @@ func main() {
 	query := flag.String("query", "", "Run a specific query directly (bypasses MCP)")
 	jsonOutput := flag.Bool("json", false, "Output in JSON format (for --query)")
 	pid := flag.Int("pid", 0, "Process ID for queries that need it (e.g., get_capabilities)")
+	imageID := flag.String("image-id", "", "Image ID for container queries (e.g., get_docker_image_history)")
 
 	// Transport flags
 	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
@@ -148,7 +150,7 @@ func main() {
 		if *pid > 0 {
 			pidVal = int32(*pid) // #nosec G115 -- checked for positive
 		}
-		runQuery(*query, *jsonOutput, pidVal)
+		runQuery(*query, *jsonOutput, pidVal, *imageID)
 		os.Exit(0)
 	}
 
@@ -333,7 +335,7 @@ EXAMPLES:
     # Verify audit log integrity
     mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
-AVAILABLE TOOLS (56):
+AVAILABLE TOOLS (62):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -364,7 +366,9 @@ AVAILABLE TOOLS (56):
 
   Software Inventory (scope: software):
     get_path_executables, get_system_packages, get_python_packages,
-    get_node_packages, get_go_modules, get_rust_packages, get_ruby_gems
+    get_node_packages, get_go_modules, get_rust_packages, get_ruby_gems,
+    get_sbom_cyclonedx, get_sbom_spdx, get_vulnerabilities_osv,
+    get_docker_images, get_docker_containers, get_docker_image_history
 
   Triage & Summary (scope: triage):
     get_os_info, get_system_profile, get_service_manager_info,
@@ -383,7 +387,7 @@ For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
 }
 
-func runQuery(queryName string, jsonOut bool, pid int32) {
+func runQuery(queryName string, jsonOut bool, pid int32, imageID string) {
 	var result interface{}
 	var err error
 
@@ -619,6 +623,30 @@ func runQuery(queryName string, jsonOut bool, pid int32) {
 	case "get_ruby_gems":
 		c := software.NewCollector()
 		result, err = c.GetRubyGems()
+
+	case "get_sbom_cyclonedx":
+		c := software.NewCollector()
+		result, err = c.GetSBOMCycloneDX()
+
+	case "get_sbom_spdx":
+		c := software.NewCollector()
+		result, err = c.GetSBOMSPDX()
+
+	case "get_vulnerabilities_osv":
+		c := software.NewCollector()
+		result, err = c.GetVulnerabilitiesOSV()
+
+	case "get_docker_images":
+		c := container.NewCollector()
+		result, err = c.GetDockerImages()
+
+	case "get_docker_containers":
+		c := container.NewCollector()
+		result, err = c.GetDockerContainers()
+
+	case "get_docker_image_history":
+		c := container.NewCollector()
+		result, err = c.GetImageHistory(imageID)
 
 	// Triage queries (Phase 1.9)
 	case "get_os_info":
