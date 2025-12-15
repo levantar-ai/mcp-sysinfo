@@ -11,7 +11,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
@@ -73,25 +72,20 @@ func (c *Collector) getOSInfo() (*types.OSInfoResult, error) {
 		}
 	}
 
-	// Get kernel info via uname
-	var uname syscall.Utsname
-	if err := syscall.Uname(&uname); err == nil {
-		result.KernelVersion = byteArrayToString(uname.Release[:])
-		result.KernelArch = byteArrayToString(uname.Machine[:])
+	// Get kernel info via uname command
+	// #nosec G204 -- no user input
+	if output, err := cmdexec.Command("uname", "-r").Output(); err == nil {
+		result.KernelVersion = strings.TrimSpace(string(output))
+	}
+	// #nosec G204 -- no user input
+	if output, err := cmdexec.Command("uname", "-m").Output(); err == nil {
+		result.KernelArch = strings.TrimSpace(string(output))
 	}
 
 	// macOS always uses UEFI on modern Macs
 	result.BootMode = "UEFI"
 
 	return result, nil
-}
-
-// byteArrayToString converts a null-terminated byte array to string.
-func byteArrayToString(arr []byte) string {
-	n := 0
-	for ; n < len(arr) && arr[n] != 0; n++ {
-	}
-	return string(arr[:n])
 }
 
 // getSystemProfile retrieves system profile on macOS.
