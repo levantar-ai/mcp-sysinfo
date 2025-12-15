@@ -816,24 +816,26 @@ Read application configuration files with rigorous secret redaction.
 
 ---
 
-## Phase 1.9: Triage & Summary Queries (25 Queries) 📋 PLANNED
+## Phase 1.9: Triage & Summary Queries (25 Queries) 🚧 IN PROGRESS
 
 High-level queries for incident triage, providing summarized views and snapshots. All queries are cross-platform with OS-specific backends.
 
-### 1.9.1 System Overview (4 queries)
+**Progress: 5/25 queries implemented**
+
+### 1.9.1 System Overview (4 queries) ✅ COMPLETE
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
 | `get_os_info` | OS version, build, kernel | ✅ | ✅ | ✅ |
 | `get_system_profile` | CPU/RAM/disk summary | ✅ | ✅ | ✅ |
-| `get_service_manager_info` | Service manager status | ⚠️ | ⚠️ | ⚠️ |
-| `get_cloud_environment` | Cloud provider detection | ⚠️ | ⚠️ | ⚠️ |
+| `get_service_manager_info` | Service manager status | ✅ | ✅ | ✅ |
+| `get_cloud_environment` | Cloud provider detection | ✅ | ✅ | ✅ |
 
 #### Implementation
-- [ ] 🐧 Linux: `/etc/os-release`, `uname`, `/proc`
-- [ ] 🍎 macOS: `sw_vers`, `sysctl`, `system_profiler`
-- [ ] 🪟 Windows: WMI `Win32_OperatingSystem`, Registry
-- [ ] All: Cloud metadata endpoints (169.254.169.254, DMI strings)
+- [x] 🐧 Linux: `/etc/os-release`, `uname`, `/proc`
+- [x] 🍎 macOS: `sw_vers`, `sysctl`, `system_profiler`
+- [x] 🪟 Windows: WMI `Win32_OperatingSystem`, Registry
+- [x] All: Cloud metadata endpoints (169.254.169.254, DMI strings)
 
 ---
 
@@ -889,7 +891,7 @@ High-level queries for incident triage, providing summarized views and snapshots
 
 ---
 
-### 1.9.5 Software & Runtime (3 queries)
+### 1.9.5 Software & Runtime (3 queries) - PARTIAL (1/3)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -898,9 +900,10 @@ High-level queries for incident triage, providing summarized views and snapshots
 | `get_fs_health_summary` | Filesystem health overview | ⚠️ | ⚠️ | ⚠️ |
 
 #### Implementation
-- [ ] 🐧 Linux: dpkg/rpm logs, `python --version`, `df`
+- [ ] 🐧 Linux: dpkg/rpm logs, `df`
 - [ ] 🍎 macOS: brew logs, pkgutil history, `diskutil`
 - [ ] 🪟 Windows: MSI logs, `wmic`, `fsutil`
+- [x] All: Language runtime detection (`python --version`, `node --version`, etc.)
 
 ---
 
@@ -1667,7 +1670,7 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
 | **Phase 1.7 (SBOM)** | 31 | 🚧 7/31 |
 | **Phase 1.8 (App Config)** | 2 | 📋 Planned |
-| **Phase 1.9 (Triage)** | 25 | 📋 Planned |
+| **Phase 1.9 (Triage)** | 25 | 🚧 5/25 |
 | **Phase 1.10 (Windows)** | 15 | 📋 Planned |
 | Phase 2 (Enhanced) | 6 | 📋 Planned |
 | Phase 3 (Storage) | 5 | 📋 Planned |
@@ -1678,11 +1681,13 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 51/149 queries implemented**
+**Current Status: 56/149 queries implemented**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
 - Phase 1.6 (Hooks): ✅ Complete (31/31 queries)
 - Phase 1.7 (SBOM): 🚧 In Progress (7/31 queries)
-- Phase 1.8-1.10: 📋 Planned (42 queries) - includes Windows Enterprise
+- Phase 1.8: 📋 Planned (2 queries) - App Discovery & Config
+- Phase 1.9 (Triage): 🚧 In Progress (5/25 queries)
+- Phase 1.10: 📋 Planned (15 queries) - Windows Enterprise
 - Phase 2-9: 📋 Planned (37 queries)

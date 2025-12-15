@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.7 In Progress (51 queries implemented)**
+**Status: Phase 1.9 In Progress (56 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -131,6 +131,22 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 > ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
 
+### Phase 1.9: Triage & Summary (5/25)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_os_info` | OS version, build, kernel, platform | ✅ | ✅ | ✅ |
+| `get_system_profile` | CPU/RAM/disk/network summary | ✅ | ✅ | ✅ |
+| `get_service_manager_info` | Service manager status | ✅ | ✅ | ✅ |
+| `get_cloud_environment` | Cloud provider detection (AWS/GCP/Azure) | ✅ | ✅ | ✅ |
+| `get_language_runtime_versions` | Python/Node/Go/Ruby/Java/etc versions | ✅ | ✅ | ✅ |
+
+**Cloud providers detected:**
+- AWS EC2 (IMDSv2), Google Cloud, Microsoft Azure, DigitalOcean, Oracle Cloud
+
+**Language runtimes detected:**
+- Python, Node.js, Go, Ruby, Java, PHP, Rust, .NET, Perl
+
 ### What You Can Do Now
 
 ```bash
@@ -165,7 +181,7 @@ Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgr
 
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
-### Phase 1.7: SBOM & Inventory (In Progress - 7/31 queries)
+### Phase 1.7: SBOM & Inventory (7/31 queries)
 
 Software Bill of Materials for vulnerability detection.
 
@@ -181,6 +197,17 @@ Software Bill of Materials for vulnerability detection.
 - Vulnerability lookup (OSV, NVD)
 
 See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
+
+### Phase 1.9: Triage & Summary (In Progress - 5/25 queries)
+
+High-level queries for incident triage.
+
+**Implemented:**
+- OS info (version, kernel, platform, boot mode)
+- System profile (CPU/RAM/disk/network summary)
+- Service manager info (systemd/launchd/SCM status)
+- Cloud environment detection (AWS/GCP/Azure metadata)
+- Language runtime versions (Python, Node, Go, Ruby, Java, PHP, Rust, .NET, Perl)
 
 ### Future Phases
 

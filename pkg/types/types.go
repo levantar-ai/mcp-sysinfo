@@ -1137,3 +1137,121 @@ type LanguagePackage struct {
 	Dependencies []string `json:"dependencies,omitempty"` // Direct dependencies
 	DevDep       bool     `json:"dev_dependency,omitempty"`
 }
+
+// ============================================================================
+// Phase 1.9: Triage & Summary Query Types
+// ============================================================================
+
+// OSInfoResult represents OS information query results.
+type OSInfoResult struct {
+	Name            string    `json:"name"`             // e.g., "Ubuntu", "macOS", "Windows"
+	Version         string    `json:"version"`          // e.g., "22.04", "14.0", "10"
+	Build           string    `json:"build,omitempty"`  // Build number
+	Codename        string    `json:"codename,omitempty"` // e.g., "jammy", "Sonoma"
+	KernelVersion   string    `json:"kernel_version"`   // e.g., "6.5.0-44-generic"
+	KernelArch      string    `json:"kernel_arch"`      // e.g., "x86_64", "arm64"
+	Platform        string    `json:"platform"`         // linux, darwin, windows
+	PlatformFamily  string    `json:"platform_family"`  // debian, rhel, darwin, windows
+	PlatformVersion string    `json:"platform_version"` // Full version string
+	Hostname        string    `json:"hostname"`
+	BootMode        string    `json:"boot_mode,omitempty"` // UEFI or BIOS
+	Timestamp       time.Time `json:"timestamp"`
+}
+
+// SystemProfileResult represents system profile (hardware summary) query results.
+type SystemProfileResult struct {
+	OS         OSInfoResult     `json:"os"`
+	CPU        CPUSummary       `json:"cpu"`
+	Memory     MemorySummary    `json:"memory"`
+	Disk       DiskSummary      `json:"disk"`
+	Network    NetworkSummary   `json:"network"`
+	Timestamp  time.Time        `json:"timestamp"`
+}
+
+// CPUSummary represents CPU summary for system profile.
+type CPUSummary struct {
+	Model         string  `json:"model"`
+	Cores         int     `json:"cores"`
+	LogicalCores  int     `json:"logical_cores"`
+	UsagePercent  float64 `json:"usage_percent"`
+	FrequencyMHz  float64 `json:"frequency_mhz,omitempty"`
+}
+
+// MemorySummary represents memory summary for system profile.
+type MemorySummary struct {
+	TotalGB       float64 `json:"total_gb"`
+	UsedGB        float64 `json:"used_gb"`
+	AvailableGB   float64 `json:"available_gb"`
+	UsagePercent  float64 `json:"usage_percent"`
+	SwapTotalGB   float64 `json:"swap_total_gb,omitempty"`
+	SwapUsedGB    float64 `json:"swap_used_gb,omitempty"`
+}
+
+// DiskSummary represents disk summary for system profile.
+type DiskSummary struct {
+	TotalGB       float64 `json:"total_gb"`
+	UsedGB        float64 `json:"used_gb"`
+	FreeGB        float64 `json:"free_gb"`
+	UsagePercent  float64 `json:"usage_percent"`
+	Partitions    int     `json:"partitions"`
+}
+
+// NetworkSummary represents network summary for system profile.
+type NetworkSummary struct {
+	Interfaces    int      `json:"interfaces"`
+	ActiveIPs     []string `json:"active_ips"`
+	PrimaryIP     string   `json:"primary_ip,omitempty"`
+	Hostname      string   `json:"hostname"`
+}
+
+// ServiceManagerInfoResult represents service manager information query results.
+type ServiceManagerInfoResult struct {
+	Type           string    `json:"type"`            // systemd, launchd, scm
+	Version        string    `json:"version,omitempty"`
+	Running        bool      `json:"running"`
+	PID            int32     `json:"pid,omitempty"`
+	BootTarget     string    `json:"boot_target,omitempty"`    // multi-user.target, graphical.target
+	DefaultTarget  string    `json:"default_target,omitempty"` // Default boot target
+	TotalUnits     int       `json:"total_units,omitempty"`
+	ActiveUnits    int       `json:"active_units,omitempty"`
+	FailedUnits    int       `json:"failed_units,omitempty"`
+	LoadedUnits    int       `json:"loaded_units,omitempty"`
+	Timestamp      time.Time `json:"timestamp"`
+}
+
+// CloudEnvironmentResult represents cloud environment detection query results.
+type CloudEnvironmentResult struct {
+	IsCloud         bool              `json:"is_cloud"`
+	Provider        string            `json:"provider,omitempty"`        // aws, gcp, azure, digitalocean, etc.
+	Region          string            `json:"region,omitempty"`
+	Zone            string            `json:"zone,omitempty"`
+	InstanceID      string            `json:"instance_id,omitempty"`
+	InstanceType    string            `json:"instance_type,omitempty"`
+	ImageID         string            `json:"image_id,omitempty"`
+	AccountID       string            `json:"account_id,omitempty"`
+	VPC             string            `json:"vpc,omitempty"`
+	Subnet          string            `json:"subnet,omitempty"`
+	PrivateIP       string            `json:"private_ip,omitempty"`
+	PublicIP        string            `json:"public_ip,omitempty"`
+	Metadata        map[string]string `json:"metadata,omitempty"`
+	DetectionMethod string            `json:"detection_method,omitempty"`
+	Timestamp       time.Time         `json:"timestamp"`
+}
+
+// LanguageRuntimesResult represents language runtime versions query results.
+type LanguageRuntimesResult struct {
+	Runtimes  []LanguageRuntime `json:"runtimes"`
+	Count     int               `json:"count"`
+	Timestamp time.Time         `json:"timestamp"`
+}
+
+// LanguageRuntime represents a detected language runtime.
+type LanguageRuntime struct {
+	Name        string `json:"name"`                  // python, node, go, ruby, java, php, rust, dotnet
+	Version     string `json:"version"`
+	Path        string `json:"path"`                  // Path to the executable
+	Manager     string `json:"manager,omitempty"`     // Package manager (pip, npm, etc.)
+	ManagerVer  string `json:"manager_version,omitempty"`
+	DefaultPkg  string `json:"default_package,omitempty"` // Default package dir
+	Environment string `json:"environment,omitempty"` // virtualenv, nvm, rbenv, etc.
+}
