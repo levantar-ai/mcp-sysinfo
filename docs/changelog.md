@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Phase 1.9: Triage & Summary queries (5 queries)
+  - `get_os_info` - OS identification and version
+  - `get_system_profile` - Hardware/VM summary
+  - `get_service_manager_info` - Init system details
+  - `get_cloud_environment` - Cloud provider detection
+  - `get_language_runtime_versions` - Installed language runtimes
+- Phase 1.7.5: Vulnerability lookup
+  - `get_vulnerabilities_osv` - Query OSV API for known CVEs
+- Phase 1.7.4: SBOM export formats
+  - `get_sbom_cyclonedx` - Generate CycloneDX 1.4 JSON SBOM
+  - `get_sbom_spdx` - Generate SPDX 2.3 JSON SBOM
+- Phase 1.7.3: Container inventory
+  - `get_docker_images` - List Docker/Podman images
+  - `get_docker_containers` - List containers with state
+  - `get_docker_image_history` - Image layer history
 - Phase 1.7.2: Language package manager scanners
   - `get_python_packages` - Python pip packages
   - `get_node_packages` - Node.js npm packages
@@ -26,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Integer overflow warnings in gosec (G115)
 - Pre-commit hook configuration with lefthook
+- Darwin build fix: use uname command instead of syscall.Uname
 
 ## [0.1.0] - 2024-01-15
 
