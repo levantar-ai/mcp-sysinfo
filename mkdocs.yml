@@ -1,4 +1,4 @@
-site_name: MCP System Info
+site_name: Levantar AI - MCP System Info
 site_description: Read-only AI diagnostics plane for secure incident triage
 site_url: https://levantar-ai.github.io/mcp-sysinfo/
 repo_url: https://github.com/levantar-ai/mcp-sysinfo
@@ -9,14 +9,14 @@ theme:
   name: material
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: blue
+      accent: blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: blue
+      accent: blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
