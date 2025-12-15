@@ -562,7 +562,7 @@ Some security queries require `sensitive` scope and are not exposed by default.
 
 Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
 
-**Progress: 7/31 queries implemented**
+**Progress: 13/31 queries implemented**
 
 ### 1.7.0 PATH Executables (1 query) ✅ COMPLETE
 
@@ -651,12 +651,12 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
-### 1.7.3 Container Images (3 queries)
+### 1.7.3 Container Images (3 queries) ✅ COMPLETE
 
 #### Implementation
-- [ ] All: Call Docker API `/images/json` for image list
-- [ ] All: Call Docker API `/images/[id]/history` for layers
-- [ ] All: Call Docker API `/images/[id]/json` for inspect
+- [x] All: Call Docker API `/images/json` for image list
+- [x] All: Call Docker API `/images/[id]/history` for layers
+- [x] All: Call Docker API `/containers/json` for container list
 - [ ] All: `docker exec` to read container package state
 
 #### Unit Tests
@@ -664,35 +664,35 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 - [ ] 🧪 Test image layer parsing
 
 #### Integration Tests
-- [ ] 🔬 All: Verify against `docker images`
-- [ ] 🔬 All: Verify against `docker history`
+- [x] 🔬 All: Verify against `docker images`
+- [x] 🔬 All: Verify against `docker history`
 
 ---
 
-### 1.7.4 SBOM Export (2 queries)
+### 1.7.4 SBOM Export (2 queries) ✅ COMPLETE
 
 #### Implementation
-- [ ] All: Generate CycloneDX 1.4 JSON format
-- [ ] All: Generate SPDX 2.3 JSON format
-- [ ] All: Include Package URLs (purl) for all packages
+- [x] All: Generate CycloneDX 1.4 JSON format
+- [x] All: Generate SPDX 2.3 JSON format
+- [x] All: Include Package URLs (purl) for all packages
 
 #### Unit Tests
 - [ ] 🧪 Test CycloneDX schema compliance
 - [ ] 🧪 Test SPDX schema compliance
-- [ ] 🧪 Test purl generation
+- [x] 🧪 Test purl generation
 
 ---
 
-### 1.7.5 Vulnerability Lookup (3 queries)
+### 1.7.5 Vulnerability Lookup (3 queries) 🚧 IN PROGRESS
 
 #### Implementation
 - [ ] 🐧 Linux (Debian): Correlate with apt security lists
-- [ ] All: Query OSV API (`api.osv.dev/v1/query`)
+- [x] All: Query OSV API (`api.osv.dev/v1/query`)
 - [ ] All: Query NVD data feeds (cached)
 
 #### Unit Tests
 - [ ] 🧪 Test vulnerability correlation logic
-- [ ] 🧪 Test OSV response parsing
+- [x] 🧪 Test OSV response parsing
 - [ ] 🧪 Test NVD feed parsing
 
 #### Integration Tests
@@ -1668,7 +1668,7 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | **Phase 1 (MVP)** | 7 | ✅ Complete |
 | **Phase 1.5 (Logs)** | 6 | ✅ Complete |
 | **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
-| **Phase 1.7 (SBOM)** | 31 | 🚧 7/31 |
+| **Phase 1.7 (SBOM)** | 31 | 🚧 13/31 |
 | **Phase 1.8 (App Config)** | 2 | 📋 Planned |
 | **Phase 1.9 (Triage)** | 25 | 🚧 5/25 |
 | **Phase 1.10 (Windows)** | 15 | 📋 Planned |
@@ -1681,12 +1681,12 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 56/149 queries implemented**
+**Current Status: 62/149 queries implemented**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
 - Phase 1.6 (Hooks): ✅ Complete (31/31 queries)
-- Phase 1.7 (SBOM): 🚧 In Progress (7/31 queries)
+- Phase 1.7 (SBOM): 🚧 In Progress (13/31 queries)
 - Phase 1.8: 📋 Planned (2 queries) - App Discovery & Config
 - Phase 1.9 (Triage): 🚧 In Progress (5/25 queries)
 - Phase 1.10: 📋 Planned (15 queries) - Windows Enterprise

@@ -1255,3 +1255,129 @@ type LanguageRuntime struct {
 	DefaultPkg  string `json:"default_package,omitempty"` // Default package dir
 	Environment string `json:"environment,omitempty"` // virtualenv, nvm, rbenv, etc.
 }
+
+// ContainerImagesResult represents Docker/Podman images query results.
+type ContainerImagesResult struct {
+	Images    []ContainerImage `json:"images"`
+	Count     int              `json:"count"`
+	Error     string           `json:"error,omitempty"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// ContainerImage represents a container image.
+type ContainerImage struct {
+	ID         string            `json:"id"`
+	Repository string            `json:"repository,omitempty"`
+	Tag        string            `json:"tag,omitempty"`
+	Tags       []string          `json:"tags,omitempty"`
+	Digests    []string          `json:"digests,omitempty"`
+	Created    time.Time         `json:"created"`
+	Size       int64             `json:"size"`
+	Labels     map[string]string `json:"labels,omitempty"`
+}
+
+// DockerContainersResult represents Docker/Podman containers query results.
+type DockerContainersResult struct {
+	Containers []DockerContainer `json:"containers"`
+	Count      int               `json:"count"`
+	Running    int               `json:"running"`
+	Paused     int               `json:"paused"`
+	Stopped    int               `json:"stopped"`
+	Error      string            `json:"error,omitempty"`
+	Timestamp  time.Time         `json:"timestamp"`
+}
+
+// DockerContainer represents a Docker/Podman container instance.
+type DockerContainer struct {
+	ID      string              `json:"id"`
+	Name    string              `json:"name"`
+	Names   []string            `json:"names,omitempty"`
+	Image   string              `json:"image"`
+	ImageID string              `json:"image_id"`
+	Command string              `json:"command,omitempty"`
+	Created time.Time           `json:"created"`
+	State   string              `json:"state"`
+	Status  string              `json:"status"`
+	Ports   []DockerPort        `json:"ports,omitempty"`
+	Labels  map[string]string   `json:"labels,omitempty"`
+}
+
+// DockerPort represents a Docker container port mapping.
+type DockerPort struct {
+	PrivatePort int    `json:"private_port"`
+	PublicPort  int    `json:"public_port,omitempty"`
+	Type        string `json:"type"`
+	IP          string `json:"ip,omitempty"`
+}
+
+// ImageHistoryResult represents Docker image history query results.
+type ImageHistoryResult struct {
+	ImageID    string       `json:"image_id"`
+	Layers     []ImageLayer `json:"layers"`
+	LayerCount int          `json:"layer_count"`
+	TotalSize  int64        `json:"total_size"`
+	Error      string       `json:"error,omitempty"`
+	Timestamp  time.Time    `json:"timestamp"`
+}
+
+// ImageLayer represents a layer in a container image.
+type ImageLayer struct {
+	ID        string    `json:"id,omitempty"`
+	Created   time.Time `json:"created"`
+	CreatedBy string    `json:"created_by"`
+	Size      int64     `json:"size"`
+	Comment   string    `json:"comment,omitempty"`
+	Tags      []string  `json:"tags,omitempty"`
+}
+
+// SBOMResult represents a Software Bill of Materials.
+type SBOMResult struct {
+	Format     string          `json:"format"` // cyclonedx, spdx
+	Version    string          `json:"version"`
+	Timestamp  time.Time       `json:"timestamp"`
+	Components []SBOMComponent `json:"components"`
+	Count      int             `json:"count"`
+	Raw        string          `json:"raw,omitempty"` // Raw SBOM in requested format
+}
+
+// SBOMComponent represents a component in the SBOM.
+type SBOMComponent struct {
+	Type        string   `json:"type"`    // library, application, framework, etc.
+	Name        string   `json:"name"`
+	Version     string   `json:"version"`
+	PURL        string   `json:"purl,omitempty"` // Package URL
+	CPE         string   `json:"cpe,omitempty"`
+	License     string   `json:"license,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Supplier    string   `json:"supplier,omitempty"`
+	Hashes      []string `json:"hashes,omitempty"`
+}
+
+// VulnerabilityResult represents vulnerability lookup results.
+type VulnerabilityResult struct {
+	Vulnerabilities []Vulnerability `json:"vulnerabilities"`
+	Count           int             `json:"count"`
+	Critical        int             `json:"critical"`
+	High            int             `json:"high"`
+	Medium          int             `json:"medium"`
+	Low             int             `json:"low"`
+	Source          string          `json:"source"` // osv, nvd, github
+	Timestamp       time.Time       `json:"timestamp"`
+	Error           string          `json:"error,omitempty"`
+}
+
+// Vulnerability represents a security vulnerability.
+type Vulnerability struct {
+	ID          string   `json:"id"`
+	Aliases     []string `json:"aliases,omitempty"` // CVE, GHSA, etc.
+	Summary     string   `json:"summary"`
+	Details     string   `json:"details,omitempty"`
+	Severity    string   `json:"severity"` // CRITICAL, HIGH, MEDIUM, LOW
+	CVSS        float64  `json:"cvss,omitempty"`
+	Package     string   `json:"package"`
+	Version     string   `json:"version"`
+	FixedIn     string   `json:"fixed_in,omitempty"`
+	References  []string `json:"references,omitempty"`
+	Published   string   `json:"published,omitempty"`
+	Modified    string   `json:"modified,omitempty"`
+}

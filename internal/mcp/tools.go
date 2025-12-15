@@ -3,6 +3,7 @@ package mcp
 import (
 	"context"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
@@ -938,6 +939,97 @@ func registerSoftwareTools(s *Server) {
 	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := software.NewCollector()
 		result, err := c.GetRubyGems()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// SBOM CycloneDX
+	s.RegisterTool(Tool{
+		Name:        "get_sbom_cyclonedx",
+		Description: "Generate CycloneDX 1.4 SBOM from installed packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetSBOMCycloneDX()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// SBOM SPDX
+	s.RegisterTool(Tool{
+		Name:        "get_sbom_spdx",
+		Description: "Generate SPDX 2.3 SBOM from installed packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetSBOMSPDX()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Vulnerability Lookup (OSV)
+	s.RegisterTool(Tool{
+		Name:        "get_vulnerabilities_osv",
+		Description: "Query OSV API for vulnerabilities in installed packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetVulnerabilitiesOSV()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Docker Images
+	s.RegisterTool(Tool{
+		Name:        "get_docker_images",
+		Description: "Get Docker/Podman container images",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := container.NewCollector()
+		result, err := c.GetDockerImages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Docker Containers
+	s.RegisterTool(Tool{
+		Name:        "get_docker_containers",
+		Description: "Get Docker/Podman containers (running and stopped)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := container.NewCollector()
+		result, err := c.GetDockerContainers()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Docker Image History
+	s.RegisterTool(Tool{
+		Name:        "get_docker_image_history",
+		Description: "Get layer history for a Docker/Podman image",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"image_id": {Type: "string", Description: "Image ID or name"},
+			},
+			Required: []string{"image_id"},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		imageID, _ := args["image_id"].(string)
+		c := container.NewCollector()
+		result, err := c.GetImageHistory(imageID)
 		if err != nil {
 			return nil, err
 		}
