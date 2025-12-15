@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
 )
 
 // contextKey is a custom type for context keys to avoid collisions.
@@ -149,16 +152,33 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get client IP for audit logging
+	clientIP := h.getClientIP(r)
+	ctx := context.WithValue(r.Context(), ContextKeyClientIP, clientIP)
+
 	// Authenticate if auth is configured (OIDC or OAuth introspection)
 	if h.config.OIDC != nil || h.config.Auth != nil {
 		identity, err := h.authenticate(r)
 		if err != nil {
+			// Audit authentication failure
+			h.auditAuth("token_validation", "", clientIP, audit.ResultDenied, map[string]interface{}{
+				"error": err.Error(),
+			})
 			h.sendAuthChallenge(w, err)
 			return
 		}
-		// Store identity in context for scope checking
-		r = r.WithContext(context.WithValue(r.Context(), identityKey, identity))
+		// Store identity in context for scope checking and audit
+		ctx = context.WithValue(ctx, identityKey, identity)
+		ctx = context.WithValue(ctx, ContextKeyIdentity, identity.Subject)
+
+		// Audit successful authentication
+		h.auditAuth("token_validation", identity.Subject, clientIP, audit.ResultSuccess, map[string]interface{}{
+			"client_id": identity.ClientID,
+			"scopes":    identity.Scopes,
+		})
 	}
+
+	r = r.WithContext(ctx)
 
 	// Read request body
 	body, err := io.ReadAll(r.Body)
@@ -175,6 +195,34 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 	if response != nil {
 		_ = json.NewEncoder(w).Encode(response)
 	}
+}
+
+// getClientIP extracts the client IP address from the request.
+func (h *HTTPServer) getClientIP(r *http.Request) string {
+	// Check X-Forwarded-For header (common for proxied requests)
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		// Take the first IP in the chain
+		if idx := strings.Index(xff, ","); idx != -1 {
+			return strings.TrimSpace(xff[:idx])
+		}
+		return strings.TrimSpace(xff)
+	}
+
+	// Check X-Real-IP header
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return strings.TrimSpace(xri)
+	}
+
+	// Fall back to RemoteAddr
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		return host
+	}
+	return r.RemoteAddr
+}
+
+// auditAuth logs an authentication event.
+func (h *HTTPServer) auditAuth(action, identity, clientIP string, result audit.EventResult, metadata map[string]interface{}) {
+	_ = audit.LogAuth(action, identity, clientIP, result, metadata)
 }
 
 // Identity represents an authenticated user/client.

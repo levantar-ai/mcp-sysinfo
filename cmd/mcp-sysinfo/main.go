@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
+	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
@@ -69,6 +72,16 @@ func main() {
 	enableRedaction := flag.Bool("redact", false, "Enable output redaction of sensitive data")
 	redactProvider := flag.String("redact-provider", "default", "Redaction provider: default, gitguardian")
 
+	// Audit flags
+	enableAudit := flag.Bool("audit", false, "Enable audit logging")
+	auditOutput := flag.String("audit-output", "/var/log/mcp-sysinfo/audit.jsonl", "Audit log file path")
+	auditBufferSize := flag.Int("audit-buffer-size", 100, "Audit buffer size (0 for synchronous writes)")
+	auditFlushInterval := flag.Duration("audit-flush-interval", 5*time.Second, "Audit flush interval")
+	auditMaxFileSize := flag.Int64("audit-max-file-size", 100*1024*1024, "Max audit file size before rotation (bytes)")
+	auditMaxFiles := flag.Int("audit-max-files", 10, "Max number of rotated audit files to keep")
+	auditSyncWrite := flag.Bool("audit-sync-write", false, "Force synchronous writes (fsync after each write)")
+	auditVerify := flag.Bool("audit-verify", false, "Verify audit log integrity and exit")
+
 	flag.Usage = printHelp
 	flag.Parse()
 
@@ -85,6 +98,46 @@ func main() {
 	// Configure redaction if enabled
 	if *enableRedaction {
 		redact.Enable(*redactProvider)
+	}
+
+	// Configure audit if enabled or verifying
+	if *enableAudit || *auditVerify {
+		cfg := audit.Config{
+			Enabled:       true,
+			ProviderName:  "default",
+			Output:        *auditOutput,
+			BufferSize:    *auditBufferSize,
+			FlushInterval: *auditFlushInterval,
+			MaxFileSize:   *auditMaxFileSize,
+			MaxFiles:      *auditMaxFiles,
+			IncludeHash:   true, // Always enable hash chain for tamper evidence
+			SyncWrite:     *auditSyncWrite,
+		}
+
+		if err := audit.Configure(cfg); err != nil {
+			fmt.Fprintf(os.Stderr, "Error configuring audit: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Handle audit verify mode
+		if *auditVerify {
+			count, err := audit.Verify()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Audit verification FAILED: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf("Audit verification OK: %d events verified\n", count)
+			os.Exit(0)
+		}
+
+		// Ensure audit is flushed on exit
+		defer func() {
+			if err := audit.Close(); err != nil {
+				log.Printf("Warning: error closing audit: %v", err)
+			}
+		}()
+
+		log.Printf("Audit logging enabled: %s", *auditOutput)
 	}
 
 	// Direct query mode (for testing/debugging)
@@ -223,6 +276,20 @@ OAUTH OPTIONS (for HTTP transport - token introspection):
     --client-id <id>     OAuth client ID for token introspection
     --client-secret <s>  OAuth client secret
 
+REDACTION OPTIONS:
+    --redact             Enable output redaction of sensitive data
+    --redact-provider    Redaction provider: default, gitguardian
+
+AUDIT OPTIONS:
+    --audit              Enable audit logging
+    --audit-output       Audit log file path (default: /var/log/mcp-sysinfo/audit.jsonl)
+    --audit-buffer-size  Buffer size for async writes (default: 100, 0 for sync)
+    --audit-flush-interval  Flush interval (default: 5s)
+    --audit-max-file-size   Max file size before rotation (default: 100MB)
+    --audit-max-files    Max rotated files to keep (default: 10)
+    --audit-sync-write   Force synchronous writes (fsync each write)
+    --audit-verify       Verify audit log integrity and exit
+
 OTHER OPTIONS:
     --help               Show this help message
     --version            Show version information
@@ -257,6 +324,12 @@ EXAMPLES:
 
     # Test a query directly
     mcp-sysinfo --query get_cpu_info --json
+
+    # Run with audit logging enabled
+    mcp-sysinfo --audit --audit-output /var/log/mcp-sysinfo/audit.jsonl
+
+    # Verify audit log integrity
+    mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
 AVAILABLE TOOLS (37):
 

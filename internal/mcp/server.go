@@ -9,6 +9,9 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
+
+	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
 )
 
 // Server is the MCP server that handles JSON-RPC requests.
@@ -31,6 +34,16 @@ type registeredTool struct {
 	Handler ToolHandler
 	Scope   string // Required MCP scope (e.g., "core", "logs", "sensitive")
 }
+
+// Context keys for audit information
+type auditContextKey string
+
+const (
+	// ContextKeyIdentity stores the authenticated identity
+	ContextKeyIdentity auditContextKey = "audit.identity"
+	// ContextKeyClientIP stores the client IP address
+	ContextKeyClientIP auditContextKey = "audit.client_ip"
+)
 
 // NewServer creates a new MCP server.
 func NewServer(name, version string) *Server {
@@ -182,12 +195,19 @@ func (s *Server) handleToolsCall(ctx context.Context, id interface{}, params jso
 	s.mu.RUnlock()
 
 	if !ok {
+		// Audit the failed tool lookup
+		s.auditToolCall(ctx, callParams.Name, callParams.Arguments, 0, audit.ResultError, "tool not found")
 		return NewErrorResponse(id, ErrCodeInvalidParams, "Tool not found", callParams.Name)
 	}
 
-	// Execute the tool
+	// Execute the tool with timing
+	start := time.Now()
 	result, err := tool.Handler(ctx, callParams.Arguments)
+	duration := time.Since(start)
+
 	if err != nil {
+		// Audit the error
+		s.auditToolCall(ctx, callParams.Name, callParams.Arguments, duration, audit.ResultError, err.Error())
 		// Return error as tool result, not JSON-RPC error
 		return NewResponse(id, &CallToolResult{
 			Content: []Content{NewTextContent(fmt.Sprintf("Error: %v", err))},
@@ -195,7 +215,27 @@ func (s *Server) handleToolsCall(ctx context.Context, id interface{}, params jso
 		})
 	}
 
+	// Audit success
+	s.auditToolCall(ctx, callParams.Name, callParams.Arguments, duration, audit.ResultSuccess, "")
+
 	return NewResponse(id, result)
+}
+
+// auditToolCall logs a tool invocation to the audit log.
+func (s *Server) auditToolCall(ctx context.Context, toolName string, params map[string]interface{}, duration time.Duration, result audit.EventResult, errMsg string) {
+	// Extract identity and client IP from context
+	identity := ""
+	if id, ok := ctx.Value(ContextKeyIdentity).(string); ok {
+		identity = id
+	}
+
+	clientIP := ""
+	if ip, ok := ctx.Value(ContextKeyClientIP).(string); ok {
+		clientIP = ip
+	}
+
+	// Log the tool call (no-op if audit is disabled)
+	_ = audit.LogToolCall(toolName, params, identity, clientIP, duration, result, errMsg)
 }
 
 // GetToolScope returns the required scope for a tool.
