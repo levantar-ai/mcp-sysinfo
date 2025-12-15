@@ -395,6 +395,10 @@ func TestProviderRegistry(t *testing.T) {
 
 func TestGitGuardianProvider(t *testing.T) {
 	p := NewGitGuardianProvider()
+	// Disable API and CLI for deterministic pattern-only testing
+	// (API/CLI may not detect known example keys like AKIAIOSFODNN7EXAMPLE)
+	p.UseAPI = false
+	p.UseCLI = false
 
 	// Test field-level detection (same as default)
 	if !p.IsSensitiveField("PASSWORD") {
@@ -410,10 +414,10 @@ func TestGitGuardianProvider(t *testing.T) {
 		t.Error("GitGuardianProvider should detect AWS key")
 	}
 
-	// Test detection mode (should be patterns when no API key or CLI)
+	// Test detection mode (should be patterns when API/CLI disabled)
 	mode := p.GetDetectionMode()
 	if mode != "patterns" {
-		t.Logf("Detection mode: %s (api/cli may be available)", mode)
+		t.Errorf("Expected detection mode 'patterns', got '%s'", mode)
 	}
 }
 
