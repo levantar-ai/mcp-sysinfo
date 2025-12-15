@@ -301,15 +301,53 @@ Planned features:
 
 ---
 
-## Audit Logging 🚧
+## Audit Logging ✅
 
-> **Not implemented.** No audit trail of queries or authentication events.
+MCP System Info provides comprehensive audit logging for security and compliance. See [docs/security/audit.md](docs/security/audit.md) for complete documentation.
 
-Planned features:
-- JSON Lines audit log
-- Query logging with identity
-- Authentication success/failure logging
-- Syslog forwarding
+### Features
+
+- **JSON Lines format**: Each event is a self-contained JSON object
+- **Tamper-evident**: SHA-256 hash chain and sequence numbers detect modifications
+- **Immutable append-only**: Uses `O_APPEND` for atomic writes
+- **Async buffered writing**: High performance with configurable flush
+- **File rotation**: Automatic rotation with gzip compression
+
+### Quick Start
+
+```bash
+# Enable audit logging
+mcp-sysinfo --audit --audit-output /var/log/mcp-sysinfo/audit.jsonl
+
+# High-integrity mode
+mcp-sysinfo --audit --audit-sync-write
+
+# Verify audit log integrity
+mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
+```
+
+### Events Logged
+
+- All tool invocations with identity, parameters, and duration
+- Authentication success and failure events
+- Access denials
+
+### Sample Event
+
+```json
+{
+  "timestamp": "2024-01-15T10:30:45.123Z",
+  "seq": 42,
+  "event_id": "550e8400-e29b-41d4-a716-446655440000",
+  "action": "tools/call",
+  "resource": "get_cpu_info",
+  "identity": "user@example.com",
+  "result": "success",
+  "duration_ns": 15000000,
+  "prev_hash": "abc123...",
+  "hash": "def456..."
+}
+```
 
 ---
 
@@ -383,7 +421,7 @@ ssh user@server "mcp-sysinfo --transport stdio"
 
 ### Planned Features
 
-- [ ] Enable audit logging
+- [x] Enable audit logging
 - [ ] Configure rate limits
 - [ ] Enable output redaction
 - [ ] Set resource limits
@@ -409,7 +447,7 @@ ssh user@server "mcp-sysinfo --transport stdio"
 | Output redaction | ✅ |
 | Output limits | 🚧 |
 | Resource limits | 🚧 |
-| Audit logging | 🚧 |
+| Audit logging | ✅ |
 | JTI replay prevention | 🚧 |
 | Config file support | 🚧 |
 | Hot reload | 🚧 |
