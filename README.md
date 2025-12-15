@@ -433,7 +433,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.6** | System Hooks | ✅ Complete | 31/31 |
 | **1.7** | SBOM & Inventory | 🚧 In Progress | 7/31 |
 | **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
-| **1.9** | Triage & Summary | 📋 Planned | 0/25 |
+| **1.9** | Triage & Summary | 🚧 In Progress | 5/25 |
 | **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
 | 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
@@ -444,7 +444,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 51/149 queries (34%)**
+**Implemented: 56/149 queries (38%)**
 
 **Phase 1.10 Windows Enterprise Features:**
 - Registry queries (read keys, enumerate, security descriptors)
