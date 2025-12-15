@@ -4,7 +4,6 @@ package software
 import (
 	"encoding/json"
 	"fmt"
-	"runtime"
 	"strings"
 	"time"
 
@@ -323,7 +322,3 @@ type spdxExternalRef struct {
 	ReferenceLocator  string `json:"referenceLocator"`
 }
 
-// GetSystemPackages stub for non-Linux platforms - implemented in platform-specific files
-func (c *Collector) getOSDistro() string {
-	return runtime.GOOS
-}

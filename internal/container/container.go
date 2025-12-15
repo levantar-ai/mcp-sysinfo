@@ -45,7 +45,7 @@ func getDockerSocket() string {
 		"/var/run/docker.sock",
 	} {
 		if conn, err := net.Dial("unix", sock); err == nil {
-			conn.Close()
+			_ = conn.Close() // #nosec G104 -- best effort close
 			return sock
 		}
 	}
