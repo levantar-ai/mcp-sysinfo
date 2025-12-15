@@ -100,18 +100,67 @@ nav:
     - Core Metrics:
       - queries/core/index.md
       - get_cpu_info: queries/core/get_cpu_info.md
-      - get_memory_info: queries/core/get_memory_info.md
       - get_disk_info: queries/core/get_disk_info.md
+      - get_memory_info: queries/core/get_memory_info.md
       - get_network_info: queries/core/get_network_info.md
       - get_processes: queries/core/get_processes.md
-      - get_uptime: queries/core/get_uptime.md
       - get_temperature: queries/core/get_temperature.md
+      - get_uptime: queries/core/get_uptime.md
     - Log Access:
       - queries/logs/index.md
+      - get_app_logs: queries/logs/get_app_logs.md
+      - get_auth_logs: queries/logs/get_auth_logs.md
+      - get_event_log: queries/logs/get_event_log.md
+      - get_journal_logs: queries/logs/get_journal_logs.md
+      - get_kernel_logs: queries/logs/get_kernel_logs.md
+      - get_syslog: queries/logs/get_syslog.md
     - System Hooks:
       - queries/hooks/index.md
+      - get_arp_table: queries/hooks/get_arp_table.md
+      - get_block_devices: queries/hooks/get_block_devices.md
+      - get_capabilities: queries/hooks/get_capabilities.md
+      - get_certificates: queries/hooks/get_certificates.md
+      - get_cgroups: queries/hooks/get_cgroups.md
+      - get_core_dumps: queries/hooks/get_core_dumps.md
+      - get_cron_jobs: queries/hooks/get_cron_jobs.md
+      - get_disk_io: queries/hooks/get_disk_io.md
+      - get_dns_servers: queries/hooks/get_dns_servers.md
+      - get_env_vars: queries/hooks/get_env_vars.md
+      - get_firewall_rules: queries/hooks/get_firewall_rules.md
+      - get_hardware_info: queries/hooks/get_hardware_info.md
+      - get_inode_usage: queries/hooks/get_inode_usage.md
+      - get_ipc_resources: queries/hooks/get_ipc_resources.md
+      - get_kernel_modules: queries/hooks/get_kernel_modules.md
+      - get_listening_ports: queries/hooks/get_listening_ports.md
+      - get_loaded_drivers: queries/hooks/get_loaded_drivers.md
+      - get_mac_status: queries/hooks/get_mac_status.md
+      - get_mounts: queries/hooks/get_mounts.md
+      - get_namespaces: queries/hooks/get_namespaces.md
+      - get_network_stats: queries/hooks/get_network_stats.md
+      - get_ntp_status: queries/hooks/get_ntp_status.md
+      - get_numa_topology: queries/hooks/get_numa_topology.md
+      - get_open_files: queries/hooks/get_open_files.md
+      - get_pci_devices: queries/hooks/get_pci_devices.md
+      - get_power_state: queries/hooks/get_power_state.md
+      - get_routes: queries/hooks/get_routes.md
+      - get_scheduled_tasks: queries/hooks/get_scheduled_tasks.md
+      - get_ssh_config: queries/hooks/get_ssh_config.md
+      - get_startup_items: queries/hooks/get_startup_items.md
+      - get_sudo_config: queries/hooks/get_sudo_config.md
+      - get_systemd_services: queries/hooks/get_systemd_services.md
+      - get_timezone: queries/hooks/get_timezone.md
+      - get_usb_devices: queries/hooks/get_usb_devices.md
+      - get_user_accounts: queries/hooks/get_user_accounts.md
+      - get_vm_info: queries/hooks/get_vm_info.md
     - Software Inventory:
       - queries/sbom/index.md
+      - get_go_modules: queries/sbom/get_go_modules.md
+      - get_node_packages: queries/sbom/get_node_packages.md
+      - get_path_executables: queries/sbom/get_path_executables.md
+      - get_python_packages: queries/sbom/get_python_packages.md
+      - get_ruby_gems: queries/sbom/get_ruby_gems.md
+      - get_rust_packages: queries/sbom/get_rust_packages.md
+      - get_system_packages: queries/sbom/get_system_packages.md
   - Security:
     - Overview: security/index.md
     - Authentication: security/authentication.md
