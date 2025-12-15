@@ -23,9 +23,11 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/memory"
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
+	"github.com/levantar-ai/mcp-sysinfo/internal/osinfo"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
 	"github.com/levantar-ai/mcp-sysinfo/internal/redact"
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
+	"github.com/levantar-ai/mcp-sysinfo/internal/runtimes"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
@@ -331,7 +333,7 @@ EXAMPLES:
     # Verify audit log integrity
     mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
-AVAILABLE TOOLS (37):
+AVAILABLE TOOLS (56):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -349,8 +351,24 @@ AVAILABLE TOOLS (37):
     get_open_files, get_inode_usage, get_env_vars, get_user_accounts,
     get_sudo_config, get_ssh_config, get_mac_status, get_certificates
 
+  Hardware (scope: hardware):
+    get_hardware_info, get_usb_devices, get_pci_devices, get_block_devices
+
+  Resources (scope: resources):
+    get_process_environ, get_ipc_resources, get_namespaces, get_cgroups,
+    get_capabilities
+
+  System State (scope: state):
+    get_vm_info, get_timezone, get_ntp_status, get_core_dumps,
+    get_power_state, get_numa_topology
+
   Software Inventory (scope: software):
-    get_path_executables, get_system_packages
+    get_path_executables, get_system_packages, get_python_packages,
+    get_node_packages, get_go_modules, get_rust_packages, get_ruby_gems
+
+  Triage & Summary (scope: triage):
+    get_os_info, get_system_profile, get_service_manager_info,
+    get_cloud_environment, get_language_runtime_versions
 
   Sensitive (scope: sensitive):
     get_auth_logs
@@ -581,6 +599,47 @@ func runQuery(queryName string, jsonOut bool, pid int32) {
 	case "get_system_packages":
 		c := software.NewCollector()
 		result, err = c.GetSystemPackages()
+
+	case "get_python_packages":
+		c := software.NewCollector()
+		result, err = c.GetPythonPackages()
+
+	case "get_node_packages":
+		c := software.NewCollector()
+		result, err = c.GetNodePackages()
+
+	case "get_go_modules":
+		c := software.NewCollector()
+		result, err = c.GetGoModules()
+
+	case "get_rust_packages":
+		c := software.NewCollector()
+		result, err = c.GetRustPackages()
+
+	case "get_ruby_gems":
+		c := software.NewCollector()
+		result, err = c.GetRubyGems()
+
+	// Triage queries (Phase 1.9)
+	case "get_os_info":
+		c := osinfo.NewCollector()
+		result, err = c.GetOSInfo()
+
+	case "get_system_profile":
+		c := osinfo.NewCollector()
+		result, err = c.GetSystemProfile()
+
+	case "get_service_manager_info":
+		c := osinfo.NewCollector()
+		result, err = c.GetServiceManagerInfo()
+
+	case "get_cloud_environment":
+		c := osinfo.NewCollector()
+		result, err = c.GetCloudEnvironment()
+
+	case "get_language_runtime_versions":
+		c := runtimes.NewCollector()
+		result, err = c.GetLanguageRuntimes()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

@@ -12,8 +12,10 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/memory"
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
+	"github.com/levantar-ai/mcp-sysinfo/internal/osinfo"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
+	"github.com/levantar-ai/mcp-sysinfo/internal/runtimes"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
@@ -44,6 +46,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 1.7: SBOM & Software Inventory (scope: software)
 	registerSoftwareTools(s)
+
+	// Phase 1.9: Triage & Summary Queries (scope: triage)
+	registerTriageTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -933,6 +938,78 @@ func registerSoftwareTools(s *Server) {
 	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := software.NewCollector()
 		result, err := c.GetRubyGems()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerTriageTools(s *Server) {
+	// OS Info
+	s.RegisterTool(Tool{
+		Name:        "get_os_info",
+		Description: "Get OS version, build, kernel, and platform information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := osinfo.NewCollector()
+		result, err := c.GetOSInfo()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// System Profile
+	s.RegisterTool(Tool{
+		Name:        "get_system_profile",
+		Description: "Get a summary of CPU, memory, disk, and network status",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := osinfo.NewCollector()
+		result, err := c.GetSystemProfile()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Service Manager Info
+	s.RegisterTool(Tool{
+		Name:        "get_service_manager_info",
+		Description: "Get service manager status (systemd, launchd, or Windows SCM)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := osinfo.NewCollector()
+		result, err := c.GetServiceManagerInfo()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Cloud Environment
+	s.RegisterTool(Tool{
+		Name:        "get_cloud_environment",
+		Description: "Detect cloud provider and instance metadata (AWS, GCP, Azure)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := osinfo.NewCollector()
+		result, err := c.GetCloudEnvironment()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Language Runtime Versions
+	s.RegisterTool(Tool{
+		Name:        "get_language_runtime_versions",
+		Description: "Get installed language runtime versions (Python, Node.js, Go, Ruby, Java, PHP, Rust, .NET)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := runtimes.NewCollector()
+		result, err := c.GetLanguageRuntimes()
 		if err != nil {
 			return nil, err
 		}
