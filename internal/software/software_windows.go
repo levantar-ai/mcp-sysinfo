@@ -8,6 +8,8 @@ import (
 	"encoding/csv"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -768,4 +770,332 @@ func parseDismFeatures(output []byte) []types.WindowsFeature {
 	}
 
 	return features
+}
+
+// GetApplications discovers installed and running applications on Windows.
+func (c *Collector) GetApplications() (*types.ApplicationsResult, error) {
+	result := &types.ApplicationsResult{
+		Applications: []types.Application{},
+		Timestamp:    time.Now(),
+	}
+
+	// Get running processes
+	runningProcs := getWindowsProcesses()
+
+	// Get Windows services
+	services := getWindowsServices()
+
+	// Get listening ports
+	listeningPorts := getWindowsListeningPorts()
+
+	// Windows-specific config paths
+	winConfigPaths := map[string][]string{
+		"nginx":      {`C:\nginx\conf\nginx.conf`},
+		"apache":     {`C:\Apache24\conf\httpd.conf`, `C:\xampp\apache\conf\httpd.conf`},
+		"mysql":      {`C:\ProgramData\MySQL\MySQL Server 8.0\my.ini`, `C:\xampp\mysql\bin\my.ini`},
+		"postgresql": {`C:\Program Files\PostgreSQL\*\data\postgresql.conf`},
+		"mongodb":    {`C:\Program Files\MongoDB\Server\*\bin\mongod.cfg`},
+		"redis":      {`C:\Program Files\Redis\redis.windows.conf`},
+	}
+
+	// Windows-specific service mappings
+	winServiceNames := map[string][]string{
+		"nginx":         {"nginx"},
+		"apache":        {"Apache2.4", "Apache2.2", "Apache"},
+		"mysql":         {"MySQL", "MySQL80", "MariaDB"},
+		"postgresql":    {"postgresql-x64-*", "postgresql-*"},
+		"mongodb":       {"MongoDB"},
+		"redis":         {"Redis"},
+		"elasticsearch": {"elasticsearch"},
+		"rabbitmq":      {"RabbitMQ"},
+		"memcached":     {"memcached"},
+		"docker":        {"Docker", "com.docker.service"},
+	}
+
+	// Check each known application
+	for _, appDef := range GetKnownApplications() {
+		app := types.Application{
+			Name: appDef.Name,
+			Type: appDef.Type,
+		}
+
+		// Use Windows-specific config paths if available
+		if paths, ok := winConfigPaths[appDef.Name]; ok {
+			app.ConfigPaths = findExistingPaths(paths)
+		} else {
+			app.ConfigPaths = findExistingPaths(appDef.ConfigPaths)
+		}
+		app.LogPaths = findExistingPaths(appDef.LogPaths)
+
+		if appDef.DataDir != "" && fileExists(appDef.DataDir) {
+			app.DataDir = appDef.DataDir
+		}
+
+		detected := false
+
+		// Check by running process
+		for _, procName := range appDef.ProcessName {
+			procNameExe := procName + ".exe"
+			if proc, ok := runningProcs[procName]; ok {
+				app.Status = "running"
+				app.PID = proc.pid
+				app.User = proc.user
+				app.Detected = "process"
+				detected = true
+				break
+			}
+			if proc, ok := runningProcs[procNameExe]; ok {
+				app.Status = "running"
+				app.PID = proc.pid
+				app.User = proc.user
+				app.Detected = "process"
+				detected = true
+				break
+			}
+		}
+
+		// Check by Windows service
+		if !detected {
+			serviceNames := appDef.ServiceName
+			if winNames, ok := winServiceNames[appDef.Name]; ok {
+				serviceNames = winNames
+			}
+			for _, serviceName := range serviceNames {
+				if svc, ok := services[serviceName]; ok {
+					app.Service = serviceName
+					app.Status = svc.status
+					if svc.pid > 0 {
+						app.PID = int32(svc.pid)
+					}
+					app.Detected = "service"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by listening port
+		if !detected {
+			for _, port := range appDef.Ports {
+				if portInfo, ok := listeningPorts[port]; ok {
+					app.Port = port
+					app.PID = portInfo.pid
+					app.Status = "listening"
+					app.Detected = "port"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by config path existence
+		if !detected && len(app.ConfigPaths) > 0 {
+			app.Status = "installed"
+			app.Detected = "config"
+			detected = true
+		}
+
+		if detected {
+			// Try to get version
+			if len(appDef.VersionCmd) > 0 {
+				app.Version = getWindowsAppVersion(appDef.VersionCmd)
+			}
+
+			// Collect all listening ports for this app
+			for _, port := range appDef.Ports {
+				if _, ok := listeningPorts[port]; ok {
+					app.Ports = append(app.Ports, port)
+				}
+			}
+			if app.Port == 0 && len(app.Ports) > 0 {
+				app.Port = app.Ports[0]
+			}
+
+			result.Applications = append(result.Applications, app)
+		}
+	}
+
+	result.Count = len(result.Applications)
+	return result, nil
+}
+
+type windowsProcInfo struct {
+	pid  int32
+	user string
+}
+
+func getWindowsProcesses() map[string]windowsProcInfo {
+	procs := make(map[string]windowsProcInfo)
+
+	// #nosec G204 -- powershell is a system utility
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
+		"Get-Process | Select-Object Name,Id | ConvertTo-Csv -NoTypeInformation")
+	output, err := cmd.Output()
+	if err != nil {
+		return procs
+	}
+
+	reader := csv.NewReader(bytes.NewReader(output))
+	records, err := reader.ReadAll()
+	if err != nil || len(records) < 2 {
+		return procs
+	}
+
+	for _, record := range records[1:] {
+		if len(record) < 2 {
+			continue
+		}
+		name := strings.Trim(record[0], "\"")
+		pid, _ := strconv.ParseInt(strings.Trim(record[1], "\""), 10, 32)
+		procs[name] = windowsProcInfo{pid: int32(pid)}
+		procs[name+".exe"] = windowsProcInfo{pid: int32(pid)}
+	}
+
+	return procs
+}
+
+type windowsServiceInfo struct {
+	status string
+	pid    int
+}
+
+func getWindowsServices() map[string]windowsServiceInfo {
+	services := make(map[string]windowsServiceInfo)
+
+	// #nosec G204 -- powershell is a system utility
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
+		"Get-Service | Select-Object Name,Status | ConvertTo-Csv -NoTypeInformation")
+	output, err := cmd.Output()
+	if err != nil {
+		return services
+	}
+
+	reader := csv.NewReader(bytes.NewReader(output))
+	records, err := reader.ReadAll()
+	if err != nil || len(records) < 2 {
+		return services
+	}
+
+	for _, record := range records[1:] {
+		if len(record) < 2 {
+			continue
+		}
+		name := strings.Trim(record[0], "\"")
+		status := strings.ToLower(strings.Trim(record[1], "\""))
+		services[name] = windowsServiceInfo{status: status}
+	}
+
+	return services
+}
+
+type windowsPortInfo struct {
+	port int
+	pid  int32
+}
+
+func getWindowsListeningPorts() map[int]windowsPortInfo {
+	ports := make(map[int]windowsPortInfo)
+
+	// #nosec G204 -- netstat is a system utility
+	cmd := cmdexec.Command("netstat", "-ano")
+	output, err := cmd.Output()
+	if err != nil {
+		return ports
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+	for scanner.Scan() {
+		line := scanner.Text()
+		if !strings.Contains(line, "LISTENING") {
+			continue
+		}
+
+		fields := strings.Fields(line)
+		if len(fields) < 5 {
+			continue
+		}
+
+		// Format: Proto LocalAddress ForeignAddress State PID
+		localAddr := fields[1]
+		pid, _ := strconv.ParseInt(fields[4], 10, 32)
+
+		// Extract port from local address (format: IP:PORT or [::]:PORT)
+		if idx := strings.LastIndex(localAddr, ":"); idx >= 0 {
+			portStr := localAddr[idx+1:]
+			if port, err := strconv.Atoi(portStr); err == nil {
+				ports[port] = windowsPortInfo{port: port, pid: int32(pid)}
+			}
+		}
+	}
+
+	return ports
+}
+
+func getWindowsAppVersion(versionCmd []string) string {
+	if len(versionCmd) == 0 {
+		return ""
+	}
+
+	// Try to find the binary
+	binary := versionCmd[0]
+	if !strings.HasSuffix(strings.ToLower(binary), ".exe") {
+		binary += ".exe"
+	}
+
+	// Check common paths
+	checkPaths := []string{
+		binary,
+		filepath.Join("C:\\Program Files", binary),
+		filepath.Join("C:\\Program Files (x86)", binary),
+	}
+
+	var foundPath string
+	for _, p := range checkPaths {
+		if _, err := os.Stat(p); err == nil {
+			foundPath = p
+			break
+		}
+	}
+
+	if foundPath == "" {
+		// Try PATH
+		if p, err := cmdexec.LookPath(versionCmd[0]); err == nil {
+			foundPath = p
+		} else {
+			return ""
+		}
+	}
+
+	args := []string{}
+	if len(versionCmd) > 1 {
+		args = versionCmd[1:]
+	}
+
+	// #nosec G204 -- running version command
+	cmd := cmdexec.Command(foundPath, args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return ""
+	}
+
+	outStr := string(output)
+
+	// Common version patterns
+	patterns := []*regexp.Regexp{
+		regexp.MustCompile(`(?i)version[:\s]+([0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[-+][a-zA-Z0-9.-]*)?)`),
+		regexp.MustCompile(`(?i)v?([0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[-+][a-zA-Z0-9.-]*)?)`),
+	}
+
+	for _, pattern := range patterns {
+		if matches := pattern.FindStringSubmatch(outStr); len(matches) > 1 {
+			return matches[1]
+		}
+	}
+
+	lines := strings.Split(outStr, "\n")
+	if len(lines) > 0 {
+		return strings.TrimSpace(lines[0])
+	}
+
+	return ""
 }

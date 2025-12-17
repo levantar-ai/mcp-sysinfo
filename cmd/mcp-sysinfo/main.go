@@ -336,7 +336,7 @@ EXAMPLES:
     # Verify audit log integrity
     mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
-AVAILABLE TOOLS (82):
+AVAILABLE TOOLS (84):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -375,7 +375,8 @@ AVAILABLE TOOLS (82):
     get_sbom_cyclonedx, get_sbom_spdx,
     get_vulnerabilities_osv, get_vulnerabilities_debian, get_vulnerabilities_nvd,
     get_docker_images, get_docker_containers, get_docker_image_history,
-    get_npm_lock, get_pip_lock, get_cargo_lock, get_go_sum, get_gemfile_lock
+    get_npm_lock, get_pip_lock, get_cargo_lock, get_go_sum, get_gemfile_lock,
+    get_applications, get_app_config
 
   Triage & Summary (scope: triage):
     get_os_info, get_system_profile, get_service_manager_info,
@@ -747,6 +748,15 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath strin
 	case "get_language_runtime_versions":
 		c := runtimes.NewCollector()
 		result, err = c.GetLanguageRuntimes()
+
+	// Application queries (Phase 1.8)
+	case "get_applications":
+		c := software.NewCollector()
+		result, err = c.GetApplications()
+
+	case "get_app_config":
+		c := software.NewCollector()
+		result, err = c.GetAppConfig(lockPath)
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

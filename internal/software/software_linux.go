@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -566,4 +567,401 @@ func (c *Collector) GetWindowsFeatures() (*types.WindowsFeaturesResult, error) {
 		Count:     0,
 		Timestamp: time.Now(),
 	}, nil
+}
+
+// GetApplications discovers installed and running applications on Linux.
+func (c *Collector) GetApplications() (*types.ApplicationsResult, error) {
+	result := &types.ApplicationsResult{
+		Applications: []types.Application{},
+		Timestamp:    time.Now(),
+	}
+
+	// Get running processes
+	runningProcs := getRunningProcesses()
+
+	// Get systemd services
+	services := getSystemdServices()
+
+	// Get listening ports
+	listeningPorts := getListeningPorts()
+
+	// Check each known application
+	for _, appDef := range GetKnownApplications() {
+		app := types.Application{
+			Name:        appDef.Name,
+			Type:        appDef.Type,
+			ConfigPaths: findExistingPaths(appDef.ConfigPaths),
+			LogPaths:    findExistingPaths(appDef.LogPaths),
+		}
+
+		if appDef.DataDir != "" && fileExists(appDef.DataDir) {
+			app.DataDir = appDef.DataDir
+		}
+
+		detected := false
+
+		// Check by running process
+		for _, procName := range appDef.ProcessName {
+			if proc, ok := runningProcs[procName]; ok {
+				app.Status = "running"
+				app.PID = proc.pid
+				app.User = proc.user
+				app.BinaryPath = proc.exe
+				app.Detected = "process"
+				detected = true
+				break
+			}
+		}
+
+		// Check by systemd service
+		if !detected {
+			for _, serviceName := range appDef.ServiceName {
+				if svc, ok := services[serviceName]; ok {
+					app.Service = serviceName
+					app.Status = svc.status
+					if svc.pid > 0 {
+						app.PID = int32(svc.pid) // #nosec G115 -- PID checked positive
+					}
+					app.Detected = "service"
+					detected = true
+					break
+				}
+				// Also check with .service suffix
+				if svc, ok := services[serviceName+".service"]; ok {
+					app.Service = serviceName + ".service"
+					app.Status = svc.status
+					if svc.pid > 0 {
+						app.PID = int32(svc.pid) // #nosec G115 -- PID checked positive
+					}
+					app.Detected = "service"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by listening port
+		if !detected {
+			for _, port := range appDef.Ports {
+				if portInfo, ok := listeningPorts[port]; ok {
+					app.Port = port
+					app.PID = portInfo.pid
+					app.Status = "listening"
+					app.Detected = "port"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by config path existence
+		if !detected && len(app.ConfigPaths) > 0 {
+			app.Status = "installed"
+			app.Detected = "config"
+			detected = true
+		}
+
+		if detected {
+			// Try to get version
+			if len(appDef.VersionCmd) > 0 {
+				app.Version = getAppVersion(appDef.VersionCmd)
+			}
+
+			// Collect all listening ports for this app
+			for _, port := range appDef.Ports {
+				if _, ok := listeningPorts[port]; ok {
+					app.Ports = append(app.Ports, port)
+				}
+			}
+			if app.Port == 0 && len(app.Ports) > 0 {
+				app.Port = app.Ports[0]
+			}
+
+			result.Applications = append(result.Applications, app)
+		}
+	}
+
+	result.Count = len(result.Applications)
+	return result, nil
+}
+
+type processInfo struct {
+	pid  int32
+	user string
+	exe  string
+}
+
+func getRunningProcesses() map[string]processInfo {
+	procs := make(map[string]processInfo)
+
+	entries, err := os.ReadDir("/proc")
+	if err != nil {
+		return procs
+	}
+
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+
+		pid, err := strconv.ParseInt(entry.Name(), 10, 32)
+		if err != nil {
+			continue
+		}
+
+		// Read comm (process name)
+		commPath := filepath.Join("/proc", entry.Name(), "comm")
+		commBytes, err := os.ReadFile(commPath) // #nosec G304 -- reading from /proc
+		if err != nil {
+			continue
+		}
+		procName := strings.TrimSpace(string(commBytes))
+
+		// Read exe symlink
+		exePath := filepath.Join("/proc", entry.Name(), "exe")
+		exe, _ := os.Readlink(exePath)
+
+		// Read status for user
+		var user string
+		statusPath := filepath.Join("/proc", entry.Name(), "status")
+		// #nosec G304 -- reading from /proc
+		if statusBytes, err := os.ReadFile(statusPath); err == nil {
+			scanner := bufio.NewScanner(bytes.NewReader(statusBytes))
+			for scanner.Scan() {
+				line := scanner.Text()
+				if strings.HasPrefix(line, "Uid:") {
+					fields := strings.Fields(line)
+					if len(fields) >= 2 {
+						uid, _ := strconv.Atoi(fields[1])
+						user = lookupUser(uid)
+					}
+					break
+				}
+			}
+		}
+
+		procs[procName] = processInfo{
+			pid:  int32(pid),
+			user: user,
+			exe:  exe,
+		}
+	}
+
+	return procs
+}
+
+func lookupUser(uid int) string {
+	// Read /etc/passwd to lookup username
+	content, err := os.ReadFile("/etc/passwd")
+	if err != nil {
+		return strconv.Itoa(uid)
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(content))
+	for scanner.Scan() {
+		fields := strings.Split(scanner.Text(), ":")
+		if len(fields) >= 3 {
+			if u, _ := strconv.Atoi(fields[2]); u == uid {
+				return fields[0]
+			}
+		}
+	}
+	return strconv.Itoa(uid)
+}
+
+type serviceInfo struct {
+	status string
+	pid    int
+}
+
+func getSystemdServices() map[string]serviceInfo {
+	services := make(map[string]serviceInfo)
+
+	systemctl, err := cmdexec.LookPath("systemctl")
+	if err != nil {
+		return services
+	}
+
+	// List all services
+	cmd := cmdexec.Command(systemctl, "list-units", "--type=service", "--all", "--no-pager", "--no-legend")
+	output, err := cmd.Output()
+	if err != nil {
+		return services
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 4 {
+			continue
+		}
+
+		name := fields[0]
+		// Fields: UNIT LOAD ACTIVE SUB DESCRIPTION...
+		activeState := fields[2]
+		subState := fields[3]
+
+		status := activeState
+		if activeState == "active" {
+			status = subState // running, exited, etc.
+		}
+
+		services[name] = serviceInfo{status: status}
+	}
+
+	// Get main PIDs for running services
+	for name, svc := range services {
+		if svc.status == "running" {
+			cmd := cmdexec.Command(systemctl, "show", name, "--property=MainPID", "--value")
+			output, err := cmd.Output()
+			if err == nil {
+				if pid, err := strconv.Atoi(strings.TrimSpace(string(output))); err == nil && pid > 0 {
+					svc.pid = pid
+					services[name] = svc
+				}
+			}
+		}
+	}
+
+	return services
+}
+
+type portInfo struct {
+	port int
+	pid  int32
+}
+
+func getListeningPorts() map[int]portInfo {
+	ports := make(map[int]portInfo)
+
+	// Parse /proc/net/tcp and /proc/net/tcp6
+	for _, tcpFile := range []string{"/proc/net/tcp", "/proc/net/tcp6"} {
+		content, err := os.ReadFile(tcpFile) // #nosec G304 -- reading from known /proc paths
+		if err != nil {
+			continue
+		}
+
+		scanner := bufio.NewScanner(bytes.NewReader(content))
+		_ = scanner.Scan() // Skip header
+
+		for scanner.Scan() {
+			line := scanner.Text()
+			fields := strings.Fields(line)
+			if len(fields) < 10 {
+				continue
+			}
+
+			// State 0A = LISTEN
+			if fields[3] != "0A" {
+				continue
+			}
+
+			// Parse local address (format: IP:PORT in hex)
+			localAddr := fields[1]
+			parts := strings.Split(localAddr, ":")
+			if len(parts) != 2 {
+				continue
+			}
+
+			port64, err := strconv.ParseInt(parts[1], 16, 32)
+			if err != nil {
+				continue
+			}
+			port := int(port64)
+
+			// Get inode
+			inode := fields[9]
+
+			// Find PID by inode
+			pid := findPidByInode(inode)
+
+			ports[port] = portInfo{port: port, pid: int32(pid)} // #nosec G115 -- port values fit in int32
+		}
+	}
+
+	return ports
+}
+
+func findPidByInode(inode string) int {
+	entries, err := os.ReadDir("/proc")
+	if err != nil {
+		return 0
+	}
+
+	target := "socket:[" + inode + "]"
+
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+
+		pid, err := strconv.Atoi(entry.Name())
+		if err != nil {
+			continue
+		}
+
+		fdDir := filepath.Join("/proc", entry.Name(), "fd")
+		fds, err := os.ReadDir(fdDir)
+		if err != nil {
+			continue
+		}
+
+		for _, fd := range fds {
+			link, err := os.Readlink(filepath.Join(fdDir, fd.Name()))
+			if err != nil {
+				continue
+			}
+			if link == target {
+				return pid
+			}
+		}
+	}
+
+	return 0
+}
+
+func getAppVersion(versionCmd []string) string {
+	if len(versionCmd) == 0 {
+		return ""
+	}
+
+	binary, err := cmdexec.LookPath(versionCmd[0])
+	if err != nil {
+		return ""
+	}
+
+	args := []string{}
+	if len(versionCmd) > 1 {
+		args = versionCmd[1:]
+	}
+
+	cmd := cmdexec.Command(binary, args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return ""
+	}
+
+	// Extract version from output
+	outStr := string(output)
+
+	// Common version patterns
+	patterns := []*regexp.Regexp{
+		regexp.MustCompile(`(?i)version[:\s]+([0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[-+][a-zA-Z0-9.-]*)?)`),
+		regexp.MustCompile(`(?i)v?([0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[-+][a-zA-Z0-9.-]*)?)`),
+	}
+
+	for _, pattern := range patterns {
+		if matches := pattern.FindStringSubmatch(outStr); len(matches) > 1 {
+			return matches[1]
+		}
+	}
+
+	// Return first line trimmed if no pattern matches
+	lines := strings.Split(outStr, "\n")
+	if len(lines) > 0 {
+		return strings.TrimSpace(lines[0])
+	}
+
+	return ""
 }
