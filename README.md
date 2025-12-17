@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.9 In Progress (56 queries implemented)**
+**Status: Phase 1.9 In Progress (71 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -113,7 +113,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_power_state` | Power/battery state | ✅ | ✅ | ✅ |
 | `get_numa_topology` | NUMA topology | ✅ | - | - |
 
-### Phase 1.7: Software Inventory (7/31)
+### Phase 1.7: Software Inventory (20/31)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -124,10 +124,23 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_go_modules` | Go modules from GOPATH/pkg/mod | ✅ | ✅ | ✅ |
 | `get_rust_packages` | Rust crates from .cargo/registry | ✅ | ✅ | ✅ |
 | `get_ruby_gems` | Ruby gems from specifications | ✅ | ✅ | ✅ |
+| `get_maven_packages` | Java/Maven packages from ~/.m2 | ✅ | ✅ | ✅ |
+| `get_php_packages` | PHP packages from Composer | ✅ | ✅ | ✅ |
+| `get_dotnet_packages` | .NET/NuGet packages | ✅ | ✅ | ✅ |
+| `get_macos_applications` | Installed macOS applications | - | ✅ | - |
+| `get_windows_hotfixes` | Windows hotfixes/updates | - | - | ✅ |
+| `get_sbom_cyclonedx` | SBOM export (CycloneDX format) | ✅ | ✅ | ✅ |
+| `get_sbom_spdx` | SBOM export (SPDX format) | ✅ | ✅ | ✅ |
+| `get_vulnerabilities_osv` | Query OSV for vulnerabilities | ✅ | ✅ | ✅ |
+| `get_vulnerabilities_debian` | Query Debian Security Tracker | ✅ | - | - |
+| `get_vulnerabilities_nvd` | Query NVD for vulnerabilities | ✅ | ✅ | ✅ |
+| `get_docker_images` | Docker images list | ✅ | ✅ | ✅ |
+| `get_docker_containers` | Docker containers list | ✅ | ✅ | ✅ |
+| `get_docker_image_history` | Docker image layer history | ✅ | ✅ | ✅ |
 
 **Package managers supported:**
 - System: dpkg, rpm, apk, pacman, Homebrew, pkgutil, Chocolatey, winget
-- Language: pip (Python), npm (Node.js), go modules, Cargo (Rust), RubyGems
+- Language: pip (Python), npm (Node.js), go modules, Cargo (Rust), RubyGems, Maven, Composer (PHP), NuGet (.NET)
 
 > ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
 
@@ -181,20 +194,23 @@ Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgr
 
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
-### Phase 1.7: SBOM & Inventory (7/31 queries)
+### Phase 1.7: SBOM & Inventory (20/31 queries)
 
 Software Bill of Materials for vulnerability detection.
 
 **Implemented:**
 - PATH executables discovery
 - System package managers (dpkg, rpm, apk, pacman, brew, choco, winget)
-- Language package managers (pip, npm, go modules, Cargo, RubyGems)
+- Language package managers (pip, npm, go modules, Cargo, RubyGems, Maven, Composer, NuGet)
+- Platform-specific: macOS Applications, Windows Hotfixes
+- Container images (Docker API: images, containers, history)
+- SBOM export (CycloneDX 1.4, SPDX 2.3)
+- Vulnerability lookup (OSV, Debian Security Tracker, NVD)
 
 **Remaining queries:**
-- Additional language package managers (Maven, Composer, NuGet)
-- Container images (Docker API)
-- SBOM export (CycloneDX, SPDX)
-- Vulnerability lookup (OSV, NVD)
+- Package lock file parsing (package-lock.json, composer.lock)
+- Container package state (docker exec)
+- Additional vulnerability sources
 
 See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
 
@@ -431,7 +447,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.0** | Core Metrics | ✅ Complete | 7/7 |
 | **1.5** | Log Access | ✅ Complete | 6/6 |
 | **1.6** | System Hooks | ✅ Complete | 31/31 |
-| **1.7** | SBOM & Inventory | 🚧 In Progress | 13/31 |
+| **1.7** | SBOM & Inventory | 🚧 In Progress | 20/31 |
 | **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
 | **1.9** | Triage & Summary | 🚧 In Progress | 5/25 |
 | **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
@@ -444,7 +460,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 62/149 queries (42%)**
+**Implemented: 71/149 queries (48%)**
 
 **Phase 1.10 Windows Enterprise Features:**
 - Registry queries (read keys, enumerate, security descriptors)
