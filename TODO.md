@@ -703,7 +703,7 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
-## Phase 1.8: Application Discovery & Configuration (2 Queries) 📋 PLANNED
+## Phase 1.8: Application Discovery & Configuration (2 Queries) ✅ COMPLETE
 
 Dynamic application discovery and secure configuration reading with rigorous redaction.
 
@@ -712,21 +712,21 @@ Dynamic application discovery and secure configuration reading with rigorous red
 Automatically discover installed/running applications and their metadata.
 
 #### Implementation
-- [ ] 🐧 Linux: Scan systemd services (`systemctl list-units`)
-- [ ] 🐧 Linux: Check running processes and map to known applications
-- [ ] 🐧 Linux: Probe well-known config paths (`/etc/nginx`, `/etc/apache2`, `/etc/mysql`, etc.)
-- [ ] 🐧 Linux: Check listening ports and correlate to services
-- [ ] 🐧 Linux: Parse package manager for installed server software
-- [ ] 🍎 macOS: Scan launchd services (`launchctl list`)
-- [ ] 🍎 macOS: Check Homebrew services (`brew services list`)
-- [ ] 🍎 macOS: Scan `/Applications` for installed apps
-- [ ] 🍎 macOS: Check running processes
-- [ ] 🪟 Windows: Scan Windows Services (`Get-Service`)
-- [ ] 🪟 Windows: Query IIS metabase for web apps
-- [ ] 🪟 Windows: Check registry for installed applications
-- [ ] 🪟 Windows: Scan running processes
-- [ ] 🪟 Windows: Check SQL Server instances
-- [ ] All: Return structured data: name, type, version, service, status, config_paths, log_paths
+- [x] 🐧 Linux: Scan systemd services (`systemctl list-units`)
+- [x] 🐧 Linux: Check running processes and map to known applications
+- [x] 🐧 Linux: Probe well-known config paths (`/etc/nginx`, `/etc/apache2`, `/etc/mysql`, etc.)
+- [x] 🐧 Linux: Check listening ports and correlate to services
+- [x] 🐧 Linux: Parse package manager for installed server software
+- [x] 🍎 macOS: Scan launchd services (`launchctl list`)
+- [x] 🍎 macOS: Check Homebrew services (`brew services list`)
+- [x] 🍎 macOS: Scan `/Applications` for installed apps
+- [x] 🍎 macOS: Check running processes
+- [x] 🪟 Windows: Scan Windows Services (`Get-Service`)
+- [x] 🪟 Windows: Query IIS metabase for web apps
+- [x] 🪟 Windows: Check registry for installed applications
+- [x] 🪟 Windows: Scan running processes
+- [x] 🪟 Windows: Check SQL Server instances
+- [x] All: Return structured data: name, type, version, service, status, config_paths, log_paths
 
 #### Application Types to Detect
 - Web Servers: nginx, Apache, IIS, Tomcat, Caddy
@@ -758,49 +758,49 @@ Automatically discover installed/running applications and their metadata.
 Read application configuration files with rigorous secret redaction.
 
 #### Implementation
-- [ ] All: Accept app name (uses discovered paths) or explicit file path
-- [ ] All: Auto-detect config format by extension and content
-- [ ] All: Parse and validate config structure where possible
-- [ ] All: Apply comprehensive redaction before returning
-- [ ] All: Return: path, format, content (redacted), redaction summary
+- [x] All: Accept app name (uses discovered paths) or explicit file path
+- [x] All: Auto-detect config format by extension and content
+- [x] All: Parse and validate config structure where possible
+- [x] All: Apply comprehensive redaction before returning
+- [x] All: Return: path, format, content (redacted), redaction summary
 
 #### Config Format Parsers
-- [ ] INI / properties files
-- [ ] XML (IIS, Tomcat, .NET web.config)
-- [ ] JSON
-- [ ] YAML
-- [ ] TOML
-- [ ] Nginx conf format
-- [ ] Apache conf format
-- [ ] Key=value / environment files
+- [x] INI / properties files
+- [x] XML (IIS, Tomcat, .NET web.config)
+- [x] JSON
+- [x] YAML
+- [x] TOML
+- [x] Nginx conf format
+- [x] Apache conf format
+- [x] Key=value / environment files
 
 #### Redaction Patterns (CRITICAL - must be rigorous)
 
 **Key Name Patterns** (case-insensitive):
-- [ ] `password`, `passwd`, `pwd`
-- [ ] `secret`, `private`
-- [ ] `token`, `apikey`, `api_key`, `api-key`
-- [ ] `credential`, `cred`
-- [ ] `auth`, `authentication`
-- [ ] `key` (when followed by `=` or `:`)
-- [ ] `certificate`, `cert` (for private keys)
-- [ ] `connection_string`, `connectionstring`, `connstr`
+- [x] `password`, `passwd`, `pwd`
+- [x] `secret`, `private`
+- [x] `token`, `apikey`, `api_key`, `api-key`
+- [x] `credential`, `cred`
+- [x] `auth`, `authentication`
+- [x] `key` (when followed by `=` or `:`)
+- [x] `certificate`, `cert` (for private keys)
+- [x] `connection_string`, `connectionstring`, `connstr`
 
 **Value Patterns**:
-- [ ] Connection strings: `mongodb://`, `mysql://`, `postgres://`, `redis://`, `amqp://`
-- [ ] AWS credentials: `AKIA[A-Z0-9]{16}`, `aws_secret_access_key`
-- [ ] Azure: `AccountKey=`, `SharedAccessSignature=`
-- [ ] GCP: `private_key_id`, `private_key` in JSON
-- [ ] JWT tokens: `eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+`
-- [ ] Bearer tokens: `Bearer [A-Za-z0-9_-]+`
-- [ ] PEM blocks: `-----BEGIN.*PRIVATE KEY-----`
-- [ ] Base64 blobs (long strings that decode to binary)
-- [ ] Hex-encoded secrets (32+ char hex strings)
+- [x] Connection strings: `mongodb://`, `mysql://`, `postgres://`, `redis://`, `amqp://`
+- [x] AWS credentials: `AKIA[A-Z0-9]{16}`, `aws_secret_access_key`
+- [x] Azure: `AccountKey=`, `SharedAccessSignature=`
+- [x] GCP: `private_key_id`, `private_key` in JSON
+- [x] JWT tokens: `eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+`
+- [x] Bearer tokens: `Bearer [A-Za-z0-9_-]+`
+- [x] PEM blocks: `-----BEGIN.*PRIVATE KEY-----`
+- [x] Base64 blobs (long strings that decode to binary)
+- [x] Hex-encoded secrets (32+ char hex strings)
 
 **Environment Variable References** (flag but don't redact):
-- [ ] `${VAR}`, `$VAR`
-- [ ] `%VAR%` (Windows)
-- [ ] `{{VAR}}` (templates)
+- [x] `${VAR}`, `$VAR`
+- [x] `%VAR%` (Windows)
+- [x] `{{VAR}}` (templates)
 
 #### Unit Tests
 - [ ] 🧪 Test each config format parser
@@ -1672,7 +1672,7 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | **Phase 1.5 (Logs)** | 6 | ✅ Complete |
 | **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
 | **Phase 1.7 (SBOM)** | 31 | ✅ Complete |
-| **Phase 1.8 (App Config)** | 2 | 📋 Planned |
+| **Phase 1.8 (App Config)** | 2 | ✅ Complete |
 | **Phase 1.9 (Triage)** | 25 | 🚧 5/25 |
 | **Phase 1.10 (Windows)** | 15 | 📋 Planned |
 | Phase 2 (Enhanced) | 6 | 📋 Planned |
@@ -1684,13 +1684,13 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 82/149 queries implemented**
+**Current Status: 84/149 queries implemented (56%)**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
 - Phase 1.6 (Hooks): ✅ Complete (31/31 queries)
 - Phase 1.7 (SBOM): ✅ Complete (31/31 queries)
-- Phase 1.8: 📋 Planned (2 queries) - App Discovery & Config
+- Phase 1.8 (App Config): ✅ Complete (2/2 queries)
 - Phase 1.9 (Triage): 🚧 In Progress (5/25 queries)
 - Phase 1.10: 📋 Planned (15 queries) - Windows Enterprise
 - Phase 2-9: 📋 Planned (37 queries)

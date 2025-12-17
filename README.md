@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.9 In Progress (82 queries implemented)**
+**Status: Phase 1.9 In Progress (84 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -155,6 +155,35 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - Lock files: package-lock.json, requirements.txt, Pipfile.lock, Cargo.lock, go.sum, Gemfile.lock
 
 > ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
+
+### Phase 1.8: Application Discovery ✅ (2/2)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_applications` | Discover installed/running apps (web servers, databases, etc.) | ✅ | ✅ | ✅ |
+| `get_app_config` | Read config files with sensitive data redaction | ✅ | ✅ | ✅ |
+
+**Applications detected:**
+- Web servers: nginx, Apache, Caddy, Tomcat
+- Databases: MySQL/MariaDB, PostgreSQL, MongoDB, Redis, Elasticsearch
+- Message queues: RabbitMQ, Kafka
+- Caching: Memcached, Varnish
+- Runtimes: PHP-FPM, Node.js
+- Containers: Docker, Podman
+- Mail: Postfix
+- Security: fail2ban
+- Directory: OpenLDAP
+
+**Config formats supported:**
+- INI, XML, JSON, YAML, TOML
+- nginx conf, Apache conf
+- Environment files (.env)
+
+**Sensitive data redaction:**
+- Passwords, secrets, tokens, API keys
+- Connection strings (MongoDB, MySQL, PostgreSQL, Redis)
+- AWS credentials, Azure keys
+- JWT tokens, PEM private keys
 
 ### Phase 1.9: Triage & Summary (5/25)
 

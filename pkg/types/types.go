@@ -1502,3 +1502,56 @@ type Vulnerability struct {
 	Published  string   `json:"published,omitempty"`
 	Modified   string   `json:"modified,omitempty"`
 }
+
+// ============================================================================
+// Phase 1.8: Application Discovery & Configuration Types
+// ============================================================================
+
+// ApplicationsResult represents application discovery query results.
+type ApplicationsResult struct {
+	Applications []Application `json:"applications"`
+	Count        int           `json:"count"`
+	Timestamp    time.Time     `json:"timestamp"`
+}
+
+// Application represents a discovered application.
+type Application struct {
+	Name        string   `json:"name"`
+	Type        string   `json:"type"` // web_server, database, message_queue, runtime, cache, mail, directory, container, security
+	Version     string   `json:"version,omitempty"`
+	Service     string   `json:"service,omitempty"`      // Service/daemon name
+	Status      string   `json:"status,omitempty"`       // running, stopped, enabled, disabled
+	Port        int      `json:"port,omitempty"`         // Primary listening port
+	Ports       []int    `json:"ports,omitempty"`        // All listening ports
+	PID         int32    `json:"pid,omitempty"`          // Main process PID
+	User        string   `json:"user,omitempty"`         // Running as user
+	ConfigPaths []string `json:"config_paths,omitempty"` // Known config file paths
+	LogPaths    []string `json:"log_paths,omitempty"`    // Known log file paths
+	DataDir     string   `json:"data_dir,omitempty"`     // Data directory
+	BinaryPath  string   `json:"binary_path,omitempty"`  // Path to executable
+	Detected    string   `json:"detected"`               // Detection method: service, process, port, config, package
+}
+
+// AppConfigResult represents application configuration read results.
+type AppConfigResult struct {
+	Path             string           `json:"path"`
+	Format           string           `json:"format"`  // ini, xml, json, yaml, toml, nginx, apache, env, unknown
+	Content          string           `json:"content"` // Redacted content
+	RedactionSummary RedactionSummary `json:"redaction_summary"`
+	ParsedKeys       []string         `json:"parsed_keys,omitempty"` // Top-level keys if parseable
+	Sections         []string         `json:"sections,omitempty"`    // Sections/blocks if applicable
+	FileSize         int64            `json:"file_size"`
+	ModTime          time.Time        `json:"mod_time"`
+	Readable         bool             `json:"readable"`
+	Error            string           `json:"error,omitempty"`
+	Timestamp        time.Time        `json:"timestamp"`
+}
+
+// RedactionSummary summarizes what was redacted from a config file.
+type RedactionSummary struct {
+	TotalRedactions int            `json:"total_redactions"`
+	ByType          map[string]int `json:"by_type"`                 // password: 3, api_key: 1, etc.
+	EnvVarRefs      int            `json:"env_var_refs"`            // Environment variable references found (not redacted but flagged)
+	TemplateRefs    int            `json:"template_refs"`           // Template references found (not redacted but flagged)
+	RedactedKeys    []string       `json:"redacted_keys,omitempty"` // List of keys that were redacted
+}

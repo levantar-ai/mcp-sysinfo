@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -456,4 +458,356 @@ func (c *Collector) GetWindowsFeatures() (*types.WindowsFeaturesResult, error) {
 		Count:     0,
 		Timestamp: time.Now(),
 	}, nil
+}
+
+// GetApplications discovers installed and running applications on macOS.
+func (c *Collector) GetApplications() (*types.ApplicationsResult, error) {
+	result := &types.ApplicationsResult{
+		Applications: []types.Application{},
+		Timestamp:    time.Now(),
+	}
+
+	// Get running processes
+	runningProcs := getDarwinProcesses()
+
+	// Get launchd services
+	services := getLaunchdServices()
+
+	// Get brew services
+	brewServices := getBrewServices()
+
+	// Get listening ports
+	listeningPorts := getDarwinListeningPorts()
+
+	// macOS-specific config paths
+	macConfigPaths := map[string][]string{
+		"nginx":      {"/usr/local/etc/nginx/nginx.conf", "/opt/homebrew/etc/nginx/nginx.conf"},
+		"apache":     {"/etc/apache2/httpd.conf", "/usr/local/etc/httpd/httpd.conf"},
+		"mysql":      {"/usr/local/etc/my.cnf", "/opt/homebrew/etc/my.cnf"},
+		"postgresql": {"/usr/local/var/postgres/postgresql.conf", "/opt/homebrew/var/postgres/postgresql.conf"},
+		"mongodb":    {"/usr/local/etc/mongod.conf", "/opt/homebrew/etc/mongod.conf"},
+		"redis":      {"/usr/local/etc/redis.conf", "/opt/homebrew/etc/redis.conf"},
+	}
+
+	// Check each known application
+	for _, appDef := range GetKnownApplications() {
+		app := types.Application{
+			Name: appDef.Name,
+			Type: appDef.Type,
+		}
+
+		// Use macOS-specific config paths if available
+		if paths, ok := macConfigPaths[appDef.Name]; ok {
+			app.ConfigPaths = findExistingPaths(paths)
+		} else {
+			app.ConfigPaths = findExistingPaths(appDef.ConfigPaths)
+		}
+		app.LogPaths = findExistingPaths(appDef.LogPaths)
+
+		if appDef.DataDir != "" && fileExists(appDef.DataDir) {
+			app.DataDir = appDef.DataDir
+		}
+
+		detected := false
+
+		// Check by running process
+		for _, procName := range appDef.ProcessName {
+			if proc, ok := runningProcs[procName]; ok {
+				app.Status = "running"
+				app.PID = proc.pid
+				app.User = proc.user
+				app.Detected = "process"
+				detected = true
+				break
+			}
+		}
+
+		// Check by launchd service
+		if !detected {
+			for _, serviceName := range appDef.ServiceName {
+				if svc, ok := services[serviceName]; ok {
+					app.Service = serviceName
+					app.Status = svc.status
+					if svc.pid > 0 {
+						app.PID = int32(svc.pid)
+					}
+					app.Detected = "service"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by brew service
+		if !detected {
+			for _, serviceName := range appDef.ServiceName {
+				if svc, ok := brewServices[serviceName]; ok {
+					app.Service = serviceName
+					app.Status = svc.status
+					if svc.pid > 0 {
+						app.PID = int32(svc.pid)
+					}
+					app.Detected = "brew_service"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by listening port
+		if !detected {
+			for _, port := range appDef.Ports {
+				if portInfo, ok := listeningPorts[port]; ok {
+					app.Port = port
+					app.PID = portInfo.pid
+					app.Status = "listening"
+					app.Detected = "port"
+					detected = true
+					break
+				}
+			}
+		}
+
+		// Check by config path existence
+		if !detected && len(app.ConfigPaths) > 0 {
+			app.Status = "installed"
+			app.Detected = "config"
+			detected = true
+		}
+
+		if detected {
+			// Try to get version
+			if len(appDef.VersionCmd) > 0 {
+				app.Version = getDarwinAppVersion(appDef.VersionCmd)
+			}
+
+			// Collect all listening ports for this app
+			for _, port := range appDef.Ports {
+				if _, ok := listeningPorts[port]; ok {
+					app.Ports = append(app.Ports, port)
+				}
+			}
+			if app.Port == 0 && len(app.Ports) > 0 {
+				app.Port = app.Ports[0]
+			}
+
+			result.Applications = append(result.Applications, app)
+		}
+	}
+
+	result.Count = len(result.Applications)
+	return result, nil
+}
+
+type darwinProcInfo struct {
+	pid  int32
+	user string
+}
+
+func getDarwinProcesses() map[string]darwinProcInfo {
+	procs := make(map[string]darwinProcInfo)
+
+	ps, err := cmdexec.LookPath("ps")
+	if err != nil {
+		return procs
+	}
+
+	cmd := cmdexec.Command(ps, "aux")
+	output, err := cmd.Output()
+	if err != nil {
+		return procs
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+	_ = scanner.Scan() // Skip header
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 11 {
+			continue
+		}
+
+		user := fields[0]
+		pid, _ := strconv.ParseInt(fields[1], 10, 32)
+		command := fields[10]
+
+		// Get just the process name from the command
+		procName := filepath.Base(command)
+
+		procs[procName] = darwinProcInfo{
+			pid:  int32(pid),
+			user: user,
+		}
+	}
+
+	return procs
+}
+
+type darwinServiceInfo struct {
+	status string
+	pid    int
+}
+
+func getLaunchdServices() map[string]darwinServiceInfo {
+	services := make(map[string]darwinServiceInfo)
+
+	launchctl, err := cmdexec.LookPath("launchctl")
+	if err != nil {
+		return services
+	}
+
+	cmd := cmdexec.Command(launchctl, "list")
+	output, err := cmd.Output()
+	if err != nil {
+		return services
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+	_ = scanner.Scan() // Skip header
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			continue
+		}
+
+		// Format: PID Status Label
+		pid, _ := strconv.Atoi(fields[0])
+		label := fields[2]
+
+		// Extract service name from label
+		parts := strings.Split(label, ".")
+		serviceName := parts[len(parts)-1]
+
+		status := "stopped"
+		if pid > 0 {
+			status = "running"
+		}
+
+		services[serviceName] = darwinServiceInfo{status: status, pid: pid}
+		services[label] = darwinServiceInfo{status: status, pid: pid}
+	}
+
+	return services
+}
+
+func getBrewServices() map[string]darwinServiceInfo {
+	services := make(map[string]darwinServiceInfo)
+
+	brew, err := cmdexec.LookPath("brew")
+	if err != nil {
+		return services
+	}
+
+	cmd := cmdexec.Command(brew, "services", "list")
+	output, err := cmd.Output()
+	if err != nil {
+		return services
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+	_ = scanner.Scan() // Skip header
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			continue
+		}
+
+		name := fields[0]
+		status := fields[1]
+
+		services[name] = darwinServiceInfo{status: status}
+	}
+
+	return services
+}
+
+type darwinPortInfo struct {
+	port int
+	pid  int32
+}
+
+func getDarwinListeningPorts() map[int]darwinPortInfo {
+	ports := make(map[int]darwinPortInfo)
+
+	lsof, err := cmdexec.LookPath("lsof")
+	if err != nil {
+		return ports
+	}
+
+	cmd := cmdexec.Command(lsof, "-nP", "-iTCP", "-sTCP:LISTEN")
+	output, err := cmd.Output()
+	if err != nil {
+		return ports
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 9 {
+			continue
+		}
+
+		// Format: COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
+		pid, _ := strconv.ParseInt(fields[1], 10, 32)
+		name := fields[8] // e.g., "*:8080" or "localhost:3000"
+
+		// Extract port from name
+		if idx := strings.LastIndex(name, ":"); idx >= 0 {
+			portStr := name[idx+1:]
+			if port, err := strconv.Atoi(portStr); err == nil {
+				ports[port] = darwinPortInfo{port: port, pid: int32(pid)}
+			}
+		}
+	}
+
+	return ports
+}
+
+func getDarwinAppVersion(versionCmd []string) string {
+	if len(versionCmd) == 0 {
+		return ""
+	}
+
+	binary, err := cmdexec.LookPath(versionCmd[0])
+	if err != nil {
+		return ""
+	}
+
+	args := []string{}
+	if len(versionCmd) > 1 {
+		args = versionCmd[1:]
+	}
+
+	cmd := cmdexec.Command(binary, args...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return ""
+	}
+
+	outStr := string(output)
+
+	// Common version patterns
+	patterns := []*regexp.Regexp{
+		regexp.MustCompile(`(?i)version[:\s]+([0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[-+][a-zA-Z0-9.-]*)?)`),
+		regexp.MustCompile(`(?i)v?([0-9]+\.[0-9]+(?:\.[0-9]+)?(?:[-+][a-zA-Z0-9.-]*)?)`),
+	}
+
+	for _, pattern := range patterns {
+		if matches := pattern.FindStringSubmatch(outStr); len(matches) > 1 {
+			return matches[1]
+		}
+	}
+
+	lines := strings.Split(outStr, "\n")
+	if len(lines) > 0 {
+		return strings.TrimSpace(lines[0])
+	}
+
+	return ""
 }

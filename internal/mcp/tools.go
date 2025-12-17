@@ -1317,6 +1317,41 @@ func registerSoftwareTools(s *Server) {
 		}
 		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
 	})
+
+	// Phase 1.8: Application Discovery
+	s.RegisterTool(Tool{
+		Name:        "get_applications",
+		Description: "Discover installed and running applications (web servers, databases, message queues, etc.)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetApplications()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Phase 1.8: Application Configuration
+	s.RegisterTool(Tool{
+		Name:        "get_app_config",
+		Description: "Read application config file with sensitive data redacted (passwords, API keys, tokens, etc.)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to the configuration file"},
+			},
+			Required: []string{"path"},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		configPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetAppConfig(configPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
 }
 
 func registerTriageTools(s *Server) {
