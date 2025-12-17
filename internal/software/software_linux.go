@@ -394,3 +394,176 @@ func parsePacmanOutput(output []byte) []types.SystemPackage {
 
 	return packages
 }
+
+// GetSnapPackages returns installed Snap packages.
+func (c *Collector) GetSnapPackages() (*types.SnapPackagesResult, error) {
+	snap, err := cmdexec.LookPath("snap")
+	if err != nil {
+		return &types.SnapPackagesResult{
+			Packages:  []types.SnapPackage{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	// #nosec G204 -- snap path is from LookPath
+	cmd := cmdexec.Command(snap, "list", "--color=never")
+	output, err := cmd.Output()
+	if err != nil {
+		return &types.SnapPackagesResult{
+			Packages:  []types.SnapPackage{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	packages := parseSnapOutput(output)
+	return &types.SnapPackagesResult{
+		Packages:  packages,
+		Count:     len(packages),
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// parseSnapOutput parses snap list output.
+func parseSnapOutput(output []byte) []types.SnapPackage {
+	var packages []types.SnapPackage
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+
+	// Skip header line (Name  Version  Rev  Tracking  Publisher  Notes)
+	_ = scanner.Scan()
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Fields(line)
+		if len(fields) < 4 {
+			continue
+		}
+
+		pkg := types.SnapPackage{
+			Name:     fields[0],
+			Version:  fields[1],
+			Revision: fields[2],
+		}
+
+		if len(fields) > 3 {
+			pkg.Channel = fields[3]
+		}
+		if len(fields) > 4 {
+			pkg.Publisher = fields[4]
+		}
+		if len(fields) > 5 {
+			notes := fields[5]
+			if strings.Contains(notes, "devmode") {
+				pkg.DevMode = true
+			}
+			pkg.Confinement = notes
+		}
+
+		packages = append(packages, pkg)
+	}
+
+	return packages
+}
+
+// GetFlatpakPackages returns installed Flatpak packages.
+func (c *Collector) GetFlatpakPackages() (*types.FlatpakPackagesResult, error) {
+	flatpak, err := cmdexec.LookPath("flatpak")
+	if err != nil {
+		return &types.FlatpakPackagesResult{
+			Packages:  []types.FlatpakPackage{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	// #nosec G204 -- flatpak path is from LookPath
+	cmd := cmdexec.Command(flatpak, "list", "--columns=name,application,version,branch,origin,arch")
+	output, err := cmd.Output()
+	if err != nil {
+		return &types.FlatpakPackagesResult{
+			Packages:  []types.FlatpakPackage{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	packages := parseFlatpakOutput(output)
+	return &types.FlatpakPackagesResult{
+		Packages:  packages,
+		Count:     len(packages),
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// parseFlatpakOutput parses flatpak list output.
+func parseFlatpakOutput(output []byte) []types.FlatpakPackage {
+	var packages []types.FlatpakPackage
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fields := strings.Split(line, "\t")
+		if len(fields) < 2 {
+			continue
+		}
+
+		pkg := types.FlatpakPackage{
+			Name:  strings.TrimSpace(fields[0]),
+			AppID: strings.TrimSpace(fields[1]),
+		}
+
+		if len(fields) > 2 {
+			pkg.Version = strings.TrimSpace(fields[2])
+		}
+		if len(fields) > 3 {
+			pkg.Branch = strings.TrimSpace(fields[3])
+		}
+		if len(fields) > 4 {
+			pkg.Origin = strings.TrimSpace(fields[4])
+		}
+		if len(fields) > 5 {
+			pkg.Arch = strings.TrimSpace(fields[5])
+		}
+
+		packages = append(packages, pkg)
+	}
+
+	return packages
+}
+
+// GetHomebrewCasks returns empty on Linux (macOS only).
+func (c *Collector) GetHomebrewCasks() (*types.HomebrewCasksResult, error) {
+	return &types.HomebrewCasksResult{
+		Casks:     []types.HomebrewCask{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetScoopPackages returns empty on Linux (Windows only).
+func (c *Collector) GetScoopPackages() (*types.ScoopPackagesResult, error) {
+	return &types.ScoopPackagesResult{
+		Packages:  []types.ScoopPackage{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetWindowsPrograms returns empty on Linux (Windows only).
+func (c *Collector) GetWindowsPrograms() (*types.WindowsProgramsResult, error) {
+	return &types.WindowsProgramsResult{
+		Programs:  []types.WindowsProgram{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetWindowsFeatures returns empty on Linux (Windows only).
+func (c *Collector) GetWindowsFeatures() (*types.WindowsFeaturesResult, error) {
+	return &types.WindowsFeaturesResult{
+		Features:  []types.WindowsFeature{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}

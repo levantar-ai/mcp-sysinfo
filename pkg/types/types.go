@@ -1144,15 +1144,15 @@ type LanguagePackage struct {
 
 // OSInfoResult represents OS information query results.
 type OSInfoResult struct {
-	Name            string    `json:"name"`             // e.g., "Ubuntu", "macOS", "Windows"
-	Version         string    `json:"version"`          // e.g., "22.04", "14.0", "10"
-	Build           string    `json:"build,omitempty"`  // Build number
+	Name            string    `json:"name"`               // e.g., "Ubuntu", "macOS", "Windows"
+	Version         string    `json:"version"`            // e.g., "22.04", "14.0", "10"
+	Build           string    `json:"build,omitempty"`    // Build number
 	Codename        string    `json:"codename,omitempty"` // e.g., "jammy", "Sonoma"
-	KernelVersion   string    `json:"kernel_version"`   // e.g., "6.5.0-44-generic"
-	KernelArch      string    `json:"kernel_arch"`      // e.g., "x86_64", "arm64"
-	Platform        string    `json:"platform"`         // linux, darwin, windows
-	PlatformFamily  string    `json:"platform_family"`  // debian, rhel, darwin, windows
-	PlatformVersion string    `json:"platform_version"` // Full version string
+	KernelVersion   string    `json:"kernel_version"`     // e.g., "6.5.0-44-generic"
+	KernelArch      string    `json:"kernel_arch"`        // e.g., "x86_64", "arm64"
+	Platform        string    `json:"platform"`           // linux, darwin, windows
+	PlatformFamily  string    `json:"platform_family"`    // debian, rhel, darwin, windows
+	PlatformVersion string    `json:"platform_version"`   // Full version string
 	Hostname        string    `json:"hostname"`
 	BootMode        string    `json:"boot_mode,omitempty"` // UEFI or BIOS
 	Timestamp       time.Time `json:"timestamp"`
@@ -1160,69 +1160,69 @@ type OSInfoResult struct {
 
 // SystemProfileResult represents system profile (hardware summary) query results.
 type SystemProfileResult struct {
-	OS         OSInfoResult     `json:"os"`
-	CPU        CPUSummary       `json:"cpu"`
-	Memory     MemorySummary    `json:"memory"`
-	Disk       DiskSummary      `json:"disk"`
-	Network    NetworkSummary   `json:"network"`
-	Timestamp  time.Time        `json:"timestamp"`
+	OS        OSInfoResult   `json:"os"`
+	CPU       CPUSummary     `json:"cpu"`
+	Memory    MemorySummary  `json:"memory"`
+	Disk      DiskSummary    `json:"disk"`
+	Network   NetworkSummary `json:"network"`
+	Timestamp time.Time      `json:"timestamp"`
 }
 
 // CPUSummary represents CPU summary for system profile.
 type CPUSummary struct {
-	Model         string  `json:"model"`
-	Cores         int     `json:"cores"`
-	LogicalCores  int     `json:"logical_cores"`
-	UsagePercent  float64 `json:"usage_percent"`
-	FrequencyMHz  float64 `json:"frequency_mhz,omitempty"`
+	Model        string  `json:"model"`
+	Cores        int     `json:"cores"`
+	LogicalCores int     `json:"logical_cores"`
+	UsagePercent float64 `json:"usage_percent"`
+	FrequencyMHz float64 `json:"frequency_mhz,omitempty"`
 }
 
 // MemorySummary represents memory summary for system profile.
 type MemorySummary struct {
-	TotalGB       float64 `json:"total_gb"`
-	UsedGB        float64 `json:"used_gb"`
-	AvailableGB   float64 `json:"available_gb"`
-	UsagePercent  float64 `json:"usage_percent"`
-	SwapTotalGB   float64 `json:"swap_total_gb,omitempty"`
-	SwapUsedGB    float64 `json:"swap_used_gb,omitempty"`
+	TotalGB      float64 `json:"total_gb"`
+	UsedGB       float64 `json:"used_gb"`
+	AvailableGB  float64 `json:"available_gb"`
+	UsagePercent float64 `json:"usage_percent"`
+	SwapTotalGB  float64 `json:"swap_total_gb,omitempty"`
+	SwapUsedGB   float64 `json:"swap_used_gb,omitempty"`
 }
 
 // DiskSummary represents disk summary for system profile.
 type DiskSummary struct {
-	TotalGB       float64 `json:"total_gb"`
-	UsedGB        float64 `json:"used_gb"`
-	FreeGB        float64 `json:"free_gb"`
-	UsagePercent  float64 `json:"usage_percent"`
-	Partitions    int     `json:"partitions"`
+	TotalGB      float64 `json:"total_gb"`
+	UsedGB       float64 `json:"used_gb"`
+	FreeGB       float64 `json:"free_gb"`
+	UsagePercent float64 `json:"usage_percent"`
+	Partitions   int     `json:"partitions"`
 }
 
 // NetworkSummary represents network summary for system profile.
 type NetworkSummary struct {
-	Interfaces    int      `json:"interfaces"`
-	ActiveIPs     []string `json:"active_ips"`
-	PrimaryIP     string   `json:"primary_ip,omitempty"`
-	Hostname      string   `json:"hostname"`
+	Interfaces int      `json:"interfaces"`
+	ActiveIPs  []string `json:"active_ips"`
+	PrimaryIP  string   `json:"primary_ip,omitempty"`
+	Hostname   string   `json:"hostname"`
 }
 
 // ServiceManagerInfoResult represents service manager information query results.
 type ServiceManagerInfoResult struct {
-	Type           string    `json:"type"`            // systemd, launchd, scm
-	Version        string    `json:"version,omitempty"`
-	Running        bool      `json:"running"`
-	PID            int32     `json:"pid,omitempty"`
-	BootTarget     string    `json:"boot_target,omitempty"`    // multi-user.target, graphical.target
-	DefaultTarget  string    `json:"default_target,omitempty"` // Default boot target
-	TotalUnits     int       `json:"total_units,omitempty"`
-	ActiveUnits    int       `json:"active_units,omitempty"`
-	FailedUnits    int       `json:"failed_units,omitempty"`
-	LoadedUnits    int       `json:"loaded_units,omitempty"`
-	Timestamp      time.Time `json:"timestamp"`
+	Type          string    `json:"type"` // systemd, launchd, scm
+	Version       string    `json:"version,omitempty"`
+	Running       bool      `json:"running"`
+	PID           int32     `json:"pid,omitempty"`
+	BootTarget    string    `json:"boot_target,omitempty"`    // multi-user.target, graphical.target
+	DefaultTarget string    `json:"default_target,omitempty"` // Default boot target
+	TotalUnits    int       `json:"total_units,omitempty"`
+	ActiveUnits   int       `json:"active_units,omitempty"`
+	FailedUnits   int       `json:"failed_units,omitempty"`
+	LoadedUnits   int       `json:"loaded_units,omitempty"`
+	Timestamp     time.Time `json:"timestamp"`
 }
 
 // CloudEnvironmentResult represents cloud environment detection query results.
 type CloudEnvironmentResult struct {
 	IsCloud         bool              `json:"is_cloud"`
-	Provider        string            `json:"provider,omitempty"`        // aws, gcp, azure, digitalocean, etc.
+	Provider        string            `json:"provider,omitempty"` // aws, gcp, azure, digitalocean, etc.
 	Region          string            `json:"region,omitempty"`
 	Zone            string            `json:"zone,omitempty"`
 	InstanceID      string            `json:"instance_id,omitempty"`
@@ -1247,13 +1247,13 @@ type LanguageRuntimesResult struct {
 
 // LanguageRuntime represents a detected language runtime.
 type LanguageRuntime struct {
-	Name        string `json:"name"`                  // python, node, go, ruby, java, php, rust, dotnet
+	Name        string `json:"name"` // python, node, go, ruby, java, php, rust, dotnet
 	Version     string `json:"version"`
-	Path        string `json:"path"`                  // Path to the executable
-	Manager     string `json:"manager,omitempty"`     // Package manager (pip, npm, etc.)
+	Path        string `json:"path"`              // Path to the executable
+	Manager     string `json:"manager,omitempty"` // Package manager (pip, npm, etc.)
 	ManagerVer  string `json:"manager_version,omitempty"`
 	DefaultPkg  string `json:"default_package,omitempty"` // Default package dir
-	Environment string `json:"environment,omitempty"` // virtualenv, nvm, rbenv, etc.
+	Environment string `json:"environment,omitempty"`     // virtualenv, nvm, rbenv, etc.
 }
 
 // ContainerImagesResult represents Docker/Podman images query results.
@@ -1289,17 +1289,17 @@ type DockerContainersResult struct {
 
 // DockerContainer represents a Docker/Podman container instance.
 type DockerContainer struct {
-	ID      string              `json:"id"`
-	Name    string              `json:"name"`
-	Names   []string            `json:"names,omitempty"`
-	Image   string              `json:"image"`
-	ImageID string              `json:"image_id"`
-	Command string              `json:"command,omitempty"`
-	Created time.Time           `json:"created"`
-	State   string              `json:"state"`
-	Status  string              `json:"status"`
-	Ports   []DockerPort        `json:"ports,omitempty"`
-	Labels  map[string]string   `json:"labels,omitempty"`
+	ID      string            `json:"id"`
+	Name    string            `json:"name"`
+	Names   []string          `json:"names,omitempty"`
+	Image   string            `json:"image"`
+	ImageID string            `json:"image_id"`
+	Command string            `json:"command,omitempty"`
+	Created time.Time         `json:"created"`
+	State   string            `json:"state"`
+	Status  string            `json:"status"`
+	Ports   []DockerPort      `json:"ports,omitempty"`
+	Labels  map[string]string `json:"labels,omitempty"`
 }
 
 // DockerPort represents a Docker container port mapping.
@@ -1342,7 +1342,7 @@ type SBOMResult struct {
 
 // SBOMComponent represents a component in the SBOM.
 type SBOMComponent struct {
-	Type        string   `json:"type"`    // library, application, framework, etc.
+	Type        string   `json:"type"` // library, application, framework, etc.
 	Name        string   `json:"name"`
 	Version     string   `json:"version"`
 	PURL        string   `json:"purl,omitempty"` // Package URL
@@ -1351,6 +1351,127 @@ type SBOMComponent struct {
 	Description string   `json:"description,omitempty"`
 	Supplier    string   `json:"supplier,omitempty"`
 	Hashes      []string `json:"hashes,omitempty"`
+}
+
+// SnapPackagesResult represents Snap packages query results.
+type SnapPackagesResult struct {
+	Packages  []SnapPackage `json:"packages"`
+	Count     int           `json:"count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// SnapPackage represents a Snap package.
+type SnapPackage struct {
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+	Revision    string `json:"revision,omitempty"`
+	Channel     string `json:"channel,omitempty"`
+	Publisher   string `json:"publisher,omitempty"`
+	Description string `json:"description,omitempty"`
+	DevMode     bool   `json:"dev_mode,omitempty"`
+	Confinement string `json:"confinement,omitempty"`
+}
+
+// FlatpakPackagesResult represents Flatpak packages query results.
+type FlatpakPackagesResult struct {
+	Packages  []FlatpakPackage `json:"packages"`
+	Count     int              `json:"count"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// FlatpakPackage represents a Flatpak package.
+type FlatpakPackage struct {
+	Name       string `json:"name"`
+	AppID      string `json:"app_id"`
+	Version    string `json:"version,omitempty"`
+	Branch     string `json:"branch,omitempty"`
+	Origin     string `json:"origin,omitempty"`
+	Arch       string `json:"arch,omitempty"`
+	InstallDir string `json:"install_dir,omitempty"`
+}
+
+// HomebrewCasksResult represents Homebrew Casks query results.
+type HomebrewCasksResult struct {
+	Casks     []HomebrewCask `json:"casks"`
+	Count     int            `json:"count"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// HomebrewCask represents a Homebrew Cask (macOS GUI app).
+type HomebrewCask struct {
+	Name        string   `json:"name"`
+	Version     string   `json:"version"`
+	AppNames    []string `json:"app_names,omitempty"`
+	Description string   `json:"description,omitempty"`
+	Homepage    string   `json:"homepage,omitempty"`
+	Outdated    bool     `json:"outdated,omitempty"`
+}
+
+// ScoopPackagesResult represents Scoop packages query results (Windows).
+type ScoopPackagesResult struct {
+	Packages  []ScoopPackage `json:"packages"`
+	Count     int            `json:"count"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// ScoopPackage represents a Scoop package.
+type ScoopPackage struct {
+	Name        string `json:"name"`
+	Version     string `json:"version"`
+	Bucket      string `json:"bucket,omitempty"`
+	Updated     string `json:"updated,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+// WindowsProgramsResult represents Windows installed programs query results.
+type WindowsProgramsResult struct {
+	Programs  []WindowsProgram `json:"programs"`
+	Count     int              `json:"count"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// WindowsProgram represents a Windows installed program from registry.
+type WindowsProgram struct {
+	Name            string `json:"name"`
+	Version         string `json:"version,omitempty"`
+	Publisher       string `json:"publisher,omitempty"`
+	InstallDate     string `json:"install_date,omitempty"`
+	InstallLocation string `json:"install_location,omitempty"`
+	UninstallString string `json:"uninstall_string,omitempty"`
+	EstimatedSize   int64  `json:"estimated_size,omitempty"`
+	SystemComponent bool   `json:"system_component,omitempty"`
+}
+
+// WindowsFeaturesResult represents Windows features query results.
+type WindowsFeaturesResult struct {
+	Features  []WindowsFeature `json:"features"`
+	Count     int              `json:"count"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// WindowsFeature represents a Windows feature/role.
+type WindowsFeature struct {
+	Name        string `json:"name"`
+	State       string `json:"state"` // Enabled, Disabled
+	Description string `json:"description,omitempty"`
+}
+
+// LockFileResult represents lock file parsing results.
+type LockFileResult struct {
+	LockFile     string           `json:"lock_file"`    // package-lock.json, requirements.txt, etc.
+	PackageType  string           `json:"package_type"` // npm, pip, cargo, go, gem, composer
+	Dependencies []LockDependency `json:"dependencies"`
+	Count        int              `json:"count"`
+	Timestamp    time.Time        `json:"timestamp"`
+}
+
+// LockDependency represents a dependency from a lock file.
+type LockDependency struct {
+	Name      string `json:"name"`
+	Version   string `json:"version"`
+	Resolved  string `json:"resolved,omitempty"`  // Resolved URL/registry
+	Integrity string `json:"integrity,omitempty"` // Hash/checksum
+	Dev       bool   `json:"dev,omitempty"`
 }
 
 // VulnerabilityResult represents vulnerability lookup results.
@@ -1368,16 +1489,16 @@ type VulnerabilityResult struct {
 
 // Vulnerability represents a security vulnerability.
 type Vulnerability struct {
-	ID          string   `json:"id"`
-	Aliases     []string `json:"aliases,omitempty"` // CVE, GHSA, etc.
-	Summary     string   `json:"summary"`
-	Details     string   `json:"details,omitempty"`
-	Severity    string   `json:"severity"` // CRITICAL, HIGH, MEDIUM, LOW
-	CVSS        float64  `json:"cvss,omitempty"`
-	Package     string   `json:"package"`
-	Version     string   `json:"version"`
-	FixedIn     string   `json:"fixed_in,omitempty"`
-	References  []string `json:"references,omitempty"`
-	Published   string   `json:"published,omitempty"`
-	Modified    string   `json:"modified,omitempty"`
+	ID         string   `json:"id"`
+	Aliases    []string `json:"aliases,omitempty"` // CVE, GHSA, etc.
+	Summary    string   `json:"summary"`
+	Details    string   `json:"details,omitempty"`
+	Severity   string   `json:"severity"` // CRITICAL, HIGH, MEDIUM, LOW
+	CVSS       float64  `json:"cvss,omitempty"`
+	Package    string   `json:"package"`
+	Version    string   `json:"version"`
+	FixedIn    string   `json:"fixed_in,omitempty"`
+	References []string `json:"references,omitempty"`
+	Published  string   `json:"published,omitempty"`
+	Modified   string   `json:"modified,omitempty"`
 }

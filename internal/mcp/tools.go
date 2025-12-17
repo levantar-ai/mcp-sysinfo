@@ -1133,6 +1133,190 @@ func registerSoftwareTools(s *Server) {
 		}
 		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
 	})
+
+	// Snap Packages (Linux)
+	s.RegisterTool(Tool{
+		Name:        "get_snap_packages",
+		Description: "Get installed Snap packages (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetSnapPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Flatpak Packages (Linux)
+	s.RegisterTool(Tool{
+		Name:        "get_flatpak_packages",
+		Description: "Get installed Flatpak packages (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetFlatpakPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Homebrew Casks (macOS)
+	s.RegisterTool(Tool{
+		Name:        "get_homebrew_casks",
+		Description: "Get installed Homebrew Casks (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetHomebrewCasks()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Scoop Packages (Windows)
+	s.RegisterTool(Tool{
+		Name:        "get_scoop_packages",
+		Description: "Get installed Scoop packages (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetScoopPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Windows Programs
+	s.RegisterTool(Tool{
+		Name:        "get_windows_programs",
+		Description: "Get installed Windows programs from registry (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetWindowsPrograms()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Windows Features
+	s.RegisterTool(Tool{
+		Name:        "get_windows_features",
+		Description: "Get Windows optional features (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetWindowsFeatures()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// NPM Lock file
+	s.RegisterTool(Tool{
+		Name:        "get_npm_lock",
+		Description: "Parse package-lock.json for precise npm dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to package-lock.json (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetNpmLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Pip Lock file
+	s.RegisterTool(Tool{
+		Name:        "get_pip_lock",
+		Description: "Parse requirements.txt or Pipfile.lock for Python dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to requirements.txt or Pipfile.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetPipLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Cargo Lock file
+	s.RegisterTool(Tool{
+		Name:        "get_cargo_lock",
+		Description: "Parse Cargo.lock for Rust dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to Cargo.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetCargoLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Go Sum file
+	s.RegisterTool(Tool{
+		Name:        "get_go_sum",
+		Description: "Parse go.sum for Go module versions and checksums",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to go.sum (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetGoSum(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Gemfile Lock file
+	s.RegisterTool(Tool{
+		Name:        "get_gemfile_lock",
+		Description: "Parse Gemfile.lock for Ruby gem versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to Gemfile.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetGemfileLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
 }
 
 func registerTriageTools(s *Server) {

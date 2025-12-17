@@ -1070,3 +1070,386 @@ func parseNuSpec(path string) types.LanguagePackage {
 
 	return pkg
 }
+
+// ============================================================================
+// Lock File Parsers
+// ============================================================================
+
+// GetNpmLock parses package-lock.json in the current directory or specified path.
+func (c *Collector) GetNpmLock(lockPath string) (*types.LockFileResult, error) {
+	result := &types.LockFileResult{
+		LockFile:     "package-lock.json",
+		PackageType:  "npm",
+		Dependencies: []types.LockDependency{},
+		Timestamp:    time.Now(),
+	}
+
+	if lockPath == "" {
+		// Try current directory
+		lockPath = "package-lock.json"
+	}
+
+	data, err := os.ReadFile(lockPath) // #nosec G304 -- user-specified lock file path
+	if err != nil {
+		return result, nil
+	}
+
+	result.LockFile = lockPath
+
+	var lockFile struct {
+		Packages map[string]struct {
+			Version   string `json:"version"`
+			Resolved  string `json:"resolved"`
+			Integrity string `json:"integrity"`
+			Dev       bool   `json:"dev"`
+		} `json:"packages"`
+		Dependencies map[string]struct {
+			Version   string `json:"version"`
+			Resolved  string `json:"resolved"`
+			Integrity string `json:"integrity"`
+			Dev       bool   `json:"dev"`
+		} `json:"dependencies"`
+	}
+
+	if err := json.Unmarshal(data, &lockFile); err != nil {
+		return result, nil
+	}
+
+	// Parse v2/v3 format (packages field)
+	for name, pkg := range lockFile.Packages {
+		if name == "" || !strings.HasPrefix(name, "node_modules/") {
+			continue
+		}
+		pkgName := strings.TrimPrefix(name, "node_modules/")
+		result.Dependencies = append(result.Dependencies, types.LockDependency{
+			Name:      pkgName,
+			Version:   pkg.Version,
+			Resolved:  pkg.Resolved,
+			Integrity: pkg.Integrity,
+			Dev:       pkg.Dev,
+		})
+	}
+
+	// Parse v1 format (dependencies field)
+	if len(result.Dependencies) == 0 {
+		for name, dep := range lockFile.Dependencies {
+			result.Dependencies = append(result.Dependencies, types.LockDependency{
+				Name:      name,
+				Version:   dep.Version,
+				Resolved:  dep.Resolved,
+				Integrity: dep.Integrity,
+				Dev:       dep.Dev,
+			})
+		}
+	}
+
+	result.Count = len(result.Dependencies)
+	return result, nil
+}
+
+// GetPipLock parses requirements.txt or Pipfile.lock.
+func (c *Collector) GetPipLock(lockPath string) (*types.LockFileResult, error) {
+	result := &types.LockFileResult{
+		LockFile:     "requirements.txt",
+		PackageType:  "pip",
+		Dependencies: []types.LockDependency{},
+		Timestamp:    time.Now(),
+	}
+
+	if lockPath == "" {
+		// Try Pipfile.lock first, then requirements.txt
+		if _, err := os.Stat("Pipfile.lock"); err == nil {
+			lockPath = "Pipfile.lock"
+		} else {
+			lockPath = "requirements.txt"
+		}
+	}
+
+	result.LockFile = lockPath
+
+	if strings.HasSuffix(lockPath, "Pipfile.lock") {
+		return parsePipfileLock(lockPath, result)
+	}
+
+	// Parse requirements.txt format
+	data, err := os.ReadFile(lockPath) // #nosec G304 -- user-specified lock file path
+	if err != nil {
+		return result, nil
+	}
+
+	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") || strings.HasPrefix(line, "-") {
+			continue
+		}
+
+		// Parse package==version or package>=version format
+		dep := types.LockDependency{}
+		for _, sep := range []string{"==", ">=", "<=", "~=", "!="} {
+			if idx := strings.Index(line, sep); idx > 0 {
+				dep.Name = strings.TrimSpace(line[:idx])
+				dep.Version = strings.TrimSpace(line[idx+len(sep):])
+				// Remove any trailing markers like ; or [
+				if spaceIdx := strings.IndexAny(dep.Version, " ;["); spaceIdx > 0 {
+					dep.Version = dep.Version[:spaceIdx]
+				}
+				break
+			}
+		}
+
+		if dep.Name == "" {
+			// Just package name without version
+			dep.Name = strings.Split(line, "[")[0]
+			dep.Name = strings.Split(dep.Name, ";")[0]
+			dep.Name = strings.TrimSpace(dep.Name)
+		}
+
+		if dep.Name != "" {
+			result.Dependencies = append(result.Dependencies, dep)
+		}
+	}
+
+	result.Count = len(result.Dependencies)
+	return result, nil
+}
+
+func parsePipfileLock(lockPath string, result *types.LockFileResult) (*types.LockFileResult, error) {
+	data, err := os.ReadFile(lockPath) // #nosec G304 -- user-specified lock file path
+	if err != nil {
+		return result, nil
+	}
+
+	var pipfile struct {
+		Default map[string]struct {
+			Version string   `json:"version"`
+			Hashes  []string `json:"hashes"`
+		} `json:"default"`
+		Develop map[string]struct {
+			Version string   `json:"version"`
+			Hashes  []string `json:"hashes"`
+		} `json:"develop"`
+	}
+
+	if err := json.Unmarshal(data, &pipfile); err != nil {
+		return result, nil
+	}
+
+	for name, pkg := range pipfile.Default {
+		dep := types.LockDependency{
+			Name:    name,
+			Version: strings.TrimPrefix(pkg.Version, "=="),
+		}
+		if len(pkg.Hashes) > 0 {
+			dep.Integrity = pkg.Hashes[0]
+		}
+		result.Dependencies = append(result.Dependencies, dep)
+	}
+
+	for name, pkg := range pipfile.Develop {
+		dep := types.LockDependency{
+			Name:    name,
+			Version: strings.TrimPrefix(pkg.Version, "=="),
+			Dev:     true,
+		}
+		if len(pkg.Hashes) > 0 {
+			dep.Integrity = pkg.Hashes[0]
+		}
+		result.Dependencies = append(result.Dependencies, dep)
+	}
+
+	result.Count = len(result.Dependencies)
+	return result, nil
+}
+
+// GetCargoLock parses Cargo.lock.
+func (c *Collector) GetCargoLock(lockPath string) (*types.LockFileResult, error) {
+	result := &types.LockFileResult{
+		LockFile:     "Cargo.lock",
+		PackageType:  "cargo",
+		Dependencies: []types.LockDependency{},
+		Timestamp:    time.Now(),
+	}
+
+	if lockPath == "" {
+		lockPath = "Cargo.lock"
+	}
+
+	result.LockFile = lockPath
+
+	data, err := os.ReadFile(lockPath) // #nosec G304 -- user-specified lock file path
+	if err != nil {
+		return result, nil
+	}
+
+	// Parse TOML-like format manually (simple parsing)
+	// [[package]] sections
+	content := string(data)
+	sections := strings.Split(content, "[[package]]")
+
+	for _, section := range sections[1:] { // Skip first empty section
+		dep := types.LockDependency{}
+		lines := strings.Split(section, "\n")
+
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if strings.HasPrefix(line, "name = ") {
+				dep.Name = strings.Trim(strings.TrimPrefix(line, "name = "), "\"")
+			} else if strings.HasPrefix(line, "version = ") {
+				dep.Version = strings.Trim(strings.TrimPrefix(line, "version = "), "\"")
+			} else if strings.HasPrefix(line, "source = ") {
+				dep.Resolved = strings.Trim(strings.TrimPrefix(line, "source = "), "\"")
+			} else if strings.HasPrefix(line, "checksum = ") {
+				dep.Integrity = strings.Trim(strings.TrimPrefix(line, "checksum = "), "\"")
+			}
+		}
+
+		if dep.Name != "" && dep.Version != "" {
+			result.Dependencies = append(result.Dependencies, dep)
+		}
+	}
+
+	result.Count = len(result.Dependencies)
+	return result, nil
+}
+
+// GetGoSum parses go.sum.
+func (c *Collector) GetGoSum(lockPath string) (*types.LockFileResult, error) {
+	result := &types.LockFileResult{
+		LockFile:     "go.sum",
+		PackageType:  "go",
+		Dependencies: []types.LockDependency{},
+		Timestamp:    time.Now(),
+	}
+
+	if lockPath == "" {
+		lockPath = "go.sum"
+	}
+
+	result.LockFile = lockPath
+
+	data, err := os.ReadFile(lockPath) // #nosec G304 -- user-specified lock file path
+	if err != nil {
+		return result, nil
+	}
+
+	seen := make(map[string]bool)
+	scanner := bufio.NewScanner(strings.NewReader(string(data)))
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		// Format: module version hash
+		// e.g., github.com/gin-gonic/gin v1.9.0 h1:abc123
+		parts := strings.Fields(line)
+		if len(parts) < 3 {
+			continue
+		}
+
+		modPath := parts[0]
+		version := parts[1]
+		hash := parts[2]
+
+		// Skip /go.mod entries (we want the actual module)
+		if strings.HasSuffix(version, "/go.mod") {
+			continue
+		}
+
+		key := modPath + "@" + version
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+
+		result.Dependencies = append(result.Dependencies, types.LockDependency{
+			Name:      modPath,
+			Version:   strings.TrimPrefix(version, "v"),
+			Integrity: hash,
+		})
+	}
+
+	result.Count = len(result.Dependencies)
+	return result, nil
+}
+
+// GetGemfileLock parses Gemfile.lock.
+func (c *Collector) GetGemfileLock(lockPath string) (*types.LockFileResult, error) {
+	result := &types.LockFileResult{
+		LockFile:     "Gemfile.lock",
+		PackageType:  "gem",
+		Dependencies: []types.LockDependency{},
+		Timestamp:    time.Now(),
+	}
+
+	if lockPath == "" {
+		lockPath = "Gemfile.lock"
+	}
+
+	result.LockFile = lockPath
+
+	data, err := os.ReadFile(lockPath) // #nosec G304 -- user-specified lock file path
+	if err != nil {
+		return result, nil
+	}
+
+	// Parse Gemfile.lock format
+	// Look for the SPECS section
+	content := string(data)
+	inSpecs := false
+	scanner := bufio.NewScanner(strings.NewReader(content))
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if strings.TrimSpace(line) == "GEM" {
+			// Skip until specs:
+			continue
+		}
+
+		if strings.TrimSpace(line) == "specs:" {
+			inSpecs = true
+			continue
+		}
+
+		if !inSpecs {
+			continue
+		}
+
+		// Exit specs section on next section header
+		if !strings.HasPrefix(line, "  ") && strings.TrimSpace(line) != "" {
+			if strings.TrimSpace(line) == "PLATFORMS" || strings.TrimSpace(line) == "DEPENDENCIES" ||
+				strings.TrimSpace(line) == "BUNDLED WITH" || strings.TrimSpace(line) == "RUBY VERSION" {
+				inSpecs = false
+				continue
+			}
+		}
+
+		// Parse gem entries (indented with 4 spaces for main gems)
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "(") {
+			continue // Skip empty and dependency lines
+		}
+
+		// Format: gem-name (version)
+		if idx := strings.Index(line, " ("); idx > 0 {
+			name := line[:idx]
+			version := line[idx+2:]
+			if endIdx := strings.Index(version, ")"); endIdx > 0 {
+				version = version[:endIdx]
+			}
+
+			// Skip sub-dependencies (they have additional indentation in original)
+			// We only want the main gems
+			result.Dependencies = append(result.Dependencies, types.LockDependency{
+				Name:    name,
+				Version: version,
+			})
+		}
+	}
+
+	result.Count = len(result.Dependencies)
+	return result, nil
+}

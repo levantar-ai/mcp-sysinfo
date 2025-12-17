@@ -53,6 +53,7 @@ func main() {
 	jsonOutput := flag.Bool("json", false, "Output in JSON format (for --query)")
 	pid := flag.Int("pid", 0, "Process ID for queries that need it (e.g., get_capabilities)")
 	imageID := flag.String("image-id", "", "Image ID for container queries (e.g., get_docker_image_history)")
+	lockPath := flag.String("path", "", "Path to lock file for lock file queries (e.g., get_npm_lock)")
 
 	// Transport flags
 	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
@@ -150,7 +151,7 @@ func main() {
 		if *pid > 0 {
 			pidVal = int32(*pid) // #nosec G115 -- checked for positive
 		}
-		runQuery(*query, *jsonOutput, pidVal, *imageID)
+		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath)
 		os.Exit(0)
 	}
 
@@ -335,7 +336,7 @@ EXAMPLES:
     # Verify audit log integrity
     mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
-AVAILABLE TOOLS (71):
+AVAILABLE TOOLS (82):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -369,9 +370,12 @@ AVAILABLE TOOLS (71):
     get_node_packages, get_go_modules, get_rust_packages, get_ruby_gems,
     get_maven_packages, get_php_packages, get_dotnet_packages,
     get_macos_applications, get_windows_hotfixes,
+    get_snap_packages, get_flatpak_packages, get_homebrew_casks,
+    get_scoop_packages, get_windows_programs, get_windows_features,
     get_sbom_cyclonedx, get_sbom_spdx,
     get_vulnerabilities_osv, get_vulnerabilities_debian, get_vulnerabilities_nvd,
-    get_docker_images, get_docker_containers, get_docker_image_history
+    get_docker_images, get_docker_containers, get_docker_image_history,
+    get_npm_lock, get_pip_lock, get_cargo_lock, get_go_sum, get_gemfile_lock
 
   Triage & Summary (scope: triage):
     get_os_info, get_system_profile, get_service_manager_info,
@@ -390,7 +394,7 @@ For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
 }
 
-func runQuery(queryName string, jsonOut bool, pid int32, imageID string) {
+func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath string) {
 	var result interface{}
 	var err error
 
@@ -678,6 +682,50 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID string) {
 	case "get_docker_image_history":
 		c := container.NewCollector()
 		result, err = c.GetImageHistory(imageID)
+
+	case "get_snap_packages":
+		c := software.NewCollector()
+		result, err = c.GetSnapPackages()
+
+	case "get_flatpak_packages":
+		c := software.NewCollector()
+		result, err = c.GetFlatpakPackages()
+
+	case "get_homebrew_casks":
+		c := software.NewCollector()
+		result, err = c.GetHomebrewCasks()
+
+	case "get_scoop_packages":
+		c := software.NewCollector()
+		result, err = c.GetScoopPackages()
+
+	case "get_windows_programs":
+		c := software.NewCollector()
+		result, err = c.GetWindowsPrograms()
+
+	case "get_windows_features":
+		c := software.NewCollector()
+		result, err = c.GetWindowsFeatures()
+
+	case "get_npm_lock":
+		c := software.NewCollector()
+		result, err = c.GetNpmLock(lockPath)
+
+	case "get_pip_lock":
+		c := software.NewCollector()
+		result, err = c.GetPipLock(lockPath)
+
+	case "get_cargo_lock":
+		c := software.NewCollector()
+		result, err = c.GetCargoLock(lockPath)
+
+	case "get_go_sum":
+		c := software.NewCollector()
+		result, err = c.GetGoSum(lockPath)
+
+	case "get_gemfile_lock":
+		c := software.NewCollector()
+		result, err = c.GetGemfileLock(lockPath)
 
 	// Triage queries (Phase 1.9)
 	case "get_os_info":

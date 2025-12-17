@@ -352,3 +352,108 @@ func parseMacOSApp(appPath string) MacOSApplication {
 
 	return app
 }
+
+// GetSnapPackages returns empty on macOS (Linux only).
+func (c *Collector) GetSnapPackages() (*types.SnapPackagesResult, error) {
+	return &types.SnapPackagesResult{
+		Packages:  []types.SnapPackage{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetFlatpakPackages returns empty on macOS (Linux only).
+func (c *Collector) GetFlatpakPackages() (*types.FlatpakPackagesResult, error) {
+	return &types.FlatpakPackagesResult{
+		Packages:  []types.FlatpakPackage{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetHomebrewCasks returns installed Homebrew Casks (macOS GUI apps).
+func (c *Collector) GetHomebrewCasks() (*types.HomebrewCasksResult, error) {
+	brew, err := cmdexec.LookPath("brew")
+	if err != nil {
+		return &types.HomebrewCasksResult{
+			Casks:     []types.HomebrewCask{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	// #nosec G204 -- brew path is from LookPath
+	cmd := cmdexec.Command(brew, "list", "--cask", "--versions")
+	output, err := cmd.Output()
+	if err != nil {
+		return &types.HomebrewCasksResult{
+			Casks:     []types.HomebrewCask{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	casks := parseBrewCasksOutput(output)
+	return &types.HomebrewCasksResult{
+		Casks:     casks,
+		Count:     len(casks),
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// parseBrewCasksOutput parses Homebrew cask list output.
+func parseBrewCasksOutput(output []byte) []types.HomebrewCask {
+	var casks []types.HomebrewCask
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		// Format: cask-name version
+		fields := strings.Fields(line)
+		if len(fields) < 1 {
+			continue
+		}
+
+		cask := types.HomebrewCask{
+			Name: fields[0],
+		}
+		if len(fields) > 1 {
+			cask.Version = fields[1]
+		}
+
+		casks = append(casks, cask)
+	}
+
+	return casks
+}
+
+// GetScoopPackages returns empty on macOS (Windows only).
+func (c *Collector) GetScoopPackages() (*types.ScoopPackagesResult, error) {
+	return &types.ScoopPackagesResult{
+		Packages:  []types.ScoopPackage{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetWindowsPrograms returns empty on macOS (Windows only).
+func (c *Collector) GetWindowsPrograms() (*types.WindowsProgramsResult, error) {
+	return &types.WindowsProgramsResult{
+		Programs:  []types.WindowsProgram{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetWindowsFeatures returns empty on macOS (Windows only).
+func (c *Collector) GetWindowsFeatures() (*types.WindowsFeaturesResult, error) {
+	return &types.WindowsFeaturesResult{
+		Features:  []types.WindowsFeature{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}

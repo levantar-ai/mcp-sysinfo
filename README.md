@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.9 In Progress (71 queries implemented)**
+**Status: Phase 1.9 In Progress (82 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -113,7 +113,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_power_state` | Power/battery state | ✅ | ✅ | ✅ |
 | `get_numa_topology` | NUMA topology | ✅ | - | - |
 
-### Phase 1.7: Software Inventory (20/31)
+### Phase 1.7: Software Inventory ✅ (31/31)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -129,6 +129,12 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_dotnet_packages` | .NET/NuGet packages | ✅ | ✅ | ✅ |
 | `get_macos_applications` | Installed macOS applications | - | ✅ | - |
 | `get_windows_hotfixes` | Windows hotfixes/updates | - | - | ✅ |
+| `get_snap_packages` | Snap packages | ✅ | - | - |
+| `get_flatpak_packages` | Flatpak packages | ✅ | - | - |
+| `get_homebrew_casks` | Homebrew Casks (macOS GUI apps) | - | ✅ | - |
+| `get_scoop_packages` | Scoop packages | - | - | ✅ |
+| `get_windows_programs` | Windows programs from registry | - | - | ✅ |
+| `get_windows_features` | Windows optional features | - | - | ✅ |
 | `get_sbom_cyclonedx` | SBOM export (CycloneDX format) | ✅ | ✅ | ✅ |
 | `get_sbom_spdx` | SBOM export (SPDX format) | ✅ | ✅ | ✅ |
 | `get_vulnerabilities_osv` | Query OSV for vulnerabilities | ✅ | ✅ | ✅ |
@@ -137,10 +143,16 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_docker_images` | Docker images list | ✅ | ✅ | ✅ |
 | `get_docker_containers` | Docker containers list | ✅ | ✅ | ✅ |
 | `get_docker_image_history` | Docker image layer history | ✅ | ✅ | ✅ |
+| `get_npm_lock` | Parse package-lock.json | ✅ | ✅ | ✅ |
+| `get_pip_lock` | Parse requirements.txt/Pipfile.lock | ✅ | ✅ | ✅ |
+| `get_cargo_lock` | Parse Cargo.lock | ✅ | ✅ | ✅ |
+| `get_go_sum` | Parse go.sum | ✅ | ✅ | ✅ |
+| `get_gemfile_lock` | Parse Gemfile.lock | ✅ | ✅ | ✅ |
 
 **Package managers supported:**
-- System: dpkg, rpm, apk, pacman, Homebrew, pkgutil, Chocolatey, winget
+- System: dpkg, rpm, apk, pacman, Homebrew, pkgutil, Chocolatey, winget, Snap, Flatpak, Scoop
 - Language: pip (Python), npm (Node.js), go modules, Cargo (Rust), RubyGems, Maven, Composer (PHP), NuGet (.NET)
+- Lock files: package-lock.json, requirements.txt, Pipfile.lock, Cargo.lock, go.sum, Gemfile.lock
 
 > ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
 
@@ -194,23 +206,19 @@ Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgr
 
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
-### Phase 1.7: SBOM & Inventory (20/31 queries)
+### Phase 1.7: SBOM & Inventory ✅ Complete (31/31 queries)
 
 Software Bill of Materials for vulnerability detection.
 
 **Implemented:**
 - PATH executables discovery
-- System package managers (dpkg, rpm, apk, pacman, brew, choco, winget)
+- System package managers (dpkg, rpm, apk, pacman, brew, choco, winget, snap, flatpak, scoop)
 - Language package managers (pip, npm, go modules, Cargo, RubyGems, Maven, Composer, NuGet)
-- Platform-specific: macOS Applications, Windows Hotfixes
+- Lock file parsing (package-lock.json, requirements.txt, Cargo.lock, go.sum, Gemfile.lock)
+- Platform-specific: macOS Applications, Windows Hotfixes/Programs/Features, Homebrew Casks
 - Container images (Docker API: images, containers, history)
 - SBOM export (CycloneDX 1.4, SPDX 2.3)
 - Vulnerability lookup (OSV, Debian Security Tracker, NVD)
-
-**Remaining queries:**
-- Package lock file parsing (package-lock.json, composer.lock)
-- Container package state (docker exec)
-- Additional vulnerability sources
 
 See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
 
@@ -447,7 +455,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.0** | Core Metrics | ✅ Complete | 7/7 |
 | **1.5** | Log Access | ✅ Complete | 6/6 |
 | **1.6** | System Hooks | ✅ Complete | 31/31 |
-| **1.7** | SBOM & Inventory | 🚧 In Progress | 20/31 |
+| **1.7** | SBOM & Inventory | ✅ Complete | 31/31 |
 | **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
 | **1.9** | Triage & Summary | 🚧 In Progress | 5/25 |
 | **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
@@ -460,7 +468,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 71/149 queries (48%)**
+**Implemented: 82/149 queries (55%)**
 
 **Phase 1.10 Windows Enterprise Features:**
 - Registry queries (read keys, enumerate, security descriptors)
