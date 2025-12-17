@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.9 In Progress (84 queries implemented)**
+**Status: Phase 1.9 Complete (102 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -185,7 +185,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - AWS credentials, Azure keys
 - JWT tokens, PEM private keys
 
-### Phase 1.9: Triage & Summary (5/25)
+### Phase 1.9: Triage & Summary ✅ (25/25)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -194,12 +194,38 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_service_manager_info` | Service manager status | ✅ | ✅ | ✅ |
 | `get_cloud_environment` | Cloud provider detection (AWS/GCP/Azure) | ✅ | ✅ | ✅ |
 | `get_language_runtime_versions` | Python/Node/Go/Ruby/Java/etc versions | ✅ | ✅ | ✅ |
+| `get_recent_reboots` | Recent reboot/shutdown events | ✅ | ✅ | ✅ |
+| `get_service_failures_24h` | Failed services in last 24 hours | ✅ | ✅ | ✅ |
+| `get_kernel_errors_24h` | Kernel errors in last 24 hours | ✅ | ✅ | ✅ |
+| `get_oom_events` | Out-of-memory events | ✅ | ✅ | ✅ |
+| `get_resource_incidents` | CPU/memory/disk resource spikes | ✅ | ✅ | ✅ |
+| `get_config_changes_24h` | Package/config changes in 24h | ✅ | ✅ | ✅ |
+| `get_failed_units` | Failed systemd/launchd/services | ✅ | ✅ | ✅ |
+| `get_pending_timers` | Pending scheduled jobs | ✅ | ✅ | ✅ |
+| `get_enabled_services` | All enabled/auto-start services | ✅ | ✅ | ✅ |
+| `get_pending_updates` | Available system updates | ✅ | ✅ | ✅ |
+| `get_security_basics` | Firewall, AV, updates status | ✅ | ✅ | ✅ |
+| `get_admin_account_summary` | Users with admin/sudo privileges | ✅ | ✅ | ✅ |
+| `get_exposed_services_summary` | Services listening on external interfaces | ✅ | ✅ | ✅ |
+| `get_ssh_security_summary` | SSH configuration security | ✅ | ✅ | ✅ |
+| `get_resource_limits` | System resource limits (ulimits) | ✅ | ✅ | ✅ |
+| `get_installed_package_summary` | Package counts by manager | ✅ | ✅ | ✅ |
+| `get_fs_health_summary` | Filesystem health and usage | ✅ | ✅ | ✅ |
+| `get_incident_triage_snapshot` | Combined triage summary | ✅ | ✅ | ✅ |
+| `get_security_posture_snapshot` | Security posture summary | ✅ | ✅ | ✅ |
+| `get_full_system_snapshot` | Complete system snapshot | ✅ | ✅ | ✅ |
 
 **Cloud providers detected:**
 - AWS EC2 (IMDSv2), Google Cloud, Microsoft Azure, DigitalOcean, Oracle Cloud
 
 **Language runtimes detected:**
 - Python, Node.js, Go, Ruby, Java, PHP, Rust, .NET, Perl
+
+**Triage categories:**
+- Recent events: reboots, service failures, kernel errors, OOM, resource incidents
+- Security: firewall status, updates, admin accounts, exposed services, SSH config
+- Services: failed units, pending timers, enabled services
+- System health: filesystem status, resource limits, package inventory
 
 ### What You Can Do Now
 
@@ -251,16 +277,16 @@ Software Bill of Materials for vulnerability detection.
 
 See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
 
-### Phase 1.9: Triage & Summary (In Progress - 5/25 queries)
+### Phase 1.9: Triage & Summary ✅ Complete (25/25 queries)
 
-High-level queries for incident triage.
+High-level queries for incident triage and security posture assessment.
 
 **Implemented:**
-- OS info (version, kernel, platform, boot mode)
-- System profile (CPU/RAM/disk/network summary)
-- Service manager info (systemd/launchd/SCM status)
-- Cloud environment detection (AWS/GCP/Azure metadata)
-- Language runtime versions (Python, Node, Go, Ruby, Java, PHP, Rust, .NET, Perl)
+- OS info, system profile, service manager, cloud environment, language runtimes
+- Recent events: reboots, service failures, kernel errors, OOM events, resource incidents
+- Security: firewall/AV status, admin accounts, exposed services, SSH config, resource limits
+- Services: failed units, pending timers, enabled services, pending updates
+- Meta queries: incident triage snapshot, security posture snapshot, full system snapshot
 
 ### Future Phases
 
@@ -485,8 +511,8 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.5** | Log Access | ✅ Complete | 6/6 |
 | **1.6** | System Hooks | ✅ Complete | 31/31 |
 | **1.7** | SBOM & Inventory | ✅ Complete | 31/31 |
-| **1.8** | App Discovery & Config | 📋 Planned | 0/2 |
-| **1.9** | Triage & Summary | 🚧 In Progress | 5/25 |
+| **1.8** | App Discovery & Config | ✅ Complete | 2/2 |
+| **1.9** | Triage & Summary | ✅ Complete | 25/25 |
 | **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
 | 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
@@ -497,7 +523,7 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 82/149 queries (55%)**
+**Implemented: 102/149 queries (68%)**
 
 **Phase 1.10 Windows Enterprise Features:**
 - Registry queries (read keys, enumerate, security descriptors)

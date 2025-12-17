@@ -34,6 +34,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
+	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
@@ -54,6 +55,11 @@ func main() {
 	pid := flag.Int("pid", 0, "Process ID for queries that need it (e.g., get_capabilities)")
 	imageID := flag.String("image-id", "", "Image ID for container queries (e.g., get_docker_image_history)")
 	lockPath := flag.String("path", "", "Path to lock file for lock file queries (e.g., get_npm_lock)")
+	serviceName := flag.String("service", "", "Service name for service queries (e.g., get_service_log_view)")
+	limit := flag.Int("limit", 0, "Limit for queries that support it")
+	hours := flag.Int("hours", 0, "Hours for time-based queries")
+	days := flag.Int("days", 0, "Days for time-based queries")
+	lines := flag.Int("lines", 0, "Lines for log queries")
 
 	// Transport flags
 	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
@@ -151,7 +157,7 @@ func main() {
 		if *pid > 0 {
 			pidVal = int32(*pid) // #nosec G115 -- checked for positive
 		}
-		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath)
+		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath, *serviceName, *limit, *hours, *days, *lines)
 		os.Exit(0)
 	}
 
@@ -336,7 +342,7 @@ EXAMPLES:
     # Verify audit log integrity
     mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
-AVAILABLE TOOLS (84):
+AVAILABLE TOOLS (104):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -380,7 +386,15 @@ AVAILABLE TOOLS (84):
 
   Triage & Summary (scope: triage):
     get_os_info, get_system_profile, get_service_manager_info,
-    get_cloud_environment, get_language_runtime_versions
+    get_cloud_environment, get_language_runtime_versions,
+    get_recent_reboots, get_recent_service_failures, get_recent_kernel_events,
+    get_recent_resource_incidents, get_recent_config_changes,
+    get_recent_critical_events, get_failed_units, get_timer_jobs,
+    get_service_log_view, get_deployment_events, get_auth_failure_summary,
+    get_security_basics, get_ssh_security_summary, get_admin_account_summary,
+    get_exposed_services_summary, get_resource_limits,
+    get_recently_installed_software, get_fs_health_summary,
+    get_incident_triage_snapshot, get_security_posture_snapshot
 
   Sensitive (scope: sensitive):
     get_auth_logs
@@ -395,7 +409,7 @@ For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
 }
 
-func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath string) {
+func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serviceName string, limitVal, hoursVal, daysVal, linesVal int) {
 	var result interface{}
 	var err error
 
@@ -757,6 +771,131 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath strin
 	case "get_app_config":
 		c := software.NewCollector()
 		result, err = c.GetAppConfig(lockPath)
+
+	// Phase 1.9.2: Recent Events
+	case "get_recent_reboots":
+		c := triage.NewCollector()
+		l := 10
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetRecentReboots(l)
+
+	case "get_recent_service_failures":
+		c := triage.NewCollector()
+		l := 20
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetRecentServiceFailures(l)
+
+	case "get_recent_kernel_events":
+		c := triage.NewCollector()
+		l := 50
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetRecentKernelEvents(l)
+
+	case "get_recent_resource_incidents":
+		c := triage.NewCollector()
+		l := 20
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetRecentResourceIncidents(l)
+
+	case "get_recent_config_changes":
+		c := triage.NewCollector()
+		l := 50
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetRecentConfigChanges(l)
+
+	case "get_recent_critical_events":
+		c := triage.NewCollector()
+		l := 30
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetRecentCriticalEvents(l)
+
+	// Phase 1.9.3: Service & Scheduling
+	case "get_failed_units":
+		c := triage.NewCollector()
+		result, err = c.GetFailedUnits()
+
+	case "get_timer_jobs":
+		c := triage.NewCollector()
+		result, err = c.GetTimerJobs()
+
+	case "get_service_log_view":
+		c := triage.NewCollector()
+		ln := 100
+		if linesVal > 0 {
+			ln = linesVal
+		}
+		result, err = c.GetServiceLogView(serviceName, ln)
+
+	case "get_deployment_events":
+		c := triage.NewCollector()
+		l := 20
+		if limitVal > 0 {
+			l = limitVal
+		}
+		result, err = c.GetDeploymentEvents(l)
+
+	// Phase 1.9.4: Security Summary
+	case "get_auth_failure_summary":
+		c := triage.NewCollector()
+		h := 24
+		if hoursVal > 0 {
+			h = hoursVal
+		}
+		result, err = c.GetAuthFailureSummary(h)
+
+	case "get_security_basics":
+		c := triage.NewCollector()
+		result, err = c.GetSecurityBasics()
+
+	case "get_ssh_security_summary":
+		c := triage.NewCollector()
+		result, err = c.GetSSHSecuritySummary()
+
+	case "get_admin_account_summary":
+		c := triage.NewCollector()
+		result, err = c.GetAdminAccountSummary()
+
+	case "get_exposed_services_summary":
+		c := triage.NewCollector()
+		result, err = c.GetExposedServicesSummary()
+
+	case "get_resource_limits":
+		c := triage.NewCollector()
+		result, err = c.GetResourceLimits()
+
+	// Phase 1.9.5: Software & Runtime
+	case "get_recently_installed_software":
+		c := triage.NewCollector()
+		d := 7
+		if daysVal > 0 {
+			d = daysVal
+		}
+		result, err = c.GetRecentlyInstalledSoftware(d)
+
+	case "get_fs_health_summary":
+		c := triage.NewCollector()
+		result, err = c.GetFSHealthSummary()
+
+	// Phase 1.9.6: Meta Queries
+	case "get_incident_triage_snapshot":
+		c := triage.NewCollector()
+		result, err = c.GetIncidentTriageSnapshot()
+
+	case "get_security_posture_snapshot":
+		c := triage.NewCollector()
+		result, err = c.GetSecurityPostureSnapshot()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

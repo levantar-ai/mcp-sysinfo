@@ -1555,3 +1555,416 @@ type RedactionSummary struct {
 	TemplateRefs    int            `json:"template_refs"`           // Template references found (not redacted but flagged)
 	RedactedKeys    []string       `json:"redacted_keys,omitempty"` // List of keys that were redacted
 }
+
+// ============================================================================
+// Phase 1.9: Triage & Summary Query Types
+// ============================================================================
+
+// RecentRebootsResult represents recent system reboot information.
+type RecentRebootsResult struct {
+	Reboots   []RebootEvent `json:"reboots"`
+	Count     int           `json:"count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// RebootEvent represents a single reboot event.
+type RebootEvent struct {
+	Time     time.Time `json:"time"`
+	Type     string    `json:"type,omitempty"`     // reboot, shutdown, crash
+	User     string    `json:"user,omitempty"`     // User who initiated
+	Duration string    `json:"duration,omitempty"` // Uptime before reboot
+	Reason   string    `json:"reason,omitempty"`   // Reason if available
+}
+
+// RecentServiceFailuresResult represents recent service failures.
+type RecentServiceFailuresResult struct {
+	Failures  []ServiceFailure `json:"failures"`
+	Count     int              `json:"count"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// ServiceFailure represents a failed service event.
+type ServiceFailure struct {
+	Service   string    `json:"service"`
+	Time      time.Time `json:"time"`
+	Status    string    `json:"status"`              // failed, crashed, timeout
+	ExitCode  int       `json:"exit_code,omitempty"` // Exit code if available
+	Message   string    `json:"message,omitempty"`   // Error message
+	Restarts  int       `json:"restarts,omitempty"`  // Number of restart attempts
+	LastStart time.Time `json:"last_start,omitempty"`
+}
+
+// RecentKernelEventsResult represents recent kernel events.
+type RecentKernelEventsResult struct {
+	Events    []KernelEvent `json:"events"`
+	Count     int           `json:"count"`
+	Errors    int           `json:"errors"`
+	Warnings  int           `json:"warnings"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// KernelEvent represents a kernel log event.
+type KernelEvent struct {
+	Time     time.Time `json:"time"`
+	Level    string    `json:"level"` // error, warning, info
+	Facility string    `json:"facility,omitempty"`
+	Message  string    `json:"message"`
+}
+
+// RecentResourceIncidentsResult represents recent resource-related incidents.
+type RecentResourceIncidentsResult struct {
+	Incidents []ResourceIncident `json:"incidents"`
+	Count     int                `json:"count"`
+	OOMKills  int                `json:"oom_kills"`
+	Throttles int                `json:"throttles"`
+	Timestamp time.Time          `json:"timestamp"`
+}
+
+// ResourceIncident represents a resource incident event.
+type ResourceIncident struct {
+	Time    time.Time `json:"time"`
+	Type    string    `json:"type"`              // oom, cpu_throttle, io_throttle, memory_pressure
+	Process string    `json:"process,omitempty"` // Affected process
+	PID     int32     `json:"pid,omitempty"`
+	Details string    `json:"details,omitempty"`
+}
+
+// RecentConfigChangesResult represents recent configuration changes.
+type RecentConfigChangesResult struct {
+	Changes   []ConfigChange `json:"changes"`
+	Count     int            `json:"count"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// ConfigChange represents a configuration change event.
+type ConfigChange struct {
+	Time    time.Time `json:"time"`
+	Type    string    `json:"type"` // package_install, package_update, package_remove, config_change
+	Package string    `json:"package,omitempty"`
+	Version string    `json:"version,omitempty"`
+	OldVer  string    `json:"old_version,omitempty"`
+	Path    string    `json:"path,omitempty"` // Config file path if applicable
+	User    string    `json:"user,omitempty"`
+}
+
+// RecentCriticalEventsResult represents recent critical log events.
+type RecentCriticalEventsResult struct {
+	Events    []CriticalEvent `json:"events"`
+	Count     int             `json:"count"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// CriticalEvent represents a critical log entry.
+type CriticalEvent struct {
+	Time     time.Time `json:"time"`
+	Source   string    `json:"source"`   // Service/facility that logged
+	Priority string    `json:"priority"` // critical, emergency, alert
+	Message  string    `json:"message"`
+}
+
+// FailedUnitsResult represents failed system services/units.
+type FailedUnitsResult struct {
+	Units     []FailedUnit `json:"units"`
+	Count     int          `json:"count"`
+	Timestamp time.Time    `json:"timestamp"`
+}
+
+// FailedUnit represents a failed service unit.
+type FailedUnit struct {
+	Name        string    `json:"name"`
+	LoadState   string    `json:"load_state,omitempty"`
+	ActiveState string    `json:"active_state"`
+	SubState    string    `json:"sub_state,omitempty"`
+	Description string    `json:"description,omitempty"`
+	FailedAt    time.Time `json:"failed_at,omitempty"`
+	Result      string    `json:"result,omitempty"` // exit-code, signal, timeout
+}
+
+// TimerJobsResult represents scheduled timer jobs.
+type TimerJobsResult struct {
+	Timers    []TimerJob `json:"timers"`
+	Count     int        `json:"count"`
+	Timestamp time.Time  `json:"timestamp"`
+}
+
+// TimerJob represents a scheduled timer/job.
+type TimerJob struct {
+	Name        string    `json:"name"`
+	Schedule    string    `json:"schedule,omitempty"` // Cron expression or description
+	NextRun     time.Time `json:"next_run,omitempty"`
+	LastRun     time.Time `json:"last_run,omitempty"`
+	LastResult  string    `json:"last_result,omitempty"` // success, failed
+	Unit        string    `json:"unit,omitempty"`        // Associated service/unit
+	Description string    `json:"description,omitempty"`
+}
+
+// ServiceLogViewResult represents service-specific log entries.
+type ServiceLogViewResult struct {
+	Service   string       `json:"service"`
+	Logs      []ServiceLog `json:"logs"`
+	Count     int          `json:"count"`
+	Timestamp time.Time    `json:"timestamp"`
+}
+
+// ServiceLog represents a single service log entry.
+type ServiceLog struct {
+	Time    time.Time `json:"time"`
+	Level   string    `json:"level,omitempty"` // info, warning, error
+	Message string    `json:"message"`
+	PID     int32     `json:"pid,omitempty"`
+}
+
+// DeploymentEventsResult represents recent deployment/package events.
+type DeploymentEventsResult struct {
+	Events    []DeploymentEvent `json:"events"`
+	Count     int               `json:"count"`
+	Installs  int               `json:"installs"`
+	Updates   int               `json:"updates"`
+	Removes   int               `json:"removes"`
+	Timestamp time.Time         `json:"timestamp"`
+}
+
+// DeploymentEvent represents a package deployment event.
+type DeploymentEvent struct {
+	Time    time.Time `json:"time"`
+	Action  string    `json:"action"` // install, update, remove, configure
+	Package string    `json:"package"`
+	Version string    `json:"version,omitempty"`
+	OldVer  string    `json:"old_version,omitempty"`
+	Status  string    `json:"status,omitempty"` // success, failed
+}
+
+// AuthFailureSummaryResult represents authentication failure summary.
+type AuthFailureSummaryResult struct {
+	Failures   []AuthFailure `json:"failures"`
+	TotalCount int           `json:"total_count"`
+	UniqueIPs  int           `json:"unique_ips"`
+	UniqueUser int           `json:"unique_users"`
+	TopIPs     []IPCount     `json:"top_ips,omitempty"`
+	TopUsers   []UserCount   `json:"top_users,omitempty"`
+	Timestamp  time.Time     `json:"timestamp"`
+}
+
+// AuthFailure represents an authentication failure event.
+type AuthFailure struct {
+	Time    time.Time `json:"time"`
+	User    string    `json:"user"`
+	Source  string    `json:"source,omitempty"` // IP address
+	Service string    `json:"service"`          // sshd, sudo, login
+	Method  string    `json:"method,omitempty"` // password, publickey
+	Reason  string    `json:"reason,omitempty"`
+}
+
+// IPCount represents IP address with count.
+type IPCount struct {
+	IP    string `json:"ip"`
+	Count int    `json:"count"`
+}
+
+// UserCount represents username with count.
+type UserCount struct {
+	User  string `json:"user"`
+	Count int    `json:"count"`
+}
+
+// SecurityBasicsResult represents basic security status.
+type SecurityBasicsResult struct {
+	Firewall   FirewallStatus   `json:"firewall"`
+	SELinux    SELinuxStatus    `json:"selinux,omitempty"`    // Linux only
+	AppArmor   AppArmorStatus   `json:"apparmor,omitempty"`   // Linux only
+	Gatekeeper GatekeeperStatus `json:"gatekeeper,omitempty"` // macOS only
+	Defender   DefenderStatus   `json:"defender,omitempty"`   // Windows only
+	Updates    UpdateStatus     `json:"updates,omitempty"`
+	Timestamp  time.Time        `json:"timestamp"`
+}
+
+// FirewallStatus represents firewall status.
+type FirewallStatus struct {
+	Enabled    bool   `json:"enabled"`
+	Type       string `json:"type,omitempty"` // iptables, nftables, ufw, pf, windows
+	RuleCount  int    `json:"rule_count,omitempty"`
+	DefaultIn  string `json:"default_in,omitempty"`  // accept, drop, reject
+	DefaultOut string `json:"default_out,omitempty"` // accept, drop, reject
+}
+
+// SELinuxStatus represents SELinux status.
+type SELinuxStatus struct {
+	Enabled bool   `json:"enabled"`
+	Mode    string `json:"mode,omitempty"` // enforcing, permissive, disabled
+	Policy  string `json:"policy,omitempty"`
+	Denials int    `json:"denials,omitempty"` // Recent denial count
+}
+
+// AppArmorStatus represents AppArmor status.
+type AppArmorStatus struct {
+	Enabled  bool `json:"enabled"`
+	Profiles int  `json:"profiles,omitempty"`
+	Enforce  int  `json:"enforce,omitempty"`
+	Complain int  `json:"complain,omitempty"`
+}
+
+// GatekeeperStatus represents macOS Gatekeeper status.
+type GatekeeperStatus struct {
+	Enabled    bool   `json:"enabled"`
+	Assessment string `json:"assessment,omitempty"`
+}
+
+// DefenderStatus represents Windows Defender status.
+type DefenderStatus struct {
+	Enabled       bool   `json:"enabled"`
+	RealTime      bool   `json:"real_time"`
+	LastScan      string `json:"last_scan,omitempty"`
+	DefinitionVer string `json:"definition_version,omitempty"`
+	DefinitionAge int    `json:"definition_age_days,omitempty"`
+}
+
+// UpdateStatus represents system update status.
+type UpdateStatus struct {
+	AutoUpdate      bool   `json:"auto_update"`
+	PendingUpdates  int    `json:"pending_updates,omitempty"`
+	LastCheck       string `json:"last_check,omitempty"`
+	SecurityUpdates int    `json:"security_updates,omitempty"`
+}
+
+// SSHSecuritySummaryResult represents SSH configuration security analysis.
+type SSHSecuritySummaryResult struct {
+	Installed       bool        `json:"installed"`
+	Running         bool        `json:"running"`
+	Port            int         `json:"port,omitempty"`
+	Settings        SSHSettings `json:"settings"`
+	Warnings        []string    `json:"warnings,omitempty"`
+	Recommendations []string    `json:"recommendations,omitempty"`
+	Timestamp       time.Time   `json:"timestamp"`
+}
+
+// SSHSettings represents SSH server settings.
+type SSHSettings struct {
+	PermitRootLogin      string `json:"permit_root_login"`
+	PasswordAuth         bool   `json:"password_auth"`
+	PubkeyAuth           bool   `json:"pubkey_auth"`
+	PermitEmptyPasswords bool   `json:"permit_empty_passwords"`
+	X11Forwarding        bool   `json:"x11_forwarding"`
+	MaxAuthTries         int    `json:"max_auth_tries,omitempty"`
+	LoginGraceTime       int    `json:"login_grace_time,omitempty"`
+	AllowUsers           string `json:"allow_users,omitempty"`
+	AllowGroups          string `json:"allow_groups,omitempty"`
+}
+
+// AdminAccountSummaryResult represents admin/sudo user summary.
+type AdminAccountSummaryResult struct {
+	Admins    []AdminAccount `json:"admins"`
+	Count     int            `json:"count"`
+	RootLogin bool           `json:"root_login_enabled"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// AdminAccount represents an admin/privileged account.
+type AdminAccount struct {
+	User       string   `json:"user"`
+	UID        int      `json:"uid"`
+	Groups     []string `json:"groups,omitempty"`
+	Shell      string   `json:"shell,omitempty"`
+	LastLogin  string   `json:"last_login,omitempty"`
+	Locked     bool     `json:"locked"`
+	NoPassword bool     `json:"no_password,omitempty"`
+}
+
+// ExposedServicesSummaryResult represents exposed/listening services summary.
+type ExposedServicesSummaryResult struct {
+	Services  []ExposedService `json:"services"`
+	Count     int              `json:"count"`
+	External  int              `json:"external"` // Services listening on 0.0.0.0 or public IP
+	Internal  int              `json:"internal"` // Services listening on localhost only
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// ExposedService represents an exposed network service.
+type ExposedService struct {
+	Port     int    `json:"port"`
+	Protocol string `json:"protocol"` // tcp, udp
+	Address  string `json:"address"`  // Listening address
+	Process  string `json:"process,omitempty"`
+	PID      int32  `json:"pid,omitempty"`
+	User     string `json:"user,omitempty"`
+	External bool   `json:"external"` // True if exposed externally
+}
+
+// ResourceLimitsResult represents system resource limits.
+type ResourceLimitsResult struct {
+	Limits    []ResourceLimit `json:"limits"`
+	Warnings  []string        `json:"warnings,omitempty"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// ResourceLimit represents a resource limit setting.
+type ResourceLimit struct {
+	Type    string `json:"type"` // open_files, max_processes, stack_size, etc.
+	Soft    int64  `json:"soft"`
+	Hard    int64  `json:"hard"`
+	Current int64  `json:"current,omitempty"` // Current usage if available
+	Unit    string `json:"unit,omitempty"`    // bytes, count, etc.
+}
+
+// RecentlyInstalledSoftwareResult represents recently installed software.
+type RecentlyInstalledSoftwareResult struct {
+	Packages  []InstalledPackage `json:"packages"`
+	Count     int                `json:"count"`
+	Since     time.Time          `json:"since"`
+	Timestamp time.Time          `json:"timestamp"`
+}
+
+// InstalledPackage represents a recently installed package.
+type InstalledPackage struct {
+	Name      string    `json:"name"`
+	Version   string    `json:"version"`
+	Manager   string    `json:"manager"` // apt, yum, brew, choco, etc.
+	Installed time.Time `json:"installed"`
+	Size      int64     `json:"size,omitempty"` // Installed size in bytes
+}
+
+// FSHealthSummaryResult represents filesystem health summary.
+type FSHealthSummaryResult struct {
+	Filesystems []FSHealth `json:"filesystems"`
+	Warnings    []string   `json:"warnings,omitempty"`
+	Timestamp   time.Time  `json:"timestamp"`
+}
+
+// FSHealth represents filesystem health status.
+type FSHealth struct {
+	Mount     string  `json:"mount"`
+	Device    string  `json:"device"`
+	Type      string  `json:"type"`
+	Size      int64   `json:"size"`
+	Used      int64   `json:"used"`
+	Available int64   `json:"available"`
+	UsedPct   float64 `json:"used_pct"`
+	InodePct  float64 `json:"inode_pct,omitempty"`
+	ReadOnly  bool    `json:"read_only"`
+	Errors    int     `json:"errors,omitempty"`
+	Status    string  `json:"status"` // healthy, warning, critical
+}
+
+// IncidentTriageSnapshotResult represents full incident triage context.
+type IncidentTriageSnapshotResult struct {
+	System          *OSInfoResult                  `json:"system"`
+	RecentReboots   *RecentRebootsResult           `json:"recent_reboots,omitempty"`
+	ServiceFailures *RecentServiceFailuresResult   `json:"service_failures,omitempty"`
+	KernelEvents    *RecentKernelEventsResult      `json:"kernel_events,omitempty"`
+	ResourceIssues  *RecentResourceIncidentsResult `json:"resource_issues,omitempty"`
+	CriticalEvents  *RecentCriticalEventsResult    `json:"critical_events,omitempty"`
+	FailedUnits     *FailedUnitsResult             `json:"failed_units,omitempty"`
+	Timestamp       time.Time                      `json:"timestamp"`
+}
+
+// SecurityPostureSnapshotResult represents security posture overview.
+type SecurityPostureSnapshotResult struct {
+	SecurityBasics  *SecurityBasicsResult         `json:"security_basics"`
+	SSHSecurity     *SSHSecuritySummaryResult     `json:"ssh_security,omitempty"`
+	AdminAccounts   *AdminAccountSummaryResult    `json:"admin_accounts,omitempty"`
+	ExposedServices *ExposedServicesSummaryResult `json:"exposed_services,omitempty"`
+	AuthFailures    *AuthFailureSummaryResult     `json:"auth_failures,omitempty"`
+	OverallScore    int                           `json:"overall_score"` // 0-100
+	RiskLevel       string                        `json:"risk_level"`    // low, medium, high, critical
+	Recommendations []string                      `json:"recommendations,omitempty"`
+	Timestamp       time.Time                     `json:"timestamp"`
+}
