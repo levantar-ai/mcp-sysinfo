@@ -819,11 +819,11 @@ Read application configuration files with rigorous secret redaction.
 
 ---
 
-## Phase 1.9: Triage & Summary Queries (25 Queries) 🚧 IN PROGRESS
+## Phase 1.9: Triage & Summary Queries (25 Queries) ✅ COMPLETE
 
 High-level queries for incident triage, providing summarized views and snapshots. All queries are cross-platform with OS-specific backends.
 
-**Progress: 5/25 queries implemented**
+**Progress: 25/25 queries implemented**
 
 ### 1.9.1 System Overview (4 queries) ✅ COMPLETE
 

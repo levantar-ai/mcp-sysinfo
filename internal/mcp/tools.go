@@ -21,6 +21,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
+	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
@@ -1419,6 +1420,427 @@ func registerTriageTools(s *Server) {
 	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := runtimes.NewCollector()
 		result, err := c.GetLanguageRuntimes()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Phase 1.9.2: Recent Events
+	// Recent Reboots
+	s.RegisterTool(Tool{
+		Name:        "get_recent_reboots",
+		Description: "Get recent system reboot events with timestamps and reasons",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of events to return",
+					Default:     10,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 10
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentReboots(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Recent Service Failures
+	s.RegisterTool(Tool{
+		Name:        "get_recent_service_failures",
+		Description: "Get recent service/daemon failures with error details",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of failures to return",
+					Default:     20,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 20
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentServiceFailures(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Recent Kernel Events
+	s.RegisterTool(Tool{
+		Name:        "get_recent_kernel_events",
+		Description: "Get recent kernel events (errors, warnings, panics)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of events to return",
+					Default:     50,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 50
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentKernelEvents(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Recent Resource Incidents
+	s.RegisterTool(Tool{
+		Name:        "get_recent_resource_incidents",
+		Description: "Get recent resource incidents (OOM, disk full, high CPU)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of incidents to return",
+					Default:     20,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 20
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentResourceIncidents(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Recent Config Changes
+	s.RegisterTool(Tool{
+		Name:        "get_recent_config_changes",
+		Description: "Get recent configuration file changes",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of changes to return",
+					Default:     50,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 50
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentConfigChanges(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Recent Critical Events
+	s.RegisterTool(Tool{
+		Name:        "get_recent_critical_events",
+		Description: "Get recent critical/emergency events across all logs",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of events to return",
+					Default:     30,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 30
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentCriticalEvents(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Phase 1.9.3: Service & Scheduling
+	// Failed Units
+	s.RegisterTool(Tool{
+		Name:        "get_failed_units",
+		Description: "Get currently failed systemd units or equivalent services",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetFailedUnits()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Timer Jobs
+	s.RegisterTool(Tool{
+		Name:        "get_timer_jobs",
+		Description: "Get systemd timers, cron jobs, and scheduled tasks",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetTimerJobs()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Service Log View
+	s.RegisterTool(Tool{
+		Name:        "get_service_log_view",
+		Description: "Get recent logs for a specific service",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"service": {
+					Type:        "string",
+					Description: "Service name to get logs for",
+				},
+				"lines": {
+					Type:        "integer",
+					Description: "Number of log lines to return",
+					Default:     100,
+				},
+			},
+			Required: []string{"service"},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		service, _ := args["service"].(string)
+		lines := 100
+		if l, ok := args["lines"].(float64); ok {
+			lines = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetServiceLogView(service, lines)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Deployment Events
+	s.RegisterTool(Tool{
+		Name:        "get_deployment_events",
+		Description: "Get recent deployment/update events (packages, containers)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"limit": {
+					Type:        "integer",
+					Description: "Maximum number of events to return",
+					Default:     20,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		limit := 20
+		if l, ok := args["limit"].(float64); ok {
+			limit = int(l)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetDeploymentEvents(limit)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Phase 1.9.4: Security Summary
+	// Auth Failure Summary
+	s.RegisterTool(Tool{
+		Name:        "get_auth_failure_summary",
+		Description: "Get authentication failure summary with top IPs and users",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"hours": {
+					Type:        "integer",
+					Description: "Hours to look back for failures",
+					Default:     24,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		hours := 24
+		if h, ok := args["hours"].(float64); ok {
+			hours = int(h)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetAuthFailureSummary(hours)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Security Basics
+	s.RegisterTool(Tool{
+		Name:        "get_security_basics",
+		Description: "Get basic security status (firewall, SELinux/AppArmor, updates)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetSecurityBasics()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// SSH Security Summary
+	s.RegisterTool(Tool{
+		Name:        "get_ssh_security_summary",
+		Description: "Get SSH security configuration summary",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetSSHSecuritySummary()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Admin Account Summary
+	s.RegisterTool(Tool{
+		Name:        "get_admin_account_summary",
+		Description: "Get administrative/privileged account summary",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetAdminAccountSummary()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Exposed Services Summary
+	s.RegisterTool(Tool{
+		Name:        "get_exposed_services_summary",
+		Description: "Get summary of exposed network services",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetExposedServicesSummary()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Resource Limits
+	s.RegisterTool(Tool{
+		Name:        "get_resource_limits",
+		Description: "Get system resource limits (ulimits, kernel params)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetResourceLimits()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Phase 1.9.5: Software & Runtime
+	// Recently Installed Software
+	s.RegisterTool(Tool{
+		Name:        "get_recently_installed_software",
+		Description: "Get recently installed packages and software",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"days": {
+					Type:        "integer",
+					Description: "Number of days to look back",
+					Default:     7,
+				},
+			},
+		},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		days := 7
+		if d, ok := args["days"].(float64); ok {
+			days = int(d)
+		}
+		c := triage.NewCollector()
+		result, err := c.GetRecentlyInstalledSoftware(days)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Filesystem Health Summary
+	s.RegisterTool(Tool{
+		Name:        "get_fs_health_summary",
+		Description: "Get filesystem health summary (usage, issues, read-only mounts)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetFSHealthSummary()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Phase 1.9.6: Meta Queries
+	// Incident Triage Snapshot
+	s.RegisterTool(Tool{
+		Name:        "get_incident_triage_snapshot",
+		Description: "Get comprehensive incident triage snapshot (system info, recent events, failures)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetIncidentTriageSnapshot()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Security Posture Snapshot
+	s.RegisterTool(Tool{
+		Name:        "get_security_posture_snapshot",
+		Description: "Get security posture snapshot with risk score and recommendations",
+		InputSchema: InputSchema{Type: "object"},
+	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := triage.NewCollector()
+		result, err := c.GetSecurityPostureSnapshot()
 		if err != nil {
 			return nil, err
 		}
