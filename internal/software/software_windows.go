@@ -5,6 +5,7 @@ package software
 import (
 	"bufio"
 	"bytes"
+	"encoding/csv"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,178 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/cmdexec"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
+
+// MacOSApplication represents a macOS application (stub for Windows).
+type MacOSApplication struct {
+	Name         string `json:"name"`
+	Path         string `json:"path"`
+	BundleID     string `json:"bundle_id,omitempty"`
+	Version      string `json:"version,omitempty"`
+	ShortVersion string `json:"short_version,omitempty"`
+	Executable   string `json:"executable,omitempty"`
+	Category     string `json:"category,omitempty"`
+	Copyright    string `json:"copyright,omitempty"`
+}
+
+// MacOSApplicationsResult represents macOS applications query results (stub for Windows).
+type MacOSApplicationsResult struct {
+	Applications []MacOSApplication `json:"applications"`
+	Count        int                `json:"count"`
+	Timestamp    time.Time          `json:"timestamp"`
+}
+
+// GetMacOSApplications returns empty result on Windows (macOS only).
+func (c *Collector) GetMacOSApplications() (*MacOSApplicationsResult, error) {
+	return &MacOSApplicationsResult{
+		Applications: []MacOSApplication{},
+		Count:        0,
+		Timestamp:    time.Now(),
+	}, nil
+}
+
+// WindowsHotfix represents a Windows hotfix/update.
+type WindowsHotfix struct {
+	HotfixID    string `json:"hotfix_id"`
+	Description string `json:"description,omitempty"`
+	InstalledBy string `json:"installed_by,omitempty"`
+	InstalledOn string `json:"installed_on,omitempty"`
+	Source      string `json:"source,omitempty"`
+	Caption     string `json:"caption,omitempty"`
+}
+
+// WindowsHotfixesResult represents Windows hotfixes query results.
+type WindowsHotfixesResult struct {
+	Hotfixes  []WindowsHotfix `json:"hotfixes"`
+	Count     int             `json:"count"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// GetWindowsHotfixes returns Windows hotfixes/updates using Get-HotFix.
+func (c *Collector) GetWindowsHotfixes() (*WindowsHotfixesResult, error) {
+	result := &WindowsHotfixesResult{
+		Hotfixes:  []WindowsHotfix{},
+		Timestamp: time.Now(),
+	}
+
+	// Use PowerShell Get-HotFix to get Windows updates
+	// #nosec G204 -- powershell is a system utility
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
+		"Get-HotFix | Select-Object HotFixID,Description,InstalledBy,InstalledOn,Caption | ConvertTo-Csv -NoTypeInformation")
+	output, err := cmd.Output()
+	if err != nil {
+		// Try wmic as fallback
+		return c.getHotfixesWmic()
+	}
+
+	hotfixes := parseHotfixCSV(output)
+	result.Hotfixes = hotfixes
+	result.Count = len(hotfixes)
+	return result, nil
+}
+
+func parseHotfixCSV(output []byte) []WindowsHotfix {
+	var hotfixes []WindowsHotfix
+
+	reader := csv.NewReader(bytes.NewReader(output))
+	records, err := reader.ReadAll()
+	if err != nil || len(records) < 2 {
+		return hotfixes
+	}
+
+	// First row is header
+	header := records[0]
+	idxMap := make(map[string]int)
+	for i, h := range header {
+		idxMap[strings.ToLower(strings.Trim(h, "\""))] = i
+	}
+
+	for _, record := range records[1:] {
+		if len(record) == 0 {
+			continue
+		}
+
+		hotfix := WindowsHotfix{Source: "Get-HotFix"}
+
+		if idx, ok := idxMap["hotfixid"]; ok && idx < len(record) {
+			hotfix.HotfixID = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["description"]; ok && idx < len(record) {
+			hotfix.Description = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["installedby"]; ok && idx < len(record) {
+			hotfix.InstalledBy = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["installedon"]; ok && idx < len(record) {
+			hotfix.InstalledOn = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["caption"]; ok && idx < len(record) {
+			hotfix.Caption = strings.Trim(record[idx], "\"")
+		}
+
+		if hotfix.HotfixID != "" {
+			hotfixes = append(hotfixes, hotfix)
+		}
+	}
+
+	return hotfixes
+}
+
+func (c *Collector) getHotfixesWmic() (*WindowsHotfixesResult, error) {
+	result := &WindowsHotfixesResult{
+		Hotfixes:  []WindowsHotfix{},
+		Timestamp: time.Now(),
+	}
+
+	// #nosec G204 -- wmic is a system utility
+	cmd := cmdexec.Command("wmic", "qfe", "get", "HotFixID,Description,InstalledBy,InstalledOn", "/format:csv")
+	output, err := cmd.Output()
+	if err != nil {
+		return result, nil
+	}
+
+	hotfixes := parseWmicHotfixes(output)
+	result.Hotfixes = hotfixes
+	result.Count = len(hotfixes)
+	return result, nil
+}
+
+func parseWmicHotfixes(output []byte) []WindowsHotfix {
+	var hotfixes []WindowsHotfix
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+
+	// Skip header
+	scanner.Scan()
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		// CSV format: Node,Description,HotFixID,InstalledBy,InstalledOn
+		parts := strings.Split(line, ",")
+		if len(parts) < 4 {
+			continue
+		}
+
+		hotfix := WindowsHotfix{
+			Description: parts[1],
+			HotfixID:    parts[2],
+			InstalledBy: parts[3],
+			Source:      "wmic",
+		}
+
+		if len(parts) > 4 {
+			hotfix.InstalledOn = parts[4]
+		}
+
+		if hotfix.HotfixID != "" {
+			hotfixes = append(hotfixes, hotfix)
+		}
+	}
+
+	return hotfixes
+}
 
 // GetPathExecutables returns executables found in PATH directories.
 func (c *Collector) GetPathExecutables() (*types.PathExecutablesResult, error) {

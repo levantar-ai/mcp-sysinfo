@@ -5,6 +5,7 @@ package software
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -200,4 +201,154 @@ func parsePkgutilOutput(output []byte) []types.SystemPackage {
 	}
 
 	return packages
+}
+
+// WindowsHotfix represents a Windows hotfix/update (stub for Darwin).
+type WindowsHotfix struct {
+	HotfixID    string `json:"hotfix_id"`
+	Description string `json:"description,omitempty"`
+	InstalledBy string `json:"installed_by,omitempty"`
+	InstalledOn string `json:"installed_on,omitempty"`
+	Source      string `json:"source,omitempty"`
+	Caption     string `json:"caption,omitempty"`
+}
+
+// WindowsHotfixesResult represents Windows hotfixes query results (stub for Darwin).
+type WindowsHotfixesResult struct {
+	Hotfixes  []WindowsHotfix `json:"hotfixes"`
+	Count     int             `json:"count"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// GetWindowsHotfixes returns empty result on Darwin (Windows only).
+func (c *Collector) GetWindowsHotfixes() (*WindowsHotfixesResult, error) {
+	return &WindowsHotfixesResult{
+		Hotfixes:  []WindowsHotfix{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// MacOSApplication represents a macOS application from /Applications.
+type MacOSApplication struct {
+	Name         string `json:"name"`
+	Path         string `json:"path"`
+	BundleID     string `json:"bundle_id,omitempty"`
+	Version      string `json:"version,omitempty"`
+	ShortVersion string `json:"short_version,omitempty"`
+	Executable   string `json:"executable,omitempty"`
+	Category     string `json:"category,omitempty"`
+	Copyright    string `json:"copyright,omitempty"`
+}
+
+// MacOSApplicationsResult represents macOS applications query results.
+type MacOSApplicationsResult struct {
+	Applications []MacOSApplication `json:"applications"`
+	Count        int                `json:"count"`
+	Timestamp    time.Time          `json:"timestamp"`
+}
+
+// GetMacOSApplications returns installed macOS applications from /Applications.
+func (c *Collector) GetMacOSApplications() (*MacOSApplicationsResult, error) {
+	result := &MacOSApplicationsResult{
+		Applications: []MacOSApplication{},
+		Timestamp:    time.Now(),
+	}
+
+	// Scan /Applications and ~/Applications
+	appDirs := []string{"/Applications"}
+	if home, err := os.UserHomeDir(); err == nil {
+		appDirs = append(appDirs, filepath.Join(home, "Applications"))
+	}
+
+	seen := make(map[string]bool)
+	for _, appDir := range appDirs {
+		apps := scanApplicationsDir(appDir)
+		for _, app := range apps {
+			if !seen[app.Path] {
+				seen[app.Path] = true
+				result.Applications = append(result.Applications, app)
+			}
+		}
+	}
+
+	result.Count = len(result.Applications)
+	return result, nil
+}
+
+func scanApplicationsDir(appDir string) []MacOSApplication {
+	var apps []MacOSApplication
+
+	entries, err := os.ReadDir(appDir)
+	if err != nil {
+		return apps
+	}
+
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if !strings.HasSuffix(name, ".app") {
+			continue
+		}
+
+		appPath := filepath.Join(appDir, name)
+		app := parseMacOSApp(appPath)
+		if app.Name != "" {
+			apps = append(apps, app)
+		}
+	}
+
+	return apps
+}
+
+func parseMacOSApp(appPath string) MacOSApplication {
+	app := MacOSApplication{
+		Path: appPath,
+		Name: strings.TrimSuffix(filepath.Base(appPath), ".app"),
+	}
+
+	infoPlistPath := filepath.Join(appPath, "Contents", "Info.plist")
+
+	// Use plutil to convert plist to JSON for parsing
+	// #nosec G204 -- plutil is a system utility
+	cmd := cmdexec.Command("plutil", "-convert", "json", "-o", "-", infoPlistPath)
+	output, err := cmd.Output()
+	if err != nil {
+		return app
+	}
+
+	var plistData map[string]interface{}
+	if err := json.Unmarshal(output, &plistData); err != nil {
+		return app
+	}
+
+	// Extract fields from Info.plist
+	if bundleID, ok := plistData["CFBundleIdentifier"].(string); ok {
+		app.BundleID = bundleID
+	}
+	if version, ok := plistData["CFBundleVersion"].(string); ok {
+		app.Version = version
+	}
+	if shortVersion, ok := plistData["CFBundleShortVersionString"].(string); ok {
+		app.ShortVersion = shortVersion
+	}
+	if executable, ok := plistData["CFBundleExecutable"].(string); ok {
+		app.Executable = executable
+	}
+	if category, ok := plistData["LSApplicationCategoryType"].(string); ok {
+		app.Category = category
+	}
+	if copyright, ok := plistData["NSHumanReadableCopyright"].(string); ok {
+		app.Copyright = copyright
+	}
+	if name, ok := plistData["CFBundleDisplayName"].(string); ok && name != "" {
+		app.Name = name
+	} else if name, ok := plistData["CFBundleName"].(string); ok && name != "" {
+		app.Name = name
+	}
+
+	return app
 }

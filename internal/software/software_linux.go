@@ -15,6 +15,58 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
+// MacOSApplication represents a macOS application (stub for Linux).
+type MacOSApplication struct {
+	Name         string `json:"name"`
+	Path         string `json:"path"`
+	BundleID     string `json:"bundle_id,omitempty"`
+	Version      string `json:"version,omitempty"`
+	ShortVersion string `json:"short_version,omitempty"`
+	Executable   string `json:"executable,omitempty"`
+	Category     string `json:"category,omitempty"`
+	Copyright    string `json:"copyright,omitempty"`
+}
+
+// MacOSApplicationsResult represents macOS applications query results (stub for Linux).
+type MacOSApplicationsResult struct {
+	Applications []MacOSApplication `json:"applications"`
+	Count        int                `json:"count"`
+	Timestamp    time.Time          `json:"timestamp"`
+}
+
+// GetMacOSApplications returns empty result on Linux (macOS only).
+func (c *Collector) GetMacOSApplications() (*MacOSApplicationsResult, error) {
+	return &MacOSApplicationsResult{
+		Applications: []MacOSApplication{},
+		Count:        0,
+		Timestamp:    time.Now(),
+	}, nil
+}
+
+// WindowsHotfix represents a Windows hotfix/update (stub for Linux).
+type WindowsHotfix struct {
+	HotfixID    string `json:"hotfix_id"`
+	Description string `json:"description,omitempty"`
+	InstalledBy string `json:"installed_by,omitempty"`
+	InstalledOn string `json:"installed_on,omitempty"`
+}
+
+// WindowsHotfixesResult represents Windows hotfixes query results (stub for Linux).
+type WindowsHotfixesResult struct {
+	Hotfixes  []WindowsHotfix `json:"hotfixes"`
+	Count     int             `json:"count"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// GetWindowsHotfixes returns empty result on Linux (Windows only).
+func (c *Collector) GetWindowsHotfixes() (*WindowsHotfixesResult, error) {
+	return &WindowsHotfixesResult{
+		Hotfixes:  []WindowsHotfix{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
 // GetPathExecutables returns executables found in PATH directories.
 func (c *Collector) GetPathExecutables() (*types.PathExecutablesResult, error) {
 	pathEnv := os.Getenv("PATH")
