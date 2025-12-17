@@ -562,7 +562,7 @@ Some security queries require `sensitive` scope and are not exposed by default.
 
 Software Bill of Materials for vulnerability detection. See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) for full details.
 
-**Progress: 13/31 queries implemented**
+**Progress: 20/31 queries implemented**
 
 ### 1.7.0 PATH Executables (1 query) ✅ COMPLETE
 
@@ -598,11 +598,11 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 - [x] 🐧 Linux (Arch): Use `pacman -Q`
 - [x] 🍎 macOS: Use `brew list --versions`
 - [x] 🍎 macOS: Use `pkgutil --pkgs` for system packages
-- [ ] 🍎 macOS: Scan `/Applications/`, read `Info.plist`
+- [x] 🍎 macOS: Scan `/Applications/`, read `Info.plist`
 - [x] 🪟 Windows: Use `choco list --local-only`
 - [x] 🪟 Windows: Use `winget list`
 - [x] 🪟 Windows: Use `wmic product get` as fallback
-- [ ] 🪟 Windows: Use `Get-HotFix` for Windows updates
+- [x] 🪟 Windows: Use `Get-HotFix` for Windows updates
 
 #### Unit Tests
 - [x] 🧪 Test dpkg output parsing
@@ -632,9 +632,9 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 - [x] All: Scan `go/pkg/mod/cache` for Go modules
 - [x] All: Scan `.cargo/registry/cache` for Rust crates
 - [x] All: Scan `specifications/*.gemspec` for Ruby gems
-- [ ] All: Scan `~/.m2/repository/` for Maven dependencies
-- [ ] All: Read `composer.lock` for PHP packages
-- [ ] All: Scan NuGet packages folder for .NET packages
+- [x] All: Scan `~/.m2/repository/` for Maven dependencies
+- [x] All: Read Composer global packages for PHP
+- [x] All: Scan NuGet packages folder for .NET packages
 
 #### Unit Tests
 - [x] 🧪 Test Python METADATA parsing
@@ -642,7 +642,9 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 - [x] 🧪 Test Go module path decoding
 - [x] 🧪 Test Cargo registry scanning
 - [x] 🧪 Test gemspec parsing
-- [ ] 🧪 Test composer.lock parsing
+- [x] 🧪 Test Maven repository scanning
+- [x] 🧪 Test PHP Composer parsing
+- [x] 🧪 Test NuGet package parsing
 
 #### Integration Tests
 - [x] 🔬 All: Verify against `pip list`
@@ -683,20 +685,21 @@ Software Bill of Materials for vulnerability detection. See [docs/09-sbom-invent
 
 ---
 
-### 1.7.5 Vulnerability Lookup (3 queries) 🚧 IN PROGRESS
+### 1.7.5 Vulnerability Lookup (3 queries) ✅ COMPLETE
 
 #### Implementation
-- [ ] 🐧 Linux (Debian): Correlate with apt security lists
+- [x] 🐧 Linux (Debian): Query Debian Security Tracker API
 - [x] All: Query OSV API (`api.osv.dev/v1/query`)
-- [ ] All: Query NVD data feeds (cached)
+- [x] All: Query NVD API for CVE lookup
 
 #### Unit Tests
-- [ ] 🧪 Test vulnerability correlation logic
+- [x] 🧪 Test vulnerability correlation logic
 - [x] 🧪 Test OSV response parsing
-- [ ] 🧪 Test NVD feed parsing
+- [x] 🧪 Test Debian Security Tracker parsing
+- [x] 🧪 Test NVD API response parsing
 
 #### Integration Tests
-- [ ] 🔬 All: Verify known CVE detection
+- [x] 🔬 All: Verify known CVE detection
 
 ---
 
@@ -1668,7 +1671,7 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | **Phase 1 (MVP)** | 7 | ✅ Complete |
 | **Phase 1.5 (Logs)** | 6 | ✅ Complete |
 | **Phase 1.6 (Hooks)** | 31 | ✅ Complete |
-| **Phase 1.7 (SBOM)** | 31 | 🚧 13/31 |
+| **Phase 1.7 (SBOM)** | 31 | 🚧 20/31 |
 | **Phase 1.8 (App Config)** | 2 | 📋 Planned |
 | **Phase 1.9 (Triage)** | 25 | 🚧 5/25 |
 | **Phase 1.10 (Windows)** | 15 | 📋 Planned |
@@ -1681,12 +1684,12 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 62/149 queries implemented**
+**Current Status: 71/149 queries implemented**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
 - Phase 1.6 (Hooks): ✅ Complete (31/31 queries)
-- Phase 1.7 (SBOM): 🚧 In Progress (13/31 queries)
+- Phase 1.7 (SBOM): 🚧 In Progress (20/31 queries)
 - Phase 1.8: 📋 Planned (2 queries) - App Discovery & Config
 - Phase 1.9 (Triage): 🚧 In Progress (5/25 queries)
 - Phase 1.10: 📋 Planned (15 queries) - Windows Enterprise
