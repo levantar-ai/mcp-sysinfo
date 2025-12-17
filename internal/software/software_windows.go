@@ -449,3 +449,323 @@ func parseWmicOutput(output []byte) []types.SystemPackage {
 
 	return packages
 }
+
+// GetSnapPackages returns empty on Windows (Linux only).
+func (c *Collector) GetSnapPackages() (*types.SnapPackagesResult, error) {
+	return &types.SnapPackagesResult{
+		Packages:  []types.SnapPackage{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetFlatpakPackages returns empty on Windows (Linux only).
+func (c *Collector) GetFlatpakPackages() (*types.FlatpakPackagesResult, error) {
+	return &types.FlatpakPackagesResult{
+		Packages:  []types.FlatpakPackage{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetHomebrewCasks returns empty on Windows (macOS only).
+func (c *Collector) GetHomebrewCasks() (*types.HomebrewCasksResult, error) {
+	return &types.HomebrewCasksResult{
+		Casks:     []types.HomebrewCask{},
+		Count:     0,
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetScoopPackages returns installed Scoop packages.
+func (c *Collector) GetScoopPackages() (*types.ScoopPackagesResult, error) {
+	// Scoop installs to ~/scoop/apps by default
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return &types.ScoopPackagesResult{
+			Packages:  []types.ScoopPackage{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	scoopDir := filepath.Join(homeDir, "scoop", "apps")
+	entries, err := os.ReadDir(scoopDir)
+	if err != nil {
+		return &types.ScoopPackagesResult{
+			Packages:  []types.ScoopPackage{},
+			Count:     0,
+			Timestamp: time.Now(),
+		}, nil
+	}
+
+	var packages []types.ScoopPackage
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if name == "scoop" {
+			continue // Skip scoop itself
+		}
+
+		pkg := types.ScoopPackage{
+			Name: name,
+		}
+
+		// Try to get version from current symlink
+		currentPath := filepath.Join(scoopDir, name, "current")
+		if target, err := os.Readlink(currentPath); err == nil {
+			pkg.Version = filepath.Base(target)
+		}
+
+		// Try to get bucket from install.json
+		installJSON := filepath.Join(scoopDir, name, "current", "install.json")
+		if data, err := os.ReadFile(installJSON); err == nil {
+			// Simple JSON parsing for bucket field
+			if idx := strings.Index(string(data), `"bucket"`); idx >= 0 {
+				remainder := string(data)[idx:]
+				if start := strings.Index(remainder, `"`); start >= 0 {
+					remainder = remainder[start+1:]
+					if start = strings.Index(remainder, `"`); start >= 0 {
+						remainder = remainder[start+1:]
+						if end := strings.Index(remainder, `"`); end >= 0 {
+							pkg.Bucket = remainder[:end]
+						}
+					}
+				}
+			}
+		}
+
+		packages = append(packages, pkg)
+	}
+
+	return &types.ScoopPackagesResult{
+		Packages:  packages,
+		Count:     len(packages),
+		Timestamp: time.Now(),
+	}, nil
+}
+
+// GetWindowsPrograms returns installed programs from Windows registry.
+func (c *Collector) GetWindowsPrograms() (*types.WindowsProgramsResult, error) {
+	result := &types.WindowsProgramsResult{
+		Programs:  []types.WindowsProgram{},
+		Timestamp: time.Now(),
+	}
+
+	// Use PowerShell to query registry
+	// #nosec G204 -- powershell is a system utility
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command", `
+		$paths = @(
+			'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*',
+			'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*',
+			'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*'
+		)
+		Get-ItemProperty $paths -ErrorAction SilentlyContinue |
+		Where-Object { $_.DisplayName -ne $null } |
+		Select-Object DisplayName,DisplayVersion,Publisher,InstallDate,InstallLocation,UninstallString,EstimatedSize,SystemComponent |
+		ConvertTo-Csv -NoTypeInformation
+	`)
+
+	output, err := cmd.Output()
+	if err != nil {
+		return result, nil
+	}
+
+	programs := parseProgramsCSV(output)
+	result.Programs = programs
+	result.Count = len(programs)
+	return result, nil
+}
+
+func parseProgramsCSV(output []byte) []types.WindowsProgram {
+	var programs []types.WindowsProgram
+
+	reader := csv.NewReader(bytes.NewReader(output))
+	records, err := reader.ReadAll()
+	if err != nil || len(records) < 2 {
+		return programs
+	}
+
+	// Build header index map
+	header := records[0]
+	idxMap := make(map[string]int)
+	for i, h := range header {
+		idxMap[strings.ToLower(strings.Trim(h, "\""))] = i
+	}
+
+	for _, record := range records[1:] {
+		if len(record) == 0 {
+			continue
+		}
+
+		prog := types.WindowsProgram{}
+
+		if idx, ok := idxMap["displayname"]; ok && idx < len(record) {
+			prog.Name = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["displayversion"]; ok && idx < len(record) {
+			prog.Version = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["publisher"]; ok && idx < len(record) {
+			prog.Publisher = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["installdate"]; ok && idx < len(record) {
+			prog.InstallDate = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["installlocation"]; ok && idx < len(record) {
+			prog.InstallLocation = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["uninstallstring"]; ok && idx < len(record) {
+			prog.UninstallString = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["systemcomponent"]; ok && idx < len(record) {
+			val := strings.Trim(record[idx], "\"")
+			prog.SystemComponent = val == "1" || strings.ToLower(val) == "true"
+		}
+
+		if prog.Name != "" {
+			programs = append(programs, prog)
+		}
+	}
+
+	return programs
+}
+
+// GetWindowsFeatures returns Windows optional features.
+func (c *Collector) GetWindowsFeatures() (*types.WindowsFeaturesResult, error) {
+	result := &types.WindowsFeaturesResult{
+		Features:  []types.WindowsFeature{},
+		Timestamp: time.Now(),
+	}
+
+	// Use PowerShell to get optional features
+	// #nosec G204 -- powershell is a system utility
+	cmd := cmdexec.Command("powershell", "-NoProfile", "-Command",
+		"Get-WindowsOptionalFeature -Online | Select-Object FeatureName,State | ConvertTo-Csv -NoTypeInformation")
+
+	output, err := cmd.Output()
+	if err != nil {
+		// Try dism as fallback
+		return c.getFeaturesDism()
+	}
+
+	features := parseFeaturesCSV(output)
+	result.Features = features
+	result.Count = len(features)
+	return result, nil
+}
+
+func parseFeaturesCSV(output []byte) []types.WindowsFeature {
+	var features []types.WindowsFeature
+
+	reader := csv.NewReader(bytes.NewReader(output))
+	records, err := reader.ReadAll()
+	if err != nil || len(records) < 2 {
+		return features
+	}
+
+	// Build header index map
+	header := records[0]
+	idxMap := make(map[string]int)
+	for i, h := range header {
+		idxMap[strings.ToLower(strings.Trim(h, "\""))] = i
+	}
+
+	for _, record := range records[1:] {
+		if len(record) == 0 {
+			continue
+		}
+
+		feat := types.WindowsFeature{}
+
+		if idx, ok := idxMap["featurename"]; ok && idx < len(record) {
+			feat.Name = strings.Trim(record[idx], "\"")
+		}
+		if idx, ok := idxMap["state"]; ok && idx < len(record) {
+			state := strings.Trim(record[idx], "\"")
+			// Convert numeric state to readable
+			switch state {
+			case "0":
+				feat.State = "Disabled"
+			case "1":
+				feat.State = "Enabled"
+			case "2":
+				feat.State = "DisablePending"
+			case "3":
+				feat.State = "EnablePending"
+			default:
+				feat.State = state
+			}
+		}
+
+		if feat.Name != "" {
+			features = append(features, feat)
+		}
+	}
+
+	return features
+}
+
+func (c *Collector) getFeaturesDism() (*types.WindowsFeaturesResult, error) {
+	result := &types.WindowsFeaturesResult{
+		Features:  []types.WindowsFeature{},
+		Timestamp: time.Now(),
+	}
+
+	// #nosec G204 -- dism is a system utility
+	cmd := cmdexec.Command("dism", "/online", "/get-features", "/format:table")
+	output, err := cmd.Output()
+	if err != nil {
+		return result, nil
+	}
+
+	features := parseDismFeatures(output)
+	result.Features = features
+	result.Count = len(features)
+	return result, nil
+}
+
+func parseDismFeatures(output []byte) []types.WindowsFeature {
+	var features []types.WindowsFeature
+	scanner := bufio.NewScanner(bytes.NewReader(output))
+
+	// Skip to feature list (after header)
+	inFeatures := false
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "Feature Name") && strings.Contains(line, "State") {
+			inFeatures = true
+			scanner.Scan() // Skip separator line
+			continue
+		}
+
+		if !inFeatures {
+			continue
+		}
+
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		// Format: FeatureName | State
+		parts := strings.Split(line, "|")
+		if len(parts) < 2 {
+			continue
+		}
+
+		feat := types.WindowsFeature{
+			Name:  strings.TrimSpace(parts[0]),
+			State: strings.TrimSpace(parts[1]),
+		}
+
+		if feat.Name != "" {
+			features = append(features, feat)
+		}
+	}
+
+	return features
+}
