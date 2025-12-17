@@ -335,7 +335,7 @@ EXAMPLES:
     # Verify audit log integrity
     mcp-sysinfo --audit-verify --audit-output /var/log/mcp-sysinfo/audit.jsonl
 
-AVAILABLE TOOLS (62):
+AVAILABLE TOOLS (71):
 
   Core Metrics (scope: core):
     get_cpu_info, get_memory_info, get_disk_info, get_network_info,
@@ -367,7 +367,10 @@ AVAILABLE TOOLS (62):
   Software Inventory (scope: software):
     get_path_executables, get_system_packages, get_python_packages,
     get_node_packages, get_go_modules, get_rust_packages, get_ruby_gems,
-    get_sbom_cyclonedx, get_sbom_spdx, get_vulnerabilities_osv,
+    get_maven_packages, get_php_packages, get_dotnet_packages,
+    get_macos_applications, get_windows_hotfixes,
+    get_sbom_cyclonedx, get_sbom_spdx,
+    get_vulnerabilities_osv, get_vulnerabilities_debian, get_vulnerabilities_nvd,
     get_docker_images, get_docker_containers, get_docker_image_history
 
   Triage & Summary (scope: triage):
@@ -624,6 +627,26 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID string) {
 		c := software.NewCollector()
 		result, err = c.GetRubyGems()
 
+	case "get_maven_packages":
+		c := software.NewCollector()
+		result, err = c.GetMavenPackages()
+
+	case "get_php_packages":
+		c := software.NewCollector()
+		result, err = c.GetPHPPackages()
+
+	case "get_dotnet_packages":
+		c := software.NewCollector()
+		result, err = c.GetDotnetPackages()
+
+	case "get_macos_applications":
+		c := software.NewCollector()
+		result, err = c.GetMacOSApplications()
+
+	case "get_windows_hotfixes":
+		c := software.NewCollector()
+		result, err = c.GetWindowsHotfixes()
+
 	case "get_sbom_cyclonedx":
 		c := software.NewCollector()
 		result, err = c.GetSBOMCycloneDX()
@@ -635,6 +658,14 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID string) {
 	case "get_vulnerabilities_osv":
 		c := software.NewCollector()
 		result, err = c.GetVulnerabilitiesOSV()
+
+	case "get_vulnerabilities_debian":
+		c := software.NewCollector()
+		result, err = c.GetVulnerabilitiesDebian()
+
+	case "get_vulnerabilities_nvd":
+		c := software.NewCollector()
+		result, err = c.GetVulnerabilitiesNVD()
 
 	case "get_docker_images":
 		c := container.NewCollector()

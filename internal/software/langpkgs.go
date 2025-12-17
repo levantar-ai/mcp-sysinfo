@@ -651,3 +651,422 @@ func extractRubyString(line string) string {
 	}
 	return ""
 }
+
+// GetMavenPackages returns Java/Maven packages from ~/.m2/repository.
+func (c *Collector) GetMavenPackages() (*types.LanguagePackagesResult, error) {
+	result := &types.LanguagePackagesResult{
+		Language:       "java",
+		PackageManager: "maven",
+		Packages:       []types.LanguagePackage{},
+		Timestamp:      time.Now(),
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return result, nil
+	}
+
+	// Maven repository location
+	m2RepoDir := filepath.Join(home, ".m2", "repository")
+	if info, err := os.Stat(m2RepoDir); err == nil && info.IsDir() {
+		packages := scanMavenRepository(m2RepoDir)
+		result.Packages = packages
+		result.Location = m2RepoDir
+	}
+
+	result.Count = len(result.Packages)
+	return result, nil
+}
+
+func scanMavenRepository(repoDir string) []types.LanguagePackage {
+	var packages []types.LanguagePackage
+	seen := make(map[string]bool)
+
+	// Walk the repository looking for .pom files
+	_ = filepath.WalkDir(repoDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return nil // Skip errors
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		// Look for .pom files which indicate downloaded artifacts
+		if strings.HasSuffix(path, ".pom") {
+			pkg := parseMavenPOM(repoDir, path)
+			if pkg.Name != "" && pkg.Version != "" {
+				key := pkg.Name + "@" + pkg.Version
+				if !seen[key] {
+					seen[key] = true
+					packages = append(packages, pkg)
+				}
+			}
+		}
+		return nil
+	})
+
+	return packages
+}
+
+func parseMavenPOM(repoDir, pomPath string) types.LanguagePackage {
+	pkg := types.LanguagePackage{}
+
+	// Parse path to get groupId/artifactId/version
+	rel, err := filepath.Rel(repoDir, pomPath)
+	if err != nil {
+		return pkg
+	}
+
+	// Path format: com/example/artifact/1.0.0/artifact-1.0.0.pom
+	parts := strings.Split(rel, string(filepath.Separator))
+	if len(parts) < 4 {
+		return pkg
+	}
+
+	// Version is second to last, artifactId is third to last
+	version := parts[len(parts)-2]
+	artifactId := parts[len(parts)-3]
+	groupId := strings.Join(parts[:len(parts)-3], ".")
+
+	pkg.Name = groupId + ":" + artifactId
+	pkg.Version = version
+	pkg.Location = filepath.Dir(pomPath)
+
+	// Try to read basic info from POM file
+	data, err := os.ReadFile(pomPath) // #nosec G304 -- reading pom from .m2/repository
+	if err != nil {
+		return pkg
+	}
+
+	content := string(data)
+
+	// Extract description if available
+	if desc := extractXMLTag(content, "description"); desc != "" {
+		pkg.Summary = desc
+	}
+	if license := extractXMLTag(content, "name"); license != "" && pkg.Summary == "" {
+		pkg.Summary = license
+	}
+	if url := extractXMLTag(content, "url"); url != "" {
+		pkg.Homepage = url
+	}
+
+	return pkg
+}
+
+func extractXMLTag(content, tag string) string {
+	start := strings.Index(content, "<"+tag+">")
+	if start == -1 {
+		return ""
+	}
+	start += len(tag) + 2
+	end := strings.Index(content[start:], "</"+tag+">")
+	if end == -1 {
+		return ""
+	}
+	return strings.TrimSpace(content[start : start+end])
+}
+
+// GetPHPPackages returns PHP packages from composer.lock files.
+func (c *Collector) GetPHPPackages() (*types.LanguagePackagesResult, error) {
+	result := &types.LanguagePackagesResult{
+		Language:       "php",
+		PackageManager: "composer",
+		Packages:       []types.LanguagePackage{},
+		Timestamp:      time.Now(),
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return result, nil
+	}
+
+	// Check global composer directory
+	composerDirs := []string{
+		filepath.Join(home, ".composer"),
+		filepath.Join(home, ".config", "composer"),
+	}
+
+	// Also check common Composer cache location
+	if runtime.GOOS == "windows" {
+		composerDirs = append(composerDirs, filepath.Join(home, "AppData", "Roaming", "Composer"))
+	}
+
+	seen := make(map[string]bool)
+	var locations []string
+
+	for _, dir := range composerDirs {
+		lockFile := filepath.Join(dir, "composer.lock")
+		if _, err := os.Stat(lockFile); err == nil {
+			packages := parseComposerLock(lockFile)
+			for _, pkg := range packages {
+				key := pkg.Name + "@" + pkg.Version
+				if !seen[key] {
+					seen[key] = true
+					result.Packages = append(result.Packages, pkg)
+				}
+			}
+			locations = append(locations, dir)
+		}
+
+		// Also check vendor directory for installed packages
+		vendorDir := filepath.Join(dir, "vendor")
+		if info, err := os.Stat(vendorDir); err == nil && info.IsDir() {
+			packages := scanComposerVendor(vendorDir)
+			for _, pkg := range packages {
+				key := pkg.Name + "@" + pkg.Version
+				if !seen[key] {
+					seen[key] = true
+					result.Packages = append(result.Packages, pkg)
+				}
+			}
+		}
+	}
+
+	result.Count = len(result.Packages)
+	if len(locations) > 0 {
+		result.Location = strings.Join(locations, ", ")
+	}
+	return result, nil
+}
+
+func parseComposerLock(lockFile string) []types.LanguagePackage {
+	var packages []types.LanguagePackage
+
+	data, err := os.ReadFile(lockFile) // #nosec G304 -- reading composer.lock
+	if err != nil {
+		return packages
+	}
+
+	var lock struct {
+		Packages    []composerPackage `json:"packages"`
+		PackagesDev []composerPackage `json:"packages-dev"`
+	}
+
+	if err := json.Unmarshal(data, &lock); err != nil {
+		return packages
+	}
+
+	for _, p := range lock.Packages {
+		pkg := types.LanguagePackage{
+			Name:     p.Name,
+			Version:  p.Version,
+			License:  strings.Join(p.License, ", "),
+			Summary:  p.Description,
+			Homepage: p.Homepage,
+		}
+		packages = append(packages, pkg)
+	}
+
+	for _, p := range lock.PackagesDev {
+		pkg := types.LanguagePackage{
+			Name:     p.Name,
+			Version:  p.Version,
+			License:  strings.Join(p.License, ", "),
+			Summary:  p.Description,
+			Homepage: p.Homepage,
+			DevDep:   true,
+		}
+		packages = append(packages, pkg)
+	}
+
+	return packages
+}
+
+type composerPackage struct {
+	Name        string   `json:"name"`
+	Version     string   `json:"version"`
+	Description string   `json:"description"`
+	License     []string `json:"license"`
+	Homepage    string   `json:"homepage"`
+}
+
+func scanComposerVendor(vendorDir string) []types.LanguagePackage {
+	var packages []types.LanguagePackage
+
+	entries, err := os.ReadDir(vendorDir)
+	if err != nil {
+		return packages
+	}
+
+	for _, vendor := range entries {
+		if !vendor.IsDir() || strings.HasPrefix(vendor.Name(), ".") {
+			continue
+		}
+
+		vendorPath := filepath.Join(vendorDir, vendor.Name())
+		pkgEntries, err := os.ReadDir(vendorPath)
+		if err != nil {
+			continue
+		}
+
+		for _, pkgEntry := range pkgEntries {
+			if !pkgEntry.IsDir() {
+				continue
+			}
+
+			composerJSON := filepath.Join(vendorPath, pkgEntry.Name(), "composer.json")
+			if pkg := parseComposerJSON(composerJSON); pkg.Name != "" {
+				pkg.Location = filepath.Join(vendorPath, pkgEntry.Name())
+				packages = append(packages, pkg)
+			}
+		}
+	}
+
+	return packages
+}
+
+func parseComposerJSON(path string) types.LanguagePackage {
+	pkg := types.LanguagePackage{}
+
+	data, err := os.ReadFile(path) // #nosec G304 -- reading composer.json from vendor
+	if err != nil {
+		return pkg
+	}
+
+	var composer struct {
+		Name        string   `json:"name"`
+		Version     string   `json:"version"`
+		Description string   `json:"description"`
+		License     []string `json:"license"`
+		Homepage    string   `json:"homepage"`
+	}
+
+	if err := json.Unmarshal(data, &composer); err != nil {
+		return pkg
+	}
+
+	pkg.Name = composer.Name
+	pkg.Version = composer.Version
+	pkg.Summary = composer.Description
+	pkg.License = strings.Join(composer.License, ", ")
+	pkg.Homepage = composer.Homepage
+
+	return pkg
+}
+
+// GetDotnetPackages returns .NET/NuGet packages from the global package cache.
+func (c *Collector) GetDotnetPackages() (*types.LanguagePackagesResult, error) {
+	result := &types.LanguagePackagesResult{
+		Language:       "dotnet",
+		PackageManager: "nuget",
+		Packages:       []types.LanguagePackage{},
+		Timestamp:      time.Now(),
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return result, nil
+	}
+
+	// NuGet global packages folder locations
+	var nugetDirs []string
+	if runtime.GOOS == "windows" {
+		nugetDirs = []string{
+			filepath.Join(home, ".nuget", "packages"),
+			filepath.Join(os.Getenv("ProgramData"), "NuGet", "Packages"),
+		}
+	} else {
+		nugetDirs = []string{
+			filepath.Join(home, ".nuget", "packages"),
+		}
+	}
+
+	seen := make(map[string]bool)
+	var locations []string
+
+	for _, dir := range nugetDirs {
+		if info, err := os.Stat(dir); err == nil && info.IsDir() {
+			packages := scanNuGetPackages(dir)
+			for _, pkg := range packages {
+				key := pkg.Name + "@" + pkg.Version
+				if !seen[key] {
+					seen[key] = true
+					result.Packages = append(result.Packages, pkg)
+				}
+			}
+			locations = append(locations, dir)
+		}
+	}
+
+	result.Count = len(result.Packages)
+	if len(locations) > 0 {
+		result.Location = strings.Join(locations, ", ")
+	}
+	return result, nil
+}
+
+func scanNuGetPackages(packagesDir string) []types.LanguagePackage {
+	var packages []types.LanguagePackage
+
+	entries, err := os.ReadDir(packagesDir)
+	if err != nil {
+		return packages
+	}
+
+	for _, entry := range entries {
+		if !entry.IsDir() || strings.HasPrefix(entry.Name(), ".") {
+			continue
+		}
+
+		pkgName := entry.Name()
+		pkgPath := filepath.Join(packagesDir, pkgName)
+
+		// List versions
+		versionEntries, err := os.ReadDir(pkgPath)
+		if err != nil {
+			continue
+		}
+
+		for _, versionEntry := range versionEntries {
+			if !versionEntry.IsDir() {
+				continue
+			}
+
+			version := versionEntry.Name()
+			nuspecPath := filepath.Join(pkgPath, version, pkgName+".nuspec")
+
+			pkg := types.LanguagePackage{
+				Name:     pkgName,
+				Version:  version,
+				Location: filepath.Join(pkgPath, version),
+			}
+
+			// Try to parse nuspec for more details
+			if nuspecInfo := parseNuSpec(nuspecPath); nuspecInfo.Name != "" {
+				pkg.Summary = nuspecInfo.Summary
+				pkg.License = nuspecInfo.License
+				pkg.Homepage = nuspecInfo.Homepage
+				pkg.Author = nuspecInfo.Author
+			}
+
+			packages = append(packages, pkg)
+		}
+	}
+
+	return packages
+}
+
+func parseNuSpec(path string) types.LanguagePackage {
+	pkg := types.LanguagePackage{}
+
+	data, err := os.ReadFile(path) // #nosec G304 -- reading nuspec from nuget packages
+	if err != nil {
+		return pkg
+	}
+
+	content := string(data)
+
+	pkg.Name = extractXMLTag(content, "id")
+	pkg.Version = extractXMLTag(content, "version")
+	pkg.Summary = extractXMLTag(content, "description")
+	pkg.Author = extractXMLTag(content, "authors")
+	pkg.Homepage = extractXMLTag(content, "projectUrl")
+	pkg.License = extractXMLTag(content, "license")
+	if pkg.License == "" {
+		pkg.License = extractXMLTag(content, "licenseUrl")
+	}
+
+	return pkg
+}

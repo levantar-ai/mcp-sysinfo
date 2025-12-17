@@ -945,6 +945,76 @@ func registerSoftwareTools(s *Server) {
 		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
 	})
 
+	// Maven Packages
+	s.RegisterTool(Tool{
+		Name:        "get_maven_packages",
+		Description: "Get Java/Maven packages from ~/.m2/repository",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetMavenPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// PHP Packages
+	s.RegisterTool(Tool{
+		Name:        "get_php_packages",
+		Description: "Get PHP packages from Composer",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetPHPPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// .NET Packages
+	s.RegisterTool(Tool{
+		Name:        "get_dotnet_packages",
+		Description: "Get .NET/NuGet packages from the global package cache",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetDotnetPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// macOS Applications
+	s.RegisterTool(Tool{
+		Name:        "get_macos_applications",
+		Description: "Get installed macOS applications from /Applications (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetMacOSApplications()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Windows Hotfixes
+	s.RegisterTool(Tool{
+		Name:        "get_windows_hotfixes",
+		Description: "Get Windows hotfixes/updates (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetWindowsHotfixes()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
 	// SBOM CycloneDX
 	s.RegisterTool(Tool{
 		Name:        "get_sbom_cyclonedx",
@@ -981,6 +1051,34 @@ func registerSoftwareTools(s *Server) {
 	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := software.NewCollector()
 		result, err := c.GetVulnerabilitiesOSV()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Vulnerability Lookup (Debian Security Tracker)
+	s.RegisterTool(Tool{
+		Name:        "get_vulnerabilities_debian",
+		Description: "Query Debian Security Tracker for vulnerabilities in system packages (Debian/Ubuntu only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetVulnerabilitiesDebian()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Vulnerability Lookup (NVD)
+	s.RegisterTool(Tool{
+		Name:        "get_vulnerabilities_nvd",
+		Description: "Query NVD (National Vulnerability Database) for vulnerabilities in installed packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetVulnerabilitiesNVD()
 		if err != nil {
 			return nil, err
 		}
