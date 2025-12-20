@@ -5,6 +5,7 @@ package integration
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
@@ -418,7 +419,7 @@ func TestSmoke_Linux_GetCgroups(t *testing.T) {
 
 func TestSmoke_Linux_GetCapabilities(t *testing.T) {
 	c := resources.NewCollector()
-	result, err := c.GetCapabilities(0)
+	result, err := c.GetCapabilities(int32(os.Getpid()))
 	if err != nil {
 		t.Fatalf("get_capabilities failed: %v", err)
 	}

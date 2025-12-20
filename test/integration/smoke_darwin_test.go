@@ -5,6 +5,7 @@ package integration
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
@@ -885,6 +886,10 @@ func TestSmoke_Darwin_GetDeploymentEvents(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetIncidentTriageSnapshot(t *testing.T) {
+	// Skip in CI - this test calls multiple 'log show' commands which can take 10+ minutes on macOS CI runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' commands on macOS runners")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetIncidentTriageSnapshot()
 	if err != nil {
@@ -894,6 +899,10 @@ func TestSmoke_Darwin_GetIncidentTriageSnapshot(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetSecurityPostureSnapshot(t *testing.T) {
+	// Skip in CI - this test calls multiple 'log show' commands which can take 10+ minutes on macOS CI runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' commands on macOS runners")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetSecurityPostureSnapshot()
 	if err != nil {
