@@ -722,6 +722,10 @@ func TestSmoke_Darwin_GetLanguageRuntimes(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetRecentReboots(t *testing.T) {
+	// Skip in CI - uses 'log show' which is slow on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetRecentReboots(10)
 	if err != nil {
@@ -731,6 +735,10 @@ func TestSmoke_Darwin_GetRecentReboots(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetRecentServiceFailures(t *testing.T) {
+	// Skip in CI - uses 'log show' which is slow on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetRecentServiceFailures(24)
 	if err != nil {
@@ -740,6 +748,10 @@ func TestSmoke_Darwin_GetRecentServiceFailures(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetRecentKernelEvents(t *testing.T) {
+	// Skip in CI - uses 'log show' which takes 1+ minutes on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetRecentKernelEvents(24)
 	if err != nil {
@@ -749,6 +761,10 @@ func TestSmoke_Darwin_GetRecentKernelEvents(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetRecentCriticalEvents(t *testing.T) {
+	// Skip in CI - uses 'log show' which takes 1+ minutes on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetRecentCriticalEvents(24)
 	if err != nil {
@@ -758,6 +774,10 @@ func TestSmoke_Darwin_GetRecentCriticalEvents(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetRecentResourceIncidents(t *testing.T) {
+	// Skip in CI - uses 'log show' which is slow on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetRecentResourceIncidents(24)
 	if err != nil {
@@ -767,6 +787,10 @@ func TestSmoke_Darwin_GetRecentResourceIncidents(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetRecentConfigChanges(t *testing.T) {
+	// Skip in CI - uses 'log show' which is slow on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetRecentConfigChanges(24)
 	if err != nil {
@@ -794,6 +818,10 @@ func TestSmoke_Darwin_GetTimerJobs(t *testing.T) {
 }
 
 func TestSmoke_Darwin_GetServiceLogView(t *testing.T) {
+	// Skip in CI - uses 'log show' which is slow on macOS runners
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping in CI due to slow 'log show' on macOS")
+	}
 	c := triage.NewCollector()
 	result, err := c.GetServiceLogView("sshd", 10)
 	if err != nil {

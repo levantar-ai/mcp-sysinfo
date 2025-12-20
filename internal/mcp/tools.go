@@ -1430,7 +1430,7 @@ func registerTriageTools(s *Server) {
 	// Recent Reboots
 	s.RegisterTool(Tool{
 		Name:        "get_recent_reboots",
-		Description: "Get recent system reboot events with timestamps and reasons",
+		Description: "Get recent system reboot events with timestamps and reasons. Note: May be slow on macOS (uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1457,7 +1457,7 @@ func registerTriageTools(s *Server) {
 	// Recent Service Failures
 	s.RegisterTool(Tool{
 		Name:        "get_recent_service_failures",
-		Description: "Get recent service/daemon failures with error details",
+		Description: "Get recent service/daemon failures with error details. Note: May be slow on macOS (uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1484,7 +1484,7 @@ func registerTriageTools(s *Server) {
 	// Recent Kernel Events
 	s.RegisterTool(Tool{
 		Name:        "get_recent_kernel_events",
-		Description: "Get recent kernel events (errors, warnings, panics)",
+		Description: "Get recent kernel events (errors, warnings, panics). WARNING: High latency on macOS (1+ minutes, uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1511,7 +1511,7 @@ func registerTriageTools(s *Server) {
 	// Recent Resource Incidents
 	s.RegisterTool(Tool{
 		Name:        "get_recent_resource_incidents",
-		Description: "Get recent resource incidents (OOM, disk full, high CPU)",
+		Description: "Get recent resource incidents (OOM, disk full, high CPU). Note: May be slow on macOS (uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1538,7 +1538,7 @@ func registerTriageTools(s *Server) {
 	// Recent Config Changes
 	s.RegisterTool(Tool{
 		Name:        "get_recent_config_changes",
-		Description: "Get recent configuration file changes",
+		Description: "Get recent configuration file changes. Note: May be slow on macOS (uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1565,7 +1565,7 @@ func registerTriageTools(s *Server) {
 	// Recent Critical Events
 	s.RegisterTool(Tool{
 		Name:        "get_recent_critical_events",
-		Description: "Get recent critical/emergency events across all logs",
+		Description: "Get recent critical/emergency events across all logs. WARNING: High latency on macOS (1+ minutes, uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1621,7 +1621,7 @@ func registerTriageTools(s *Server) {
 	// Service Log View
 	s.RegisterTool(Tool{
 		Name:        "get_service_log_view",
-		Description: "Get recent logs for a specific service",
+		Description: "Get recent logs for a specific service. Note: May be slow on macOS (uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
@@ -1682,7 +1682,7 @@ func registerTriageTools(s *Server) {
 	// Auth Failure Summary
 	s.RegisterTool(Tool{
 		Name:        "get_auth_failure_summary",
-		Description: "Get authentication failure summary with top IPs and users",
+		Description: "Get authentication failure summary with top IPs and users. Note: May be slow on macOS (uses log show)",
 		InputSchema: InputSchema{
 			Type: "object",
 			Properties: map[string]Property{
