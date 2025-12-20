@@ -1822,7 +1822,7 @@ func registerTriageTools(s *Server) {
 	// Incident Triage Snapshot
 	s.RegisterTool(Tool{
 		Name:        "get_incident_triage_snapshot",
-		Description: "Get comprehensive incident triage snapshot (system info, recent events, failures)",
+		Description: "Get comprehensive incident triage snapshot (system info, recent events, failures). WARNING: High latency on macOS (may take 1-5 minutes due to log queries)",
 		InputSchema: InputSchema{Type: "object"},
 	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := triage.NewCollector()
@@ -1836,7 +1836,7 @@ func registerTriageTools(s *Server) {
 	// Security Posture Snapshot
 	s.RegisterTool(Tool{
 		Name:        "get_security_posture_snapshot",
-		Description: "Get security posture snapshot with risk score and recommendations",
+		Description: "Get security posture snapshot with risk score and recommendations. WARNING: High latency on macOS (may take 1-5 minutes due to log queries)",
 		InputSchema: InputSchema{Type: "object"},
 	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := triage.NewCollector()

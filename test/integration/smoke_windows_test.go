@@ -139,7 +139,7 @@ func TestSmoke_Windows_GetTemperature(t *testing.T) {
 
 func TestSmoke_Windows_GetEventLog(t *testing.T) {
 	c := logs.NewCollector()
-	result, err := c.GetEventLog(&types.LogQuery{Lines: 10})
+	result, err := c.GetEventLog(&types.EventLogQuery{LogQuery: types.LogQuery{Lines: 10}})
 	if err != nil {
 		t.Logf("get_event_log returned error: %v", err)
 		return
