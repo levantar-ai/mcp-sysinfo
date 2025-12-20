@@ -170,10 +170,34 @@ jobs:
         with:
           args: ./...
 
+  # SonarCloud analysis
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-linux
+          path: .
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   # Build binaries on native platforms (always runs for CI)
   build:
     name: Build (${{ matrix.goos }}/${{ matrix.goarch }})
-    needs: [integration-linux, integration-macos, integration-windows, lint, security]
+    needs: [integration-linux, integration-macos, integration-windows, lint, security, sonarcloud]
     strategy:
       matrix:
         include:
