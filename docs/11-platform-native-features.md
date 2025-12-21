@@ -125,6 +125,111 @@ Get-WinEvent -FilterHashtable @{
 | `get_firewall_profiles` | Firewall profile status | `netsh advfirewall` | 🟢 |
 | `get_bitlocker_status` | BitLocker encryption status | `manage-bde` | 🟢 |
 
+### IIS Web Server (Comprehensive)
+
+Complete IIS introspection for enterprise web server diagnostics. **Phase 1.10** (implemented) provides core queries, **Phase 1.11** (planned) adds deep configuration access.
+
+#### Phase 1.10 - Core IIS (Implemented ✅)
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_sites` | All websites with state | `Get-Website` | 🟢 |
+| `get_iis_app_pools` | Application pool config | `Get-ChildItem IIS:\AppPools` | 🟢 |
+| `get_iis_bindings` | Site bindings (ports, SSL, hostnames) | WebAdministration | 🟢 |
+| `get_iis_virtual_dirs` | Virtual directories per site | `Get-WebVirtualDirectory` | 🟢 |
+| `get_iis_handlers` | Handler mappings | `Get-WebHandler` | 🟢 |
+| `get_iis_modules` | Global and managed modules | `Get-WebGlobalModule` | 🟢 |
+| `get_iis_ssl_certs` | SSL certificate bindings | `netsh http show sslcert` | 🟢 |
+| `get_iis_auth_config` | Authentication settings per site | WebConfiguration | 🟢 |
+
+#### Phase 1.11 - Deep IIS Configuration (Planned 🚧)
+
+**Security & Request Filtering**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_request_filtering` | Request filtering rules (verbs, extensions, URLs) | system.webServer/security/requestFiltering | 🟢 |
+| `get_iis_ip_security` | IP allow/deny rules per site | system.webServer/security/ipSecurity | 🟡 |
+| `get_iis_url_authorization` | URL authorization rules | system.webServer/security/authorization | 🟡 |
+| `get_iis_isapi_filters` | ISAPI filters | system.webServer/isapiFilters | 🟢 |
+| `get_iis_isapi_cgi_restrictions` | ISAPI/CGI restrictions | system.webServer/security/isapiCgiRestriction | 🟢 |
+
+**URL Rewriting & Routing**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_url_rewrite` | URL rewrite rules | system.webServer/rewrite | 🟢 |
+| `get_iis_redirect_rules` | HTTP redirect rules | system.webServer/httpRedirect | 🟢 |
+| `get_iis_failed_request_rules` | Failed request tracing rules | system.webServer/tracing | 🟢 |
+
+**Compression & Caching**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_compression` | Static/dynamic compression settings | system.webServer/httpCompression | 🟢 |
+| `get_iis_output_caching` | Output caching rules | system.webServer/caching | 🟢 |
+| `get_iis_static_content` | Static content configuration | system.webServer/staticContent | 🟢 |
+
+**HTTP Settings**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_default_document` | Default document list | system.webServer/defaultDocument | 🟢 |
+| `get_iis_directory_browse` | Directory browsing settings | system.webServer/directoryBrowse | 🟢 |
+| `get_iis_custom_headers` | Custom HTTP response headers | system.webServer/httpProtocol | 🟢 |
+| `get_iis_mime_types` | MIME type mappings | system.webServer/staticContent/mimeMap | 🟢 |
+| `get_iis_error_pages` | Custom error pages | system.webServer/httpErrors | 🟢 |
+| `get_iis_cors_config` | CORS configuration | system.webServer/cors | 🟢 |
+
+**Application Pool Deep Config**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_apppool_recycling` | Recycling settings (time, memory, requests) | applicationPools/recycling | 🟢 |
+| `get_iis_apppool_process_model` | Process model (identity, idle timeout, ping) | applicationPools/processModel | 🟡 |
+| `get_iis_apppool_cpu` | CPU throttling settings | applicationPools/cpu | 🟢 |
+| `get_iis_apppool_failure` | Rapid-fail protection settings | applicationPools/failure | 🟢 |
+
+**ASP.NET Configuration**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_aspnet_compilation` | Compilation settings (debug, batch) | system.web/compilation | 🟢 |
+| `get_iis_aspnet_session` | Session state configuration | system.web/sessionState | 🟡 |
+| `get_iis_aspnet_machinekey` | Machine key configuration (validation/decryption) | system.web/machineKey | 🔴 Sensitive |
+| `get_iis_aspnet_custom_errors` | ASP.NET custom errors | system.web/customErrors | 🟢 |
+| `get_iis_aspnet_globalization` | Globalization settings | system.web/globalization | 🟢 |
+
+**Diagnostics & Logging**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_logging` | W3C/IIS logging configuration | system.webServer/httpLogging | 🟢 |
+| `get_iis_log_fields` | Custom log fields | system.applicationHost/log | 🟢 |
+| `get_iis_failed_requests` | Failed request trace logs | FREB logs | 🟡 |
+| `get_iis_worker_processes` | Currently running w3wp.exe processes | `Get-IISWorkerProcess` | 🟢 |
+| `get_iis_site_state` | Detailed site state and counters | WMI IIsWebInfo | 🟢 |
+
+**Advanced Features**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_websocket` | WebSocket protocol settings | system.webServer/webSocket | 🟢 |
+| `get_iis_http2` | HTTP/2 settings | system.webServer/http2 | 🟢 |
+| `get_iis_request_limits` | Request limits (maxContentLength, etc.) | system.webServer/security/requestFiltering/requestLimits | 🟢 |
+| `get_iis_fastcgi` | FastCGI application configuration | system.webServer/fastCgi | 🟢 |
+| `get_iis_application_init` | Application initialization settings | system.webServer/applicationInitialization | 🟢 |
+
+**Configuration Comparison**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_config_diff` | Compare site config to server defaults | applicationHost.config diff | 🟢 |
+| `get_iis_locked_sections` | Locked configuration sections | system.webServer/security/access | 🟢 |
+| `get_iis_delegation_rules` | Feature delegation settings | administration.config | 🟢 |
+
+**Total: 8 implemented + 35 planned = 43 IIS queries**
+
 ---
 
 ## Linux-Specific Features
