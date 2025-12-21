@@ -265,6 +265,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
+      - name: Fetch all tags
+        run: git fetch --tags origin
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
