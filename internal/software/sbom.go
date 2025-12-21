@@ -253,10 +253,10 @@ func generatePURL(pkgManager, name, version, arch string) string {
 
 // CycloneDX types
 type cycloneDXBOM struct {
-	BOMFormat   string              `json:"bomFormat"`
-	SpecVersion string              `json:"specVersion"`
-	Version     int                 `json:"version"`
-	Metadata    cycloneDXMetadata   `json:"metadata"`
+	BOMFormat   string               `json:"bomFormat"`
+	SpecVersion string               `json:"specVersion"`
+	Version     int                  `json:"version"`
+	Metadata    cycloneDXMetadata    `json:"metadata"`
 	Components  []cycloneDXComponent `json:"components"`
 }
 
@@ -305,15 +305,15 @@ type spdxCreationInfo struct {
 }
 
 type spdxPackage struct {
-	SPDXID            string            `json:"SPDXID"`
-	Name              string            `json:"name"`
-	VersionInfo       string            `json:"versionInfo"`
-	DownloadLocation  string            `json:"downloadLocation"`
-	FilesAnalyzed     bool              `json:"filesAnalyzed"`
-	LicenseConcluded  string            `json:"licenseConcluded"`
-	LicenseDeclared   string            `json:"licenseDeclared"`
-	CopyrightText     string            `json:"copyrightText"`
-	ExternalRefs      []spdxExternalRef `json:"externalRefs,omitempty"`
+	SPDXID           string            `json:"SPDXID"`
+	Name             string            `json:"name"`
+	VersionInfo      string            `json:"versionInfo"`
+	DownloadLocation string            `json:"downloadLocation"`
+	FilesAnalyzed    bool              `json:"filesAnalyzed"`
+	LicenseConcluded string            `json:"licenseConcluded"`
+	LicenseDeclared  string            `json:"licenseDeclared"`
+	CopyrightText    string            `json:"copyrightText"`
+	ExternalRefs     []spdxExternalRef `json:"externalRefs,omitempty"`
 }
 
 type spdxExternalRef struct {
@@ -321,4 +321,3 @@ type spdxExternalRef struct {
 	ReferenceType     string `json:"referenceType"`
 	ReferenceLocator  string `json:"referenceLocator"`
 }
-

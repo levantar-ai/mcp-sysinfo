@@ -36,6 +36,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
+	"github.com/levantar-ai/mcp-sysinfo/internal/windows"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -60,6 +61,12 @@ func main() {
 	hours := flag.Int("hours", 0, "Hours for time-based queries")
 	days := flag.Int("days", 0, "Days for time-based queries")
 	lines := flag.Int("lines", 0, "Lines for log queries")
+
+	// Windows Enterprise flags
+	regHive := flag.String("hive", "HKLM", "Registry hive (HKLM, HKCU, HKCR, HKU, HKCC)")
+	regPath := flag.String("regpath", "", "Registry key path")
+	maxDepth := flag.Int("max-depth", 3, "Maximum depth for recursive queries")
+	appID := flag.String("appid", "", "DCOM AppID GUID")
 
 	// Transport flags
 	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
@@ -157,7 +164,7 @@ func main() {
 		if *pid > 0 {
 			pidVal = int32(*pid) // #nosec G115 -- checked for positive
 		}
-		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath, *serviceName, *limit, *hours, *days, *lines)
+		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath, *serviceName, *limit, *hours, *days, *lines, *regHive, *regPath, *maxDepth, *appID)
 		os.Exit(0)
 	}
 
@@ -409,7 +416,7 @@ For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
 }
 
-func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serviceName string, limitVal, hoursVal, daysVal, linesVal int) {
+func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serviceName string, limitVal, hoursVal, daysVal, linesVal int, regHive, regPath string, maxDepth int, appID string) {
 	var result interface{}
 	var err error
 
@@ -896,6 +903,70 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serv
 	case "get_security_posture_snapshot":
 		c := triage.NewCollector()
 		result, err = c.GetSecurityPostureSnapshot()
+
+	// Phase 1.10: Windows Enterprise Features
+	// Phase 1.10.1: Registry Queries
+	case "get_registry_key":
+		c := windows.NewCollector()
+		result, err = c.GetRegistryKey(regHive, regPath)
+
+	case "get_registry_tree":
+		c := windows.NewCollector()
+		result, err = c.GetRegistryTree(regHive, regPath, maxDepth)
+
+	case "get_registry_security":
+		c := windows.NewCollector()
+		result, err = c.GetRegistrySecurity(regHive, regPath)
+
+	// Phase 1.10.2: DCOM/COM Security Queries
+	case "get_dcom_applications":
+		c := windows.NewCollector()
+		result, err = c.GetDCOMApplications()
+
+	case "get_dcom_permissions":
+		c := windows.NewCollector()
+		result, err = c.GetDCOMPermissions(appID)
+
+	case "get_dcom_identities":
+		c := windows.NewCollector()
+		result, err = c.GetDCOMIdentities()
+
+	case "get_com_security_defaults":
+		c := windows.NewCollector()
+		result, err = c.GetCOMSecurityDefaults()
+
+	// Phase 1.10.3: IIS Web Server Queries
+	case "get_iis_sites":
+		c := windows.NewCollector()
+		result, err = c.GetIISSites()
+
+	case "get_iis_app_pools":
+		c := windows.NewCollector()
+		result, err = c.GetIISAppPools()
+
+	case "get_iis_bindings":
+		c := windows.NewCollector()
+		result, err = c.GetIISBindings()
+
+	case "get_iis_virtual_dirs":
+		c := windows.NewCollector()
+		result, err = c.GetIISVirtualDirs()
+
+	case "get_iis_handlers":
+		c := windows.NewCollector()
+		result, err = c.GetIISHandlers()
+
+	case "get_iis_modules":
+		c := windows.NewCollector()
+		result, err = c.GetIISModules()
+
+	case "get_iis_ssl_certs":
+		c := windows.NewCollector()
+		result, err = c.GetIISSSLCerts()
+
+	case "get_iis_auth_config":
+		c := windows.NewCollector()
+		result, err = c.GetIISAuthConfig()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

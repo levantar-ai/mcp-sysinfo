@@ -23,6 +23,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
+	"github.com/levantar-ai/mcp-sysinfo/internal/windows"
 	"github.com/levantar-ai/mcp-sysinfo/pkg/types"
 )
 
@@ -51,6 +52,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 1.9: Triage & Summary Queries (scope: triage)
 	registerTriageTools(s)
+
+	// Phase 1.10: Windows Enterprise Features (scope: windows)
+	registerWindowsEnterpriseTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -1841,6 +1845,311 @@ func registerTriageTools(s *Server) {
 	}, "triage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := triage.NewCollector()
 		result, err := c.GetSecurityPostureSnapshot()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+// registerWindowsEnterpriseTools registers Phase 1.10 Windows Enterprise tools.
+func registerWindowsEnterpriseTools(s *Server) {
+	// ==========================================================================
+	// Phase 1.10.1: Registry Queries
+	// ==========================================================================
+
+	// Get Registry Key
+	s.RegisterTool(Tool{
+		Name:        "get_registry_key",
+		Description: "Read a Windows registry key and its values (Windows only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"hive": {
+					Type:        "string",
+					Description: "Registry hive (HKLM, HKCU, HKCR, HKU, HKCC)",
+					Default:     "HKLM",
+				},
+				"path": {
+					Type:        "string",
+					Description: "Registry key path (e.g., SOFTWARE\\Microsoft\\Windows\\CurrentVersion)",
+				},
+			},
+			Required: []string{"path"},
+		},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		hive := "HKLM"
+		if h, ok := args["hive"].(string); ok && h != "" {
+			hive = h
+		}
+		path, _ := args["path"].(string)
+
+		c := windows.NewCollector()
+		result, err := c.GetRegistryKey(hive, path)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get Registry Tree
+	s.RegisterTool(Tool{
+		Name:        "get_registry_tree",
+		Description: "Recursively enumerate a Windows registry key and its subkeys (Windows only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"hive": {
+					Type:        "string",
+					Description: "Registry hive (HKLM, HKCU, HKCR, HKU, HKCC)",
+					Default:     "HKLM",
+				},
+				"path": {
+					Type:        "string",
+					Description: "Registry key path",
+				},
+				"max_depth": {
+					Type:        "integer",
+					Description: "Maximum depth to recurse (default 3)",
+					Default:     3,
+				},
+			},
+			Required: []string{"path"},
+		},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		hive := "HKLM"
+		if h, ok := args["hive"].(string); ok && h != "" {
+			hive = h
+		}
+		path, _ := args["path"].(string)
+		maxDepth := 3
+		if d, ok := args["max_depth"].(float64); ok {
+			maxDepth = int(d)
+		}
+
+		c := windows.NewCollector()
+		result, err := c.GetRegistryTree(hive, path, maxDepth)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get Registry Security
+	s.RegisterTool(Tool{
+		Name:        "get_registry_security",
+		Description: "Get security descriptor (owner, group, DACL) for a Windows registry key (Windows only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"hive": {
+					Type:        "string",
+					Description: "Registry hive (HKLM, HKCU, HKCR, HKU, HKCC)",
+					Default:     "HKLM",
+				},
+				"path": {
+					Type:        "string",
+					Description: "Registry key path",
+				},
+			},
+			Required: []string{"path"},
+		},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		hive := "HKLM"
+		if h, ok := args["hive"].(string); ok && h != "" {
+			hive = h
+		}
+		path, _ := args["path"].(string)
+
+		c := windows.NewCollector()
+		result, err := c.GetRegistrySecurity(hive, path)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// ==========================================================================
+	// Phase 1.10.2: DCOM/COM Security Queries
+	// ==========================================================================
+
+	// Get DCOM Applications
+	s.RegisterTool(Tool{
+		Name:        "get_dcom_applications",
+		Description: "List all registered DCOM applications (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetDCOMApplications()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get DCOM Permissions
+	s.RegisterTool(Tool{
+		Name:        "get_dcom_permissions",
+		Description: "Get launch and access permissions for a DCOM application (Windows only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"appid": {
+					Type:        "string",
+					Description: "DCOM AppID GUID (e.g., {00000000-0000-0000-0000-000000000000})",
+				},
+			},
+			Required: []string{"appid"},
+		},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		appID, _ := args["appid"].(string)
+
+		c := windows.NewCollector()
+		result, err := c.GetDCOMPermissions(appID)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get DCOM Identities
+	s.RegisterTool(Tool{
+		Name:        "get_dcom_identities",
+		Description: "List RunAs identities for all DCOM applications (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetDCOMIdentities()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get COM Security Defaults
+	s.RegisterTool(Tool{
+		Name:        "get_com_security_defaults",
+		Description: "Get machine-wide COM/DCOM security settings (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetCOMSecurityDefaults()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// ==========================================================================
+	// Phase 1.10.3: IIS Web Server Queries
+	// ==========================================================================
+
+	// Get IIS Sites
+	s.RegisterTool(Tool{
+		Name:        "get_iis_sites",
+		Description: "List all IIS websites with bindings and configuration (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISSites()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS App Pools
+	s.RegisterTool(Tool{
+		Name:        "get_iis_app_pools",
+		Description: "List all IIS application pools with configuration (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISAppPools()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS Bindings
+	s.RegisterTool(Tool{
+		Name:        "get_iis_bindings",
+		Description: "List all site bindings across all IIS sites (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISBindings()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS Virtual Directories
+	s.RegisterTool(Tool{
+		Name:        "get_iis_virtual_dirs",
+		Description: "List all virtual directories across all IIS sites (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISVirtualDirs()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS Handlers
+	s.RegisterTool(Tool{
+		Name:        "get_iis_handlers",
+		Description: "List all handler mappings configured in IIS (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISHandlers()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS Modules
+	s.RegisterTool(Tool{
+		Name:        "get_iis_modules",
+		Description: "List all modules (native and managed) installed in IIS (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISModules()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS SSL Certs
+	s.RegisterTool(Tool{
+		Name:        "get_iis_ssl_certs",
+		Description: "List all SSL certificate bindings in IIS (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISSSLCerts()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get IIS Auth Config
+	s.RegisterTool(Tool{
+		Name:        "get_iis_auth_config",
+		Description: "Get authentication configuration for all IIS sites (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := windows.NewCollector()
+		result, err := c.GetIISAuthConfig()
 		if err != nil {
 			return nil, err
 		}
