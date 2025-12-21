@@ -228,7 +228,101 @@ Complete IIS introspection for enterprise web server diagnostics. **Phase 1.10**
 | `get_iis_locked_sections` | Locked configuration sections | system.webServer/security/access | 🟢 |
 | `get_iis_delegation_rules` | Feature delegation settings | administration.config | 🟢 |
 
-**Total: 8 implemented + 35 planned = 43 IIS queries**
+#### Phase 1.12 - Complete IIS Coverage (Planned 🚧)
+
+**FTP Server**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_ftp_sites` | FTP sites and configuration | Microsoft.Web.FtpServer | 🟢 |
+| `get_iis_ftp_ssl` | FTP over SSL (FTPS) settings | ftpServer/security/ssl | 🟢 |
+| `get_iis_ftp_user_isolation` | FTP user isolation mode | ftpServer/userIsolation | 🟡 |
+| `get_iis_ftp_authorization` | FTP authorization rules | ftpServer/security/authorization | 🟡 |
+| `get_iis_ftp_ip_security` | FTP IP allow/deny rules | ftpServer/security/ipSecurity | 🟡 |
+| `get_iis_ftp_logging` | FTP logging configuration | ftpServer/logFile | 🟢 |
+| `get_iis_ftp_firewall` | FTP passive mode/firewall settings | ftpServer/firewallSupport | 🟢 |
+
+**Classic ASP Configuration**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_asp_settings` | Classic ASP master settings | system.webServer/asp | 🟢 |
+| `get_iis_asp_session` | ASP session state configuration | system.webServer/asp/session | 🟡 |
+| `get_iis_asp_limits` | ASP script timeout, buffering, queue | system.webServer/asp/limits | 🟢 |
+| `get_iis_asp_com_plus` | COM+ sideband settings | system.webServer/asp/comPlus | 🟢 |
+| `get_iis_asp_cache` | ASP script cache settings | system.webServer/asp/cache | 🟢 |
+
+**Application Request Routing (ARR)**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_server_farms` | Web farm definitions | webFarms | 🟢 |
+| `get_iis_arr_cache` | ARR disk cache configuration | diskCache | 🟢 |
+| `get_iis_arr_health` | Health monitoring probes | webFarms/healthCheck | 🟢 |
+| `get_iis_arr_affinity` | Session affinity/sticky sessions | webFarms/applicationRequestRouting | 🟡 |
+| `get_iis_arr_routing` | Reverse proxy routing rules | rewrite/globalRules | 🟢 |
+| `get_iis_arr_settings` | ARR proxy settings (timeout, buffer) | proxy | 🟢 |
+
+**Extended Authentication**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_client_cert_mapping` | Client certificate mapping rules | iisClientCertificateMappingAuthentication | 🟡 |
+| `get_iis_aspnet_impersonation` | ASP.NET impersonation settings | system.web/identity | 🟡 |
+| `get_iis_forms_auth` | Forms authentication configuration | system.web/authentication | 🟡 |
+
+**Extended Security**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_hidden_segments` | Hidden URL segments | requestFiltering/hiddenSegments | 🟢 |
+| `get_iis_webdav` | WebDAV authoring settings | system.webServer/webdav | 🟡 |
+| `get_iis_double_escaping` | Allow double escaping setting | requestFiltering/allowDoubleEscaping | 🟢 |
+| `get_iis_high_bit_chars` | Allow high bit characters | requestFiltering/allowHighBitCharacters | 🟢 |
+| `get_iis_query_strings` | Query string filtering rules | requestFiltering/queryStrings | 🟢 |
+| `get_iis_file_extensions` | File extension allow/deny | requestFiltering/fileExtensions | 🟢 |
+
+**Performance & Limits**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_kernel_cache` | HTTP.sys kernel-mode cache | system.webServer/caching/kernelCachePolicy | 🟢 |
+| `get_iis_connection_limits` | Connection limits per site | system.applicationHost/sites/limits | 🟢 |
+| `get_iis_bandwidth_throttle` | Bandwidth throttling settings | system.webServer/serverRuntime | 🟢 |
+| `get_iis_web_garden` | Web garden (multiple worker processes) | applicationPools/webGarden | 🟢 |
+| `get_iis_http_keep_alive` | HTTP keep-alive settings | system.webServer/httpProtocol/allowKeepAlive | 🟢 |
+
+**Configuration Management**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_shared_config` | Shared configuration settings | administration.config | 🟢 |
+| `get_iis_config_history` | Configuration history/backups | configHistory | 🟢 |
+| `get_iis_machine_defaults` | Machine-level default settings | applicationHost.config defaults | 🟢 |
+| `get_iis_config_sections` | All configuration section schemas | schema files | 🟢 |
+| `get_iis_overrides` | Configuration override modes | overrideModeDefault | 🟢 |
+
+**HTTP.sys & Windows Integration**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_httpsys_settings` | HTTP.sys driver configuration | netsh http | 🟢 |
+| `get_iis_httpsys_cache` | HTTP.sys URI cache entries | netsh http show cachestate | 🟢 |
+| `get_iis_httpsys_service_state` | HTTP.sys service queue state | netsh http show servicestate | 🟢 |
+| `get_iis_httpsys_timeout` | HTTP.sys timeout configuration | netsh http show timeout | 🟢 |
+| `get_iis_wmi_webserver` | IIS WMI provider data | MicrosoftIISv2 WMI | 🟢 |
+| `get_iis_windows_features` | IIS Windows features installed | Get-WindowsOptionalFeature | 🟢 |
+
+**Runtime Monitoring**
+
+| Query | Description | Source | Impact |
+|-------|-------------|--------|:------:|
+| `get_iis_requests_executing` | Currently executing requests | `Get-IISRequestExecuting` | 🟢 |
+| `get_iis_app_domains` | Loaded .NET AppDomains | Runtime API | 🟢 |
+| `get_iis_perf_counters` | IIS performance counters | Win32_PerfRawData_W3SVC | 🟢 |
+| `get_iis_cache_stats` | Output cache hit/miss statistics | caching counters | 🟢 |
+
+**Total: 8 implemented + 35 (Phase 1.11) + 47 (Phase 1.12) = 90 IIS queries**
 
 ---
 
