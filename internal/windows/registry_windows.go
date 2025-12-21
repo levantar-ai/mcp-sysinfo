@@ -293,6 +293,9 @@ const (
 	GROUP_SECURITY_INFORMATION = 0x00000002
 	DACL_SECURITY_INFORMATION  = 0x00000004
 	SACL_SECURITY_INFORMATION  = 0x00000008
+
+	// Standard access rights
+	READ_CONTROL = 0x00020000
 )
 
 var (
@@ -343,7 +346,7 @@ func (c *Collector) getRegistrySecurity(hive, path string) (*types.RegistrySecur
 		return result, nil
 	}
 
-	key, err := registry.OpenKey(rootKey, path, registry.READ_CONTROL)
+	key, err := registry.OpenKey(rootKey, path, READ_CONTROL)
 	if err != nil {
 		result.Error = fmt.Sprintf("failed to open key: %v", err)
 		return result, nil
