@@ -1,4 +1,4 @@
-//go:build darwin
+//go:build !windows
 
 package windows
 
@@ -9,7 +9,7 @@ import (
 )
 
 // =============================================================================
-// Registry Queries - Empty stubs for macOS
+// Registry Queries - Empty stubs for non-Windows platforms
 // =============================================================================
 
 func (c *Collector) getRegistryKey(hive, path string) (*types.RegistryKeyResult, error) {
@@ -48,7 +48,7 @@ func (c *Collector) getRegistrySecurity(hive, path string) (*types.RegistrySecur
 }
 
 // =============================================================================
-// DCOM/COM Queries - Empty stubs for macOS
+// DCOM/COM Queries - Empty stubs for non-Windows platforms
 // =============================================================================
 
 func (c *Collector) getDCOMApplications() (*types.DCOMApplicationsResult, error) {
@@ -88,7 +88,7 @@ func (c *Collector) getCOMSecurityDefaults() (*types.COMSecurityDefaults, error)
 }
 
 // =============================================================================
-// IIS Queries - Empty stubs for macOS
+// IIS Queries - Empty stubs for non-Windows platforms
 // =============================================================================
 
 func (c *Collector) getIISSites() (*types.IISSitesResult, error) {
