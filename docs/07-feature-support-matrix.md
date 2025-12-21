@@ -14,17 +14,22 @@ A summary of feature support across Linux, macOS, and Windows.
 ║  Phase              Description                              Queries  Status ║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
 ║  Phase 1 (MVP)      Core system metrics                           7   ✅ Done║
-║  Phase 1.5 (Logs)   System & app log access for diagnostics       6   📋 Next║
-║  Phase 1.6 (Hooks)  Deep system introspection (37 hooks!)        37   📋 Plan║
-║  Phase 1.7 (SBOM)   Software inventory & vulnerability           31   📋 Plan║
-║  Phase 2            Enhanced (GPU, Battery, Containers, etc.)     6   📋 Plan║
+║  Phase 1.5 (Logs)   System & app log access for diagnostics       6   ✅ Done║
+║  Phase 1.6 (Hooks)  Deep system introspection                    31   ✅ Done║
+║  Phase 1.7 (SBOM)   Software inventory & vulnerability           31   ✅ Done║
+║  Phase 1.8 (Apps)   Application discovery & config                2   ✅ Done║
+║  Phase 1.9 (Triage) Triage & summary queries                     25   ✅ Done║
+║  Phase 1.10 (Win)   Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
+║  Phase 1.11         Deep IIS Configuration                       35   📋 Plan║
+║  Phase 1.12         Complete IIS Coverage                        47   📋 Plan║
+║  Phase 2            Enhanced (GPU, Battery, Containers)           6   📋 Plan║
 ║  Phase 3            Analytics (Historical, Trends, Anomaly)       4   📋 Plan║
 ║  Phase 4            Automation (Alerts, Remediation)              4   📋 Plan║
 ║  Phase 5            Security (Scan, Compliance, Forensics)        4   📋 Plan║
 ║  Phase 6            Integration (Cloud, Plugins, Multi-host)      4   📋 Plan║
 ║  Phase 7            LLM Features (NL Queries, Auto-diagnostics)   3   📋 Plan║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  TOTAL PLANNED QUERIES: 106                                                  ║
+║  IMPLEMENTED: 117 queries    PLANNED: 129 queries    TOTAL: 246             ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```

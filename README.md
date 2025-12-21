@@ -52,7 +52,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.9 Complete (102 queries implemented)**
+**Status: Phase 1.10 Complete (117 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -226,6 +226,42 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - Security: firewall status, updates, admin accounts, exposed services, SSH config
 - Services: failed units, pending timers, enabled services
 - System health: filesystem status, resource limits, package inventory
+
+### Phase 1.10: Windows Enterprise Features ✅ (15/15)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_registry_key` | Read registry key and values | - | - | ✅ |
+| `get_registry_tree` | Enumerate subkeys recursively | - | - | ✅ |
+| `get_registry_security` | Key permissions and ownership | - | - | ✅ |
+| `get_dcom_applications` | List registered DCOM apps | - | - | ✅ |
+| `get_dcom_permissions` | DCOM launch/access permissions | - | - | ✅ |
+| `get_dcom_identities` | DCOM RunAs identities per app | - | - | ✅ |
+| `get_com_security_defaults` | Machine-wide COM security | - | - | ✅ |
+| `get_iis_sites` | List all IIS websites | - | - | ✅ |
+| `get_iis_app_pools` | Application pool configuration | - | - | ✅ |
+| `get_iis_bindings` | Site bindings (ports, SSL, hostnames) | - | - | ✅ |
+| `get_iis_virtual_dirs` | Virtual directories and applications | - | - | ✅ |
+| `get_iis_handlers` | Handler mappings | - | - | ✅ |
+| `get_iis_modules` | Installed IIS modules | - | - | ✅ |
+| `get_iis_ssl_certs` | SSL certificate bindings | - | - | ✅ |
+| `get_iis_auth_config` | Authentication settings per site | - | - | ✅ |
+
+**Registry queries:**
+- Read keys, values, and subkeys from any hive (HKLM, HKCU, HKCR, HKU, HKCC)
+- Recursive tree enumeration with depth limits
+- Security descriptor parsing (owner, group, DACL)
+
+**DCOM/COM security:**
+- Enumerate registered DCOM applications
+- Parse launch and access permissions
+- Identify RunAs identities and security defaults
+
+**IIS web server:**
+- Complete site and application pool inventory
+- SSL certificate bindings with certificate details
+- Handler mappings and module configuration
+- Authentication settings (Anonymous, Basic, Windows, Digest)
 
 ### What You Can Do Now
 
@@ -513,7 +549,9 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | **1.7** | SBOM & Inventory | ✅ Complete | 31/31 |
 | **1.8** | App Discovery & Config | ✅ Complete | 2/2 |
 | **1.9** | Triage & Summary | ✅ Complete | 25/25 |
-| **1.10** | Windows Enterprise | 📋 Planned | 0/15 |
+| **1.10** | Windows Enterprise | ✅ Complete | 15/15 |
+| **1.11** | Deep IIS Configuration | 📋 Planned | 0/35 |
+| **1.12** | Complete IIS Coverage | 📋 Planned | 0/47 |
 | 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
@@ -523,12 +561,18 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 102/149 queries (68%)**
+**Implemented: 117/246 queries (48%)**
 
-**Phase 1.10 Windows Enterprise Features:**
+**Phase 1.10 Windows Enterprise Features (Complete):**
 - Registry queries (read keys, enumerate, security descriptors)
 - DCOM/COM security (applications, permissions, identities)
 - IIS web server (sites, app pools, bindings, SSL, handlers)
+
+**Phase 1.11-1.12 IIS Deep Dive (Planned - 82 queries):**
+- Request filtering, URL rewrite, compression, caching
+- App pool recycling, process model, CPU throttling
+- ASP.NET configuration, FTP server, HTTP.sys integration
+- ARR load balancing, Classic ASP, runtime monitoring
 
 ### Cross-Platform Architecture
 
