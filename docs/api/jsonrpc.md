@@ -2,7 +2,7 @@
 
 MCP System Info implements the [JSON-RPC 2.0](https://www.jsonrpc.org/specification) protocol for communication.
 
-> **OpenAPI Specification**: A machine-readable API specification is available at [`api/openapi.yaml`](../../api/openapi.yaml).
+> **OpenAPI Specification**: A machine-readable API specification is available at [`api/openapi.yaml`](https://github.com/levantar-ai/mcp-sysinfo/blob/main/api/openapi.yaml).
 
 ## Request Format
 
