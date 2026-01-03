@@ -561,6 +561,53 @@ INTEGRATION_TEST=true go test -v -tags=integration ./test/integration/...
 | [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md) | Phase 1.7: Software inventory |
 | [docs/10-query-profiles.md](docs/10-query-profiles.md) | Query profiles for efficient investigations |
 | [docs/11-platform-native-features.md](docs/11-platform-native-features.md) | Platform-specific native APIs (WMI, procfs, IOKit) |
+| [api/openapi.yaml](api/openapi.yaml) | OpenAPI 3.1 specification |
+| [charts/mcp-sysinfo/](charts/mcp-sysinfo/) | Helm chart for Kubernetes |
+| [examples/](examples/) | Go and Python client examples |
+
+---
+
+## Kubernetes Deployment
+
+Deploy to Kubernetes using Helm:
+
+```bash
+# Install from local chart
+helm install mcp-sysinfo ./charts/mcp-sysinfo
+
+# With OIDC authentication
+helm install mcp-sysinfo ./charts/mcp-sysinfo \
+  --set mcp.auth.oidc.enabled=true \
+  --set mcp.auth.oidc.issuer=https://your-idp.example.com \
+  --set mcp.auth.oidc.audience=mcp-sysinfo
+
+# With Prometheus ServiceMonitor
+helm install mcp-sysinfo ./charts/mcp-sysinfo \
+  --set metrics.serviceMonitor.enabled=true
+```
+
+See [charts/mcp-sysinfo/README.md](charts/mcp-sysinfo/README.md) for full configuration options.
+
+---
+
+## Prometheus Metrics
+
+When running in HTTP mode, Prometheus metrics are available at `/metrics`:
+
+```bash
+curl http://localhost:8080/metrics
+```
+
+**Available metrics:**
+
+| Metric | Description |
+|--------|-------------|
+| `mcp_sysinfo_http_requests_total` | Total HTTP requests by method, path, status |
+| `mcp_sysinfo_http_request_duration_seconds` | Request latency histogram |
+| `mcp_sysinfo_tool_calls_total` | Tool calls by name and scope |
+| `mcp_sysinfo_tool_call_duration_seconds` | Tool execution latency |
+| `mcp_sysinfo_tool_call_errors_total` | Tool errors by type |
+| `mcp_sysinfo_auth_requests_total` | Authentication attempts |
 
 ---
 
