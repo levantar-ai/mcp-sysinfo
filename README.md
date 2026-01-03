@@ -1,5 +1,8 @@
 # MCP System Info
 
+[![CI](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml/badge.svg)](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **Read-only AI diagnostics plane for secure incident triage and evidence capture.**
 
 A security-first MCP server that provides structured, auditable access to system state without granting shell access to AI agents. Designed for production environments where you need AI-assisted diagnostics without the risks of arbitrary command execution.
@@ -275,6 +278,28 @@ go build -o mcp-sysinfo ./cmd/mcp-sysinfo
 # Run via SSH (remote host)
 ssh user@server "mcp-sysinfo"
 ```
+
+### Quick Start with Docker
+
+```bash
+# Clone and start HTTP server
+git clone https://github.com/levantar-ai/mcp-sysinfo
+cd mcp-sysinfo
+docker compose up mcp-sysinfo-http
+
+# Test it
+curl -X POST http://localhost:8080/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_uptime"}}'
+```
+
+For privileged access (all system queries):
+
+```bash
+docker compose --profile privileged up mcp-sysinfo-privileged
+```
+
+See [examples/](examples/) for Go and Python client examples.
 
 ### Resource Impact
 

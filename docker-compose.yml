@@ -1,0 +1,137 @@
+# Docker Compose for MCP System Info
+#
+# Usage:
+#   docker compose up mcp-sysinfo-http    # HTTP mode on port 8080
+#   docker compose up mcp-sysinfo-stdio   # Stdio mode (for MCP clients)
+#
+# For full system access (privileged queries):
+#   docker compose --profile privileged up mcp-sysinfo-privileged
+
+services:
+  # HTTP mode - exposes REST API on port 8080
+  mcp-sysinfo-http:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-sysinfo:latest
+    container_name: mcp-sysinfo-http
+    command: ["--transport", "http", "--listen", "0.0.0.0:8080"]
+    ports:
+      - "8080:8080"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    # Mount /proc and /sys read-only for system info
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Stdio mode - for use with MCP clients (Claude Desktop, etc.)
+  mcp-sysinfo-stdio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-sysinfo:latest
+    container_name: mcp-sysinfo-stdio
+    stdin_open: true
+    tty: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+
+  # Privileged mode - full system access for all queries
+  mcp-sysinfo-privileged:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-sysinfo:latest
+    container_name: mcp-sysinfo-privileged
+    command: ["--transport", "http", "--listen", "0.0.0.0:8080"]
+    ports:
+      - "8081:8080"
+    user: root
+    privileged: true
+    pid: host
+    network_mode: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/log:/var/log:ro
+      - /etc:/host/etc:ro
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+    profiles:
+      - privileged
+
+  # HTTP mode with OAuth token server
+  mcp-sysinfo-auth:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-sysinfo:latest
+    container_name: mcp-sysinfo-auth
+    command:
+      - "--transport"
+      - "http"
+      - "--listen"
+      - "0.0.0.0:8080"
+      - "--auth-server"
+      - "http://token-server:8444"
+      - "--client-id"
+      - "mcp-sysinfo"
+      - "--client-secret"
+      - "${MCP_CLIENT_SECRET:-changeme}"
+    ports:
+      - "8082:8080"
+    depends_on:
+      - token-server
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      - HOST_PROC=/host/proc
+      - HOST_SYS=/host/sys
+    profiles:
+      - auth
+
+  # Built-in OAuth token server
+  token-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.token-server
+    image: mcp-token-server:latest
+    container_name: mcp-token-server
+    command:
+      - "serve"
+      - "--listen"
+      - "0.0.0.0:8444"
+      - "--issuer"
+      - "http://token-server:8444"
+      - "--audience"
+      - "mcp-sysinfo"
+      - "--clients"
+      - "/etc/mcp/clients.json"
+    ports:
+      - "8444:8444"
+    volumes:
+      - ./config/clients.json:/etc/mcp/clients.json:ro
+    profiles:
+      - auth

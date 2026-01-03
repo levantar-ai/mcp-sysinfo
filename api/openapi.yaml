@@ -1,0 +1,488 @@
+openapi: 3.1.0
+info:
+  title: MCP System Info API
+  description: |
+    Read-only AI diagnostics plane for secure incident triage and evidence capture.
+
+    This API uses JSON-RPC 2.0 over HTTP. All requests are POST to the root endpoint.
+
+    ## Authentication
+
+    When running in HTTP mode with authentication enabled, include a Bearer token:
+    ```
+    Authorization: Bearer <token>
+    ```
+
+    ## Query Scopes
+
+    Tools are organized by scope:
+    - `core` - CPU, memory, disk, network, processes (enabled by default)
+    - `logs` - System and application logs (enabled by default)
+    - `hooks` - Scheduled tasks, kernel modules, network config (enabled by default)
+    - `hardware` - USB, PCI, block devices (enabled by default)
+    - `resources` - Process environment, IPC, namespaces, cgroups (enabled by default)
+    - `state` - VM detection, timezone, NTP, power state (enabled by default)
+    - `software` - Package inventory, SBOM, vulnerabilities (enabled by default)
+    - `triage` - Incident triage and security posture (enabled by default)
+    - `windows` - Windows enterprise features (enabled by default)
+    - `sensitive` - Auth logs, env vars, SSH config (**disabled by default**)
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: MCP System Info
+    url: https://github.com/levantar-ai/mcp-sysinfo
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /:
+    post:
+      summary: JSON-RPC 2.0 Endpoint
+      description: |
+        All MCP operations use this single endpoint with JSON-RPC 2.0 protocol.
+
+        Supported methods:
+        - `initialize` - Initialize the MCP connection
+        - `tools/list` - List available query tools
+        - `tools/call` - Execute a query tool
+      operationId: jsonrpc
+      security:
+        - bearerAuth: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonRpcRequest'
+            examples:
+              listTools:
+                summary: List available tools
+                value:
+                  jsonrpc: "2.0"
+                  id: 1
+                  method: tools/list
+              callTool:
+                summary: Call a tool
+                value:
+                  jsonrpc: "2.0"
+                  id: 1
+                  method: tools/call
+                  params:
+                    name: get_cpu_info
+                    arguments:
+                      per_cpu: true
+              batchRequest:
+                summary: Batch request
+                value:
+                  - jsonrpc: "2.0"
+                    id: 1
+                    method: tools/call
+                    params:
+                      name: get_cpu_info
+                  - jsonrpc: "2.0"
+                    id: 2
+                    method: tools/call
+                    params:
+                      name: get_memory_info
+      responses:
+        '200':
+          description: JSON-RPC response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/JsonRpcResponse'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/JsonRpcResponse'
+              examples:
+                toolsListResponse:
+                  summary: Tools list response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    result:
+                      tools:
+                        - name: get_cpu_info
+                          description: Get CPU usage, frequency, load average, and core count
+                          inputSchema:
+                            type: object
+                            properties:
+                              per_cpu:
+                                type: boolean
+                                description: Include per-CPU core statistics
+                toolCallResponse:
+                  summary: Tool call response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    result:
+                      content:
+                        - type: text
+                          text: '{"cpu_percent": 12.5, "cpu_count": 8}'
+                errorResponse:
+                  summary: Error response
+                  value:
+                    jsonrpc: "2.0"
+                    id: 1
+                    error:
+                      code: -32600
+                      message: "Query 'get_auth_logs' requires scope 'sensitive' which is not enabled"
+        '401':
+          description: Unauthorized - invalid or missing token
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: OAuth 2.0 Bearer token
+
+  schemas:
+    JsonRpcRequest:
+      type: object
+      required:
+        - jsonrpc
+        - method
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+          description: JSON-RPC version (must be "2.0")
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+          description: Request identifier
+        method:
+          type: string
+          enum:
+            - initialize
+            - tools/list
+            - tools/call
+          description: JSON-RPC method name
+        params:
+          oneOf:
+            - $ref: '#/components/schemas/InitializeParams'
+            - $ref: '#/components/schemas/CallToolParams'
+          description: Method parameters
+
+    JsonRpcResponse:
+      type: object
+      required:
+        - jsonrpc
+      properties:
+        jsonrpc:
+          type: string
+          enum: ["2.0"]
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+            - type: "null"
+        result:
+          description: Result on success
+        error:
+          $ref: '#/components/schemas/JsonRpcError'
+
+    JsonRpcError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: Error code
+          enum:
+            - -32700  # Parse error
+            - -32600  # Invalid request
+            - -32601  # Method not found
+            - -32602  # Invalid params
+            - -32603  # Internal error
+            - -32000  # Query execution error
+        message:
+          type: string
+          description: Error message
+        data:
+          description: Additional error data
+
+    InitializeParams:
+      type: object
+      properties:
+        protocolVersion:
+          type: string
+          example: "2024-11-05"
+        capabilities:
+          type: object
+        clientInfo:
+          $ref: '#/components/schemas/Implementation'
+
+    Implementation:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "mcp-client"
+        version:
+          type: string
+          example: "1.0.0"
+
+    CallToolParams:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Tool name to call
+          example: get_cpu_info
+        arguments:
+          type: object
+          description: Tool-specific arguments
+          additionalProperties: true
+
+    Tool:
+      type: object
+      required:
+        - name
+        - inputSchema
+      properties:
+        name:
+          type: string
+          description: Tool name
+        description:
+          type: string
+          description: Tool description
+        inputSchema:
+          $ref: '#/components/schemas/InputSchema'
+
+    InputSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [object]
+        properties:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Property'
+        required:
+          type: array
+          items:
+            type: string
+
+    Property:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [string, integer, boolean, number]
+        description:
+          type: string
+        default:
+          description: Default value
+        enum:
+          type: array
+          items:
+            type: string
+
+    CallToolResult:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Content'
+        isError:
+          type: boolean
+          default: false
+
+    Content:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum: [text, image, resource]
+        text:
+          type: string
+          description: Text content (for type=text)
+        mimeType:
+          type: string
+          description: MIME type (for type=image)
+        data:
+          type: string
+          description: Base64-encoded data (for type=image)
+
+    # Core Metrics Response Schemas
+    CpuInfo:
+      type: object
+      properties:
+        cpu_percent:
+          type: number
+          format: float
+          description: Overall CPU usage percentage
+          example: 12.5
+        cpu_count:
+          type: integer
+          description: Number of CPU cores
+          example: 8
+        cpu_freq_mhz:
+          type: number
+          format: float
+          description: Current CPU frequency in MHz
+          example: 2400.0
+        load_average:
+          type: array
+          items:
+            type: number
+          description: Load average (1, 5, 15 minutes)
+          example: [1.2, 0.8, 0.5]
+        model_name:
+          type: string
+          description: CPU model name
+          example: "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz"
+        per_cpu:
+          type: array
+          items:
+            type: object
+            properties:
+              cpu:
+                type: integer
+              percent:
+                type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    MemoryInfo:
+      type: object
+      properties:
+        total_bytes:
+          type: integer
+          format: int64
+          example: 17179869184
+        used_bytes:
+          type: integer
+          format: int64
+          example: 8589934592
+        available_bytes:
+          type: integer
+          format: int64
+          example: 8589934592
+        percent_used:
+          type: number
+          format: float
+          example: 50.0
+        swap_total:
+          type: integer
+          format: int64
+        swap_used:
+          type: integer
+          format: int64
+        swap_percent:
+          type: number
+          format: float
+        timestamp:
+          type: string
+          format: date-time
+
+    DiskInfo:
+      type: object
+      properties:
+        partitions:
+          type: array
+          items:
+            type: object
+            properties:
+              device:
+                type: string
+                example: "/dev/sda1"
+              mountpoint:
+                type: string
+                example: "/"
+              fstype:
+                type: string
+                example: "ext4"
+              total_bytes:
+                type: integer
+                format: int64
+              used_bytes:
+                type: integer
+                format: int64
+              free_bytes:
+                type: integer
+                format: int64
+              percent_used:
+                type: number
+                format: float
+        timestamp:
+          type: string
+          format: date-time
+
+    ProcessInfo:
+      type: object
+      properties:
+        processes:
+          type: array
+          items:
+            type: object
+            properties:
+              pid:
+                type: integer
+              name:
+                type: string
+              username:
+                type: string
+              cpu_percent:
+                type: number
+                format: float
+              memory_percent:
+                type: number
+                format: float
+              memory_rss_bytes:
+                type: integer
+                format: int64
+              status:
+                type: string
+              create_time:
+                type: string
+                format: date-time
+              cmdline:
+                type: string
+        count:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+
+    UptimeInfo:
+      type: object
+      properties:
+        uptime_seconds:
+          type: integer
+          format: int64
+          example: 345600
+        uptime_human:
+          type: string
+          example: "4 days, 0 hours, 0 minutes"
+        boot_time:
+          type: string
+          format: date-time
+        timestamp:
+          type: string
+          format: date-time
+
+tags:
+  - name: JSON-RPC
+    description: JSON-RPC 2.0 endpoint for all MCP operations

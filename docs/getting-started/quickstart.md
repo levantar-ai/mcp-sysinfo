@@ -1,5 +1,36 @@
 # Quick Start
 
+## Docker (Fastest Way to Try)
+
+```bash
+# Clone the repository
+git clone https://github.com/levantar-ai/mcp-sysinfo
+cd mcp-sysinfo
+
+# Start the HTTP server on port 8080
+docker compose up mcp-sysinfo-http
+
+# In another terminal, test it
+curl -X POST http://localhost:8080/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_uptime"}}'
+```
+
+For full system access (privileged mode):
+
+```bash
+docker compose --profile privileged up mcp-sysinfo-privileged
+```
+
+## Building from Source
+
+```bash
+# Clone and build
+git clone https://github.com/levantar-ai/mcp-sysinfo
+cd mcp-sysinfo
+go build -o mcp-sysinfo ./cmd/mcp-sysinfo
+```
+
 ## Running the Server
 
 ### Stdio Mode (MCP Clients)
@@ -89,7 +120,23 @@ $ ./mcp-sysinfo --query get_uptime --json
 }
 ```
 
+## Example Clients
+
+We provide example clients in Go and Python to help you get started:
+
+```bash
+# Go client
+go run examples/go/main.go --query get_cpu_info
+
+# Python client
+pip install requests
+python examples/python/mcp_client.py --query get_cpu_info
+```
+
+See the [examples/](https://github.com/levantar-ai/mcp-sysinfo/tree/main/examples) directory for full source code.
+
 ## Next Steps
 
 - [Configuration](configuration.md) - Enable sensitive queries, configure scopes
 - [Security](../security/index.md) - Authentication and deployment options
+- [API Reference](../api/jsonrpc.md) - Full JSON-RPC API documentation

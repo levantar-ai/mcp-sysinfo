@@ -9,10 +9,12 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
+	"github.com/levantar-ai/mcp-sysinfo/internal/metrics"
 )
 
 // contextKey is a custom type for context keys to avoid collisions.
@@ -110,7 +112,19 @@ func (h *HTTPServer) Start() error {
 	// Health check
 	mux.HandleFunc("/health", h.handleHealth)
 
-	handler := h.withLogging(h.withCORS(mux))
+	// Prometheus metrics endpoint
+	mux.Handle("/metrics", metrics.Handler())
+
+	// Set server info metric
+	authMethod := "none"
+	if h.config.OIDC != nil {
+		authMethod = "oidc"
+	} else if h.config.Auth != nil {
+		authMethod = "oauth-introspection"
+	}
+	metrics.SetServerInfo("1.0.0", "http", authMethod)
+
+	handler := h.withMetrics(h.withLogging(h.withCORS(mux)))
 
 	h.httpServer = &http.Server{
 		Addr:         h.config.ListenAddr,
@@ -164,6 +178,7 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 			h.auditAuth("token_validation", "", clientIP, audit.ResultDenied, map[string]interface{}{
 				"error": err.Error(),
 			})
+			metrics.RecordAuth("failure")
 			h.sendAuthChallenge(w, err)
 			return
 		}
@@ -176,6 +191,7 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 			"client_id": identity.ClientID,
 			"scopes":    identity.Scopes,
 		})
+		metrics.RecordAuth("success")
 	}
 
 	r = r.WithContext(ctx)
@@ -449,6 +465,24 @@ func (h *HTTPServer) sendError(w http.ResponseWriter, status int, message string
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(map[string]string{
 		"error": message,
+	})
+}
+
+// withMetrics wraps a handler with Prometheus metrics recording.
+func (h *HTTPServer) withMetrics(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Skip metrics for the metrics endpoint itself
+		if r.URL.Path == "/metrics" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		start := time.Now()
+		wrapped := &statusWriter{ResponseWriter: w, status: 200}
+		next.ServeHTTP(wrapped, r)
+		duration := time.Since(start)
+
+		metrics.RecordRequest(r.Method, r.URL.Path, strconv.Itoa(wrapped.status), duration)
 	})
 }
 

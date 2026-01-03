@@ -1,0 +1,19 @@
+apiVersion: v2
+name: mcp-sysinfo
+description: Read-only AI diagnostics plane via Model Context Protocol
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - mcp
+  - system-info
+  - diagnostics
+  - observability
+  - ai
+  - security
+home: https://github.com/levantar-ai/mcp-sysinfo
+sources:
+  - https://github.com/levantar-ai/mcp-sysinfo
+maintainers:
+  - name: MCP System Info Maintainers
+    url: https://github.com/levantar-ai/mcp-sysinfo

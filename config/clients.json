@@ -1,0 +1,14 @@
+{
+  "clients": [
+    {
+      "client_id": "example-app",
+      "client_secret": "example-secret",
+      "scopes": ["core", "logs", "hooks", "sbom"]
+    },
+    {
+      "client_id": "admin-app",
+      "client_secret": "admin-secret",
+      "scopes": ["core", "logs", "hooks", "sbom", "sensitive"]
+    }
+  ]
+}

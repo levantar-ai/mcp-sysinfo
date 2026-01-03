@@ -1,0 +1,41 @@
+# Build stage for token server
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates
+
+# Copy go mod files first for better caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the token server binary
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-s -w" \
+    -o mcp-token-server \
+    ./cmd/mcp-token-server
+
+# Runtime stage
+FROM alpine:3.19
+
+RUN apk add --no-cache ca-certificates
+
+# Create non-root user
+RUN adduser -D -u 1000 mcp
+
+# Copy binary from builder
+COPY --from=builder /build/mcp-token-server /usr/local/bin/mcp-token-server
+
+# Set permissions
+RUN chmod +x /usr/local/bin/mcp-token-server
+
+USER mcp
+
+ENTRYPOINT ["/usr/local/bin/mcp-token-server"]
+
+LABEL org.opencontainers.image.title="MCP Token Server"
+LABEL org.opencontainers.image.description="OAuth 2.1 token server for MCP System Info"

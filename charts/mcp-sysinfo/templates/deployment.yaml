@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mcp-sysinfo.fullname" . }}
+  labels:
+    {{- include "mcp-sysinfo.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "mcp-sysinfo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "mcp-sysinfo.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "mcp-sysinfo.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "mcp-sysinfo.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "--transport"
+            - "http"
+            - "--listen"
+            - "0.0.0.0:{{ .Values.service.port }}"
+            {{- if .Values.mcp.auth.oidc.enabled }}
+            - "--oidc-issuer"
+            - {{ .Values.mcp.auth.oidc.issuer | quote }}
+            - "--oidc-audience"
+            - {{ .Values.mcp.auth.oidc.audience | quote }}
+            {{- end }}
+            {{- if .Values.mcp.auth.oauth.enabled }}
+            - "--auth-server"
+            - {{ .Values.mcp.auth.oauth.authServerUrl | quote }}
+            - "--client-id"
+            - {{ .Values.mcp.auth.oauth.clientId | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- if .Values.hostPaths.proc.enabled }}
+            - name: HOST_PROC
+              value: {{ .Values.hostPaths.proc.mountPath }}
+            {{- end }}
+            {{- if .Values.hostPaths.sys.enabled }}
+            - name: HOST_SYS
+              value: {{ .Values.hostPaths.sys.mountPath }}
+            {{- end }}
+            {{- if .Values.mcp.auth.oauth.enabled }}
+            - name: MCP_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mcp.auth.oauth.clientSecretRef.name }}
+                  key: {{ .Values.mcp.auth.oauth.clientSecretRef.key }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.hostPaths.proc.enabled }}
+            - name: host-proc
+              mountPath: {{ .Values.hostPaths.proc.mountPath }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.hostPaths.sys.enabled }}
+            - name: host-sys
+              mountPath: {{ .Values.hostPaths.sys.mountPath }}
+              readOnly: true
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.hostPaths.proc.enabled }}
+        - name: host-proc
+          hostPath:
+            path: {{ .Values.hostPaths.proc.path }}
+            type: Directory
+        {{- end }}
+        {{- if .Values.hostPaths.sys.enabled }}
+        - name: host-sys
+          hostPath:
+            path: {{ .Values.hostPaths.sys.path }}
+            type: Directory
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

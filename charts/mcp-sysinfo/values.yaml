@@ -1,0 +1,161 @@
+# Default values for mcp-sysinfo
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/levantar-ai/mcp-sysinfo
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+  # Annotations for the service
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: mcp-sysinfo.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: mcp-sysinfo-tls
+  #    hosts:
+  #      - mcp-sysinfo.local
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# MCP-specific configuration
+mcp:
+  # Transport mode (http is the only supported mode for Kubernetes)
+  transport: http
+
+  # Scopes enabled by default
+  scopes:
+    core: true
+    logs: true
+    hooks: true
+    hardware: true
+    resources: true
+    state: true
+    software: true
+    triage: true
+    windows: false
+    sensitive: false  # Disabled by default for security
+
+  # Authentication configuration
+  auth:
+    # Enable authentication (recommended for production)
+    enabled: false
+
+    # OIDC configuration (recommended for enterprise)
+    oidc:
+      enabled: false
+      issuer: ""
+      audience: ""
+      requiredScopes: []
+
+    # OAuth introspection configuration (alternative to OIDC)
+    oauth:
+      enabled: false
+      authServerUrl: ""
+      clientId: ""
+      clientSecretRef:
+        name: ""
+        key: ""
+      requiredScopes: []
+
+# Prometheus metrics
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    labels: {}
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Host paths to mount (for system info collection)
+hostPaths:
+  # Mount /proc for process information
+  proc:
+    enabled: true
+    path: /proc
+    mountPath: /host/proc
+  # Mount /sys for system information
+  sys:
+    enabled: true
+    path: /sys
+    mountPath: /host/sys
+
+# Extra environment variables
+extraEnv: []
+#  - name: HOST_PROC
+#    value: /host/proc
+
+# Extra volume mounts
+extraVolumeMounts: []
+
+# Extra volumes
+extraVolumes: []

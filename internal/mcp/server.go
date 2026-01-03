@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
+	"github.com/levantar-ai/mcp-sysinfo/internal/metrics"
 )
 
 // Server is the MCP server that handles JSON-RPC requests.
@@ -197,6 +198,7 @@ func (s *Server) handleToolsCall(ctx context.Context, id interface{}, params jso
 	if !ok {
 		// Audit the failed tool lookup
 		s.auditToolCall(ctx, callParams.Name, callParams.Arguments, 0, audit.ResultError, "tool not found")
+		metrics.RecordToolError(callParams.Name, "not_found")
 		return NewErrorResponse(id, ErrCodeInvalidParams, "Tool not found", callParams.Name)
 	}
 
@@ -208,6 +210,8 @@ func (s *Server) handleToolsCall(ctx context.Context, id interface{}, params jso
 	if err != nil {
 		// Audit the error
 		s.auditToolCall(ctx, callParams.Name, callParams.Arguments, duration, audit.ResultError, err.Error())
+		metrics.RecordToolError(callParams.Name, "execution_error")
+		metrics.RecordToolCall(callParams.Name, tool.Scope, duration)
 		// Return error as tool result, not JSON-RPC error
 		return NewResponse(id, &CallToolResult{
 			Content: []Content{NewTextContent(fmt.Sprintf("Error: %v", err))},
@@ -215,8 +219,9 @@ func (s *Server) handleToolsCall(ctx context.Context, id interface{}, params jso
 		})
 	}
 
-	// Audit success
+	// Audit success and record metrics
 	s.auditToolCall(ctx, callParams.Name, callParams.Arguments, duration, audit.ResultSuccess, "")
+	metrics.RecordToolCall(callParams.Name, tool.Scope, duration)
 
 	return NewResponse(id, result)
 }
