@@ -59,22 +59,69 @@ claude mcp add --transport stdio sysinfo -- /path/to/mcp-sysinfo --scope sensiti
 
 ### Remote Machine (HTTP Mode)
 
-Connect Claude Code to mcp-sysinfo running on a remote machine (e.g., a Windows VM):
+Connect Claude Code to mcp-sysinfo running on a remote machine (e.g., a Windows VM).
 
-**Step 1: Start mcp-sysinfo on the remote machine**
+#### Windows VM Setup
+
+**Step 1: Download the binary on the Windows VM**
 
 ```powershell
-# On the Windows VM (replace with your token)
-.\mcp-sysinfo-windows-amd64.exe --http :8080 --token my-secret-token
+# Download from GitHub releases
+Invoke-WebRequest -Uri "https://github.com/levantar-ai/mcp-sysinfo/releases/latest/download/mcp-sysinfo-windows-amd64.exe" -OutFile "mcp-sysinfo.exe"
+
+# Verify it works
+.\mcp-sysinfo.exe --version
+.\mcp-sysinfo.exe --query get_cpu_info --json
 ```
 
-**Step 2: Add to Claude Code on your local machine**
+**Step 2: Start the HTTP server on the Windows VM**
+
+```powershell
+# Basic (core queries only)
+.\mcp-sysinfo.exe --http :8080 --token my-secret-token
+
+# With all scopes including sensitive queries
+.\mcp-sysinfo.exe --http :8080 --token my-secret-token --scope sensitive
+```
+
+**Step 3: Open Windows Firewall (if needed)**
+
+```powershell
+New-NetFirewallRule -DisplayName "MCP SysInfo" -Direction Inbound -Port 8080 -Protocol TCP -Action Allow
+```
+
+**Step 4: Get the VM's IP address**
+
+```powershell
+# Find the VM's IP
+ipconfig | findstr /i "IPv4"
+```
+
+#### Host Machine Setup (Claude Code)
+
+**Step 5: Add to Claude Code on your host machine**
 
 ```bash
-# Replace 192.168.1.100 with your VM's IP address
-claude mcp add --transport http sysinfo-vm http://192.168.1.100:8080 \
+# Replace 10.211.55.x with your VM's actual IP address
+claude mcp add --transport http sysinfo-windows http://10.211.55.x:8080 \
   --header "Authorization: Bearer my-secret-token"
 ```
+
+**Step 6: Verify the connection**
+
+```bash
+# List configured servers
+claude mcp list
+
+# Inside Claude Code, check status
+/mcp
+```
+
+Now Claude Code can query your Windows VM for system diagnostics including:
+- `get_cpu_info`, `get_memory_info`, `get_disk_info`, `get_processes`
+- `get_registry_key`, `get_event_log`, `get_firewall_rules`
+- `get_scheduled_tasks`, `get_startup_items`, `get_loaded_drivers`
+- ...and 110+ more Windows-compatible queries
 
 ### Project-Shared Configuration
 

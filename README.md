@@ -334,23 +334,31 @@ claude mcp add --transport stdio sysinfo -- /path/to/mcp-sysinfo
 claude mcp add --transport stdio sysinfo -- C:\path\to\mcp-sysinfo-windows-amd64.exe
 ```
 
-**Remote machine (HTTP) - e.g., Windows VM:**
+**Remote Windows VM (HTTP):**
+
+```powershell
+# 1. On Windows VM: Download and start server
+Invoke-WebRequest -Uri "https://github.com/levantar-ai/mcp-sysinfo/releases/latest/download/mcp-sysinfo-windows-amd64.exe" -OutFile "mcp-sysinfo.exe"
+.\mcp-sysinfo.exe --http :8080 --token my-secret-token
+
+# 2. Open firewall if needed
+New-NetFirewallRule -DisplayName "MCP SysInfo" -Direction Inbound -Port 8080 -Protocol TCP -Action Allow
+```
 
 ```bash
-# On the remote machine, start HTTP server
-./mcp-sysinfo --http :8080 --token my-secret-token
-
-# On your local machine, connect Claude Code
-claude mcp add --transport http sysinfo-remote http://192.168.1.100:8080 \
+# 3. On host: Connect Claude Code (replace IP with your VM's IP)
+claude mcp add --transport http sysinfo-windows http://10.211.55.x:8080 \
   --header "Authorization: Bearer my-secret-token"
 ```
 
-**Verify with:**
+**Verify:**
 
 ```bash
 claude mcp list   # List configured servers
 /mcp              # Check status inside Claude Code
 ```
+
+See [Quick Start](docs/getting-started/quickstart.md) for detailed setup instructions.
 
 ### Resource Impact
 
