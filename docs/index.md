@@ -54,3 +54,4 @@ go build -o mcp-sysinfo ./cmd/mcp-sysinfo
 - [Quick Start](getting-started/quickstart.md) - First queries
 - [Query Reference](queries/index.md) - All available queries
 - [Security](security/index.md) - Authentication and deployment
+- [Building Plugins](extending/plugins.md) - Extend with custom queries
