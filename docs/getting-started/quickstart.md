@@ -66,12 +66,20 @@ Connect Claude Code to mcp-sysinfo running on a remote machine (e.g., a Windows 
 **Step 1: Download the binary on the Windows VM**
 
 ```powershell
-# Download from GitHub releases
-Invoke-WebRequest -Uri "https://github.com/levantar-ai/mcp-sysinfo/releases/latest/download/mcp-sysinfo-windows-amd64.exe" -OutFile "mcp-sysinfo.exe"
+# Force TLS 1.2 (required for GitHub)
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# Download from GitHub releases (note: binary has no .exe extension on GitHub)
+Invoke-WebRequest -Uri "https://github.com/levantar-ai/mcp-sysinfo/releases/latest/download/mcp-sysinfo-windows-amd64" -OutFile "mcp-sysinfo.exe"
 
 # Verify it works
 .\mcp-sysinfo.exe --version
 .\mcp-sysinfo.exe --query get_cpu_info --json
+```
+
+Alternative using curl:
+```powershell
+curl -L -o mcp-sysinfo.exe "https://github.com/levantar-ai/mcp-sysinfo/releases/latest/download/mcp-sysinfo-windows-amd64"
 ```
 
 **Step 2: Start the HTTP server on the Windows VM**

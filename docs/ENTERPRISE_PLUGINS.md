@@ -6,40 +6,55 @@ Premium plugin offerings for enterprise environments. Each plugin provides speci
 
 ## Table of Contents
 
-1. [Database Systems](#database-systems)
-2. [Cloud Providers](#cloud-providers)
-3. [Container Orchestration](#container-orchestration)
-4. [Message Queues & Event Streaming](#message-queues--event-streaming)
-5. [Web Servers & Reverse Proxies](#web-servers--reverse-proxies)
-6. [Load Balancers & Traffic Management](#load-balancers--traffic-management)
-7. [CI/CD Platforms](#cicd-platforms)
-8. [Observability & Monitoring](#observability--monitoring)
-9. [Security & Secrets Management](#security--secrets-management)
-10. [Identity & Access Management](#identity--access-management)
-11. [Networking & Firewalls](#networking--firewalls)
-12. [Storage Systems](#storage-systems)
-13. [Virtualization Platforms](#virtualization-platforms)
-14. [Backup & Disaster Recovery](#backup--disaster-recovery)
-15. [Service Mesh](#service-mesh)
-16. [Serverless Platforms](#serverless-platforms)
-17. [CDN & Edge Computing](#cdn--edge-computing)
-18. [APM & Distributed Tracing](#apm--distributed-tracing)
-19. [Log Management](#log-management)
-20. [Configuration Management](#configuration-management)
-21. [DNS & Domain Services](#dns--domain-services)
-22. [Email & Messaging](#email--messaging)
-23. [Collaboration & Communication](#collaboration--communication)
-24. [ERP Systems](#erp-systems)
-25. [CRM Platforms](#crm-platforms)
-26. [Big Data & Analytics](#big-data--analytics)
-27. [Machine Learning Platforms](#machine-learning-platforms)
-28. [API Gateways](#api-gateways)
-29. [Certificate Management](#certificate-management)
-30. [Compliance & Governance](#compliance--governance)
+1. [Database Systems - Relational](#database-systems---relational)
+2. [Database Systems - NoSQL & Document](#database-systems---nosql--document)
+3. [Database Systems - Time Series](#database-systems---time-series)
+4. [Database Systems - Graph](#database-systems---graph)
+5. [Database Systems - NewSQL & Distributed](#database-systems---newsql--distributed)
+6. [Database Systems - In-Memory & Cache](#database-systems---in-memory--cache)
+7. [Database Systems - Embedded & Edge](#database-systems---embedded--edge)
+8. [Cloud Providers](#cloud-providers)
+9. [Container Orchestration](#container-orchestration)
+10. [Message Queues & Event Streaming](#message-queues--event-streaming)
+11. [Web Servers & Reverse Proxies](#web-servers--reverse-proxies)
+12. [Load Balancers & Traffic Management](#load-balancers--traffic-management)
+13. [CI/CD Platforms](#cicd-platforms)
+14. [Observability & Monitoring](#observability--monitoring)
+15. [Security & Secrets Management](#security--secrets-management)
+16. [Identity & Access Management](#identity--access-management)
+17. [Antivirus & Anti-Malware](#antivirus--anti-malware)
+18. [Endpoint Detection & Response (EDR/XDR)](#endpoint-detection--response-edrxdr)
+19. [Endpoint Protection Platforms (EPP)](#endpoint-protection-platforms-epp)
+20. [Mobile Device Management (MDM/UEM)](#mobile-device-management-mdmuem)
+21. [Data Loss Prevention (DLP)](#data-loss-prevention-dlp)
+22. [SIEM & Security Analytics](#siem--security-analytics)
+23. [Networking & Firewalls](#networking--firewalls)
+24. [Storage Systems](#storage-systems)
+25. [Virtualization Platforms](#virtualization-platforms)
+26. [Backup & Disaster Recovery](#backup--disaster-recovery)
+27. [Service Mesh](#service-mesh)
+28. [Serverless Platforms](#serverless-platforms)
+29. [CDN & Edge Computing](#cdn--edge-computing)
+30. [APM & Distributed Tracing](#apm--distributed-tracing)
+31. [Log Management](#log-management)
+32. [Configuration Management](#configuration-management)
+33. [DNS & Domain Services](#dns--domain-services)
+34. [Email & Messaging](#email--messaging)
+35. [Collaboration & Communication](#collaboration--communication)
+36. [ERP Systems](#erp-systems)
+37. [CRM Platforms](#crm-platforms)
+38. [Big Data & Analytics](#big-data--analytics)
+39. [Machine Learning Platforms](#machine-learning-platforms)
+40. [API Gateways](#api-gateways)
+41. [Certificate Management](#certificate-management)
+42. [Compliance & Governance](#compliance--governance)
+43. [Network Access Control (NAC)](#network-access-control-nac)
+44. [Privileged Access Management (PAM)](#privileged-access-management-pam)
+45. [Vulnerability Management](#vulnerability-management)
 
 ---
 
-## Database Systems
+## Database Systems - Relational
 
 ### MySQL / MariaDB Plugin
 **Scope:** `mysql`
@@ -206,6 +221,666 @@ Premium plugin offerings for enterprise environments. Each plugin provides speci
 | `get_crdb_replication_lag` | Get replication lag stats |
 | `get_crdb_backup_status` | Get backup schedule status |
 | `get_crdb_contention` | Get contention analysis |
+
+### IBM Db2 Plugin
+**Scope:** `db2`
+
+| Query | Description |
+|-------|-------------|
+| `get_db2_instance_info` | Get instance configuration |
+| `get_db2_database_cfg` | Get database configuration |
+| `get_db2_tablespaces` | Get tablespace status and usage |
+| `get_db2_bufferpools` | Get buffer pool hit ratios |
+| `get_db2_connections` | Get active connections |
+| `get_db2_locks` | Get lock waits and deadlocks |
+| `get_db2_hadr_status` | Get HADR replication status |
+| `get_db2_utilities` | Get running utilities |
+| `get_db2_logs` | Get transaction log status |
+| `get_db2_diagnostics` | Get db2diag.log entries |
+| `get_db2_snapshots` | Get database snapshots |
+
+### SAP HANA Plugin
+**Scope:** `hana`
+
+| Query | Description |
+|-------|-------------|
+| `get_hana_system_overview` | Get system status and version |
+| `get_hana_services` | Get service status |
+| `get_hana_memory` | Get memory allocation breakdown |
+| `get_hana_connections` | Get active connections |
+| `get_hana_expensive_statements` | Get expensive SQL statements |
+| `get_hana_blocked_transactions` | Get blocked transactions |
+| `get_hana_replication` | Get system replication status |
+| `get_hana_backup_catalog` | Get backup catalog |
+| `get_hana_alerts` | Get system alerts |
+| `get_hana_volumes` | Get persistence volume status |
+| `get_hana_delta_merge` | Get delta merge statistics |
+
+### Teradata Plugin
+**Scope:** `teradata`
+
+| Query | Description |
+|-------|-------------|
+| `get_teradata_system_info` | Get DBS version and config |
+| `get_teradata_nodes` | Get node/AMP status |
+| `get_teradata_sessions` | Get active sessions |
+| `get_teradata_queries` | Get running queries |
+| `get_teradata_space` | Get database space usage |
+| `get_teradata_workloads` | Get TASM workload status |
+| `get_teradata_skew` | Get data skew analysis |
+| `get_teradata_locks` | Get lock information |
+| `get_teradata_stats` | Get statistics collection status |
+
+### Sybase/SAP ASE Plugin
+**Scope:** `sybase`
+
+| Query | Description |
+|-------|-------------|
+| `get_sybase_server_info` | Get server version and config |
+| `get_sybase_databases` | Get database status |
+| `get_sybase_processes` | Get active processes |
+| `get_sybase_locks` | Get lock contention |
+| `get_sybase_devices` | Get device allocation |
+| `get_sybase_replication` | Get Rep Server status |
+| `get_sybase_caches` | Get data cache statistics |
+| `get_sybase_engines` | Get engine utilization |
+
+### Informix Plugin
+**Scope:** `informix`
+
+| Query | Description |
+|-------|-------------|
+| `get_informix_status` | Get instance status |
+| `get_informix_dbspaces` | Get dbspace usage |
+| `get_informix_sessions` | Get active sessions |
+| `get_informix_locks` | Get lock information |
+| `get_informix_checkpoints` | Get checkpoint history |
+| `get_informix_logs` | Get logical log status |
+| `get_informix_replication` | Get HDR/RSS status |
+
+### Firebird Plugin
+**Scope:** `firebird`
+
+| Query | Description |
+|-------|-------------|
+| `get_firebird_server_info` | Get server version |
+| `get_firebird_databases` | Get database list |
+| `get_firebird_connections` | Get active connections |
+| `get_firebird_transactions` | Get transaction status |
+| `get_firebird_statistics` | Get database statistics |
+| `get_firebird_trace` | Get trace session data |
+
+---
+
+## Database Systems - NoSQL & Document
+
+### Amazon DynamoDB Plugin
+**Scope:** `dynamodb`
+
+| Query | Description |
+|-------|-------------|
+| `get_dynamodb_tables` | Get table inventory |
+| `get_dynamodb_table_metrics` | Get table CloudWatch metrics |
+| `get_dynamodb_capacity` | Get provisioned/on-demand capacity |
+| `get_dynamodb_indexes` | Get GSI/LSI status |
+| `get_dynamodb_streams` | Get DynamoDB Streams status |
+| `get_dynamodb_backups` | Get backup status |
+| `get_dynamodb_global_tables` | Get global table replication |
+| `get_dynamodb_dax` | Get DAX cluster status |
+
+### Azure Cosmos DB Plugin
+**Scope:** `cosmosdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_cosmosdb_accounts` | Get account inventory |
+| `get_cosmosdb_databases` | Get database list |
+| `get_cosmosdb_containers` | Get container metrics |
+| `get_cosmosdb_throughput` | Get RU/s allocation |
+| `get_cosmosdb_partitions` | Get partition key distribution |
+| `get_cosmosdb_replication` | Get geo-replication status |
+| `get_cosmosdb_consistency` | Get consistency settings |
+| `get_cosmosdb_conflicts` | Get conflict resolution |
+
+### CouchDB Plugin
+**Scope:** `couchdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_couchdb_server_info` | Get server status |
+| `get_couchdb_databases` | Get database list |
+| `get_couchdb_database_info` | Get database statistics |
+| `get_couchdb_active_tasks` | Get running tasks |
+| `get_couchdb_replication` | Get replication status |
+| `get_couchdb_cluster` | Get cluster membership |
+| `get_couchdb_scheduler` | Get scheduler jobs |
+| `get_couchdb_shards` | Get shard distribution |
+
+### Couchbase Plugin
+**Scope:** `couchbase`
+
+| Query | Description |
+|-------|-------------|
+| `get_couchbase_cluster` | Get cluster overview |
+| `get_couchbase_nodes` | Get node status |
+| `get_couchbase_buckets` | Get bucket statistics |
+| `get_couchbase_indexes` | Get GSI index status |
+| `get_couchbase_xdcr` | Get cross-datacenter replication |
+| `get_couchbase_fts` | Get full-text search status |
+| `get_couchbase_analytics` | Get analytics service status |
+| `get_couchbase_eventing` | Get eventing functions |
+| `get_couchbase_backup` | Get backup service status |
+
+### RavenDB Plugin
+**Scope:** `ravendb`
+
+| Query | Description |
+|-------|-------------|
+| `get_ravendb_server_info` | Get server status |
+| `get_ravendb_databases` | Get database list |
+| `get_ravendb_indexes` | Get index status |
+| `get_ravendb_replication` | Get replication topology |
+| `get_ravendb_subscriptions` | Get data subscriptions |
+| `get_ravendb_operations` | Get running operations |
+| `get_ravendb_studio` | Get studio usage stats |
+
+### ArangoDB Plugin
+**Scope:** `arangodb`
+
+| Query | Description |
+|-------|-------------|
+| `get_arangodb_server_info` | Get server version |
+| `get_arangodb_databases` | Get database list |
+| `get_arangodb_collections` | Get collection statistics |
+| `get_arangodb_indexes` | Get index inventory |
+| `get_arangodb_graphs` | Get graph definitions |
+| `get_arangodb_cluster` | Get cluster health |
+| `get_arangodb_replication` | Get replication status |
+| `get_arangodb_jobs` | Get async job status |
+
+### MarkLogic Plugin
+**Scope:** `marklogic`
+
+| Query | Description |
+|-------|-------------|
+| `get_marklogic_cluster` | Get cluster status |
+| `get_marklogic_hosts` | Get host health |
+| `get_marklogic_forests` | Get forest status |
+| `get_marklogic_databases` | Get database config |
+| `get_marklogic_servers` | Get app server status |
+| `get_marklogic_requests` | Get active requests |
+| `get_marklogic_transactions` | Get open transactions |
+| `get_marklogic_backup_status` | Get backup history |
+
+---
+
+## Database Systems - Time Series
+
+### InfluxDB Plugin
+**Scope:** `influxdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_influxdb_health` | Get server health |
+| `get_influxdb_databases` | Get database list (v1) |
+| `get_influxdb_buckets` | Get bucket list (v2) |
+| `get_influxdb_orgs` | Get organization list |
+| `get_influxdb_users` | Get user list |
+| `get_influxdb_retention` | Get retention policies |
+| `get_influxdb_continuous_queries` | Get CQ status |
+| `get_influxdb_subscriptions` | Get subscriptions |
+| `get_influxdb_shards` | Get shard groups |
+| `get_influxdb_tasks` | Get Flux tasks |
+| `get_influxdb_cardinality` | Get series cardinality |
+
+### TimescaleDB Plugin
+**Scope:** `timescaledb`
+
+| Query | Description |
+|-------|-------------|
+| `get_timescale_version` | Get extension version |
+| `get_timescale_hypertables` | Get hypertable list |
+| `get_timescale_chunks` | Get chunk information |
+| `get_timescale_compression` | Get compression status |
+| `get_timescale_continuous_aggs` | Get continuous aggregates |
+| `get_timescale_retention` | Get retention policies |
+| `get_timescale_jobs` | Get background jobs |
+| `get_timescale_replication` | Get multi-node status |
+
+### Prometheus TSDB Plugin
+**Scope:** `prometheus_tsdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_prom_tsdb_status` | Get TSDB statistics |
+| `get_prom_head_stats` | Get head block stats |
+| `get_prom_wal_status` | Get WAL statistics |
+| `get_prom_block_stats` | Get block metadata |
+| `get_prom_tombstones` | Get tombstone count |
+| `get_prom_exemplars` | Get exemplar storage |
+| `get_prom_label_names` | Get label cardinality |
+
+### Victoria Metrics Plugin
+**Scope:** `victoriametrics`
+
+| Query | Description |
+|-------|-------------|
+| `get_vm_status` | Get server status |
+| `get_vm_storage` | Get storage statistics |
+| `get_vm_active_queries` | Get running queries |
+| `get_vm_top_queries` | Get heaviest queries |
+| `get_vm_tsid_status` | Get TSID statistics |
+| `get_vm_replication` | Get vmstorage replication |
+| `get_vm_cluster` | Get cluster component status |
+
+### QuestDB Plugin
+**Scope:** `questdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_questdb_status` | Get server status |
+| `get_questdb_tables` | Get table list |
+| `get_questdb_columns` | Get column metadata |
+| `get_questdb_partitions` | Get partition info |
+| `get_questdb_wal` | Get WAL status |
+| `get_questdb_metrics` | Get server metrics |
+
+### Apache Druid Plugin
+**Scope:** `druid`
+
+| Query | Description |
+|-------|-------------|
+| `get_druid_cluster` | Get cluster status |
+| `get_druid_coordinator` | Get coordinator status |
+| `get_druid_overlord` | Get overlord status |
+| `get_druid_brokers` | Get broker status |
+| `get_druid_historicals` | Get historical node status |
+| `get_druid_datasources` | Get datasource list |
+| `get_druid_segments` | Get segment inventory |
+| `get_druid_tasks` | Get ingestion tasks |
+| `get_druid_supervisors` | Get streaming supervisors |
+| `get_druid_lookups` | Get lookup status |
+
+### Graphite Plugin
+**Scope:** `graphite`
+
+| Query | Description |
+|-------|-------------|
+| `get_graphite_metrics` | Get metric index |
+| `get_graphite_whisper_info` | Get whisper file stats |
+| `get_graphite_carbon_stats` | Get carbon daemon stats |
+| `get_graphite_retention` | Get storage schemas |
+| `get_graphite_aggregation` | Get aggregation rules |
+
+### OpenTSDB Plugin
+**Scope:** `opentsdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_opentsdb_version` | Get server version |
+| `get_opentsdb_stats` | Get internal statistics |
+| `get_opentsdb_suggest` | Get metric suggestions |
+| `get_opentsdb_uid` | Get UID assignment stats |
+| `get_opentsdb_region_clients` | Get HBase region clients |
+
+---
+
+## Database Systems - Graph
+
+### Neo4j Plugin
+**Scope:** `neo4j`
+
+| Query | Description |
+|-------|-------------|
+| `get_neo4j_server_info` | Get server version/edition |
+| `get_neo4j_databases` | Get database list |
+| `get_neo4j_cluster` | Get causal cluster status |
+| `get_neo4j_store_sizes` | Get store file sizes |
+| `get_neo4j_transactions` | Get transaction stats |
+| `get_neo4j_page_cache` | Get page cache metrics |
+| `get_neo4j_indexes` | Get index status |
+| `get_neo4j_constraints` | Get constraint definitions |
+| `get_neo4j_procedures` | Get procedure list |
+| `get_neo4j_queries` | Get running queries |
+| `get_neo4j_logs` | Get query log entries |
+
+### Amazon Neptune Plugin
+**Scope:** `neptune`
+
+| Query | Description |
+|-------|-------------|
+| `get_neptune_cluster` | Get cluster status |
+| `get_neptune_instances` | Get instance health |
+| `get_neptune_endpoints` | Get endpoint configuration |
+| `get_neptune_parameters` | Get parameter groups |
+| `get_neptune_statistics` | Get graph statistics |
+| `get_neptune_status` | Get engine status |
+| `get_neptune_sparql_status` | Get SPARQL endpoint status |
+| `get_neptune_gremlin_status` | Get Gremlin endpoint status |
+
+### JanusGraph Plugin
+**Scope:** `janusgraph`
+
+| Query | Description |
+|-------|-------------|
+| `get_janusgraph_status` | Get server status |
+| `get_janusgraph_schema` | Get graph schema |
+| `get_janusgraph_indexes` | Get index status |
+| `get_janusgraph_backends` | Get storage backend status |
+| `get_janusgraph_metrics` | Get performance metrics |
+| `get_janusgraph_transactions` | Get open transactions |
+
+### TigerGraph Plugin
+**Scope:** `tigergraph`
+
+| Query | Description |
+|-------|-------------|
+| `get_tigergraph_cluster` | Get cluster status |
+| `get_tigergraph_graphs` | Get graph list |
+| `get_tigergraph_vertices` | Get vertex type stats |
+| `get_tigergraph_edges` | Get edge type stats |
+| `get_tigergraph_queries` | Get installed queries |
+| `get_tigergraph_loading_jobs` | Get loading job status |
+| `get_tigergraph_users` | Get user list |
+| `get_tigergraph_gsql_server` | Get GSQL server status |
+
+### Dgraph Plugin
+**Scope:** `dgraph`
+
+| Query | Description |
+|-------|-------------|
+| `get_dgraph_health` | Get cluster health |
+| `get_dgraph_state` | Get cluster state |
+| `get_dgraph_zeros` | Get Zero group status |
+| `get_dgraph_alphas` | Get Alpha group status |
+| `get_dgraph_schema` | Get GraphQL schema |
+| `get_dgraph_predicates` | Get predicate list |
+| `get_dgraph_enterprise` | Get license/ACL status |
+
+### OrientDB Plugin
+**Scope:** `orientdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_orientdb_server` | Get server status |
+| `get_orientdb_databases` | Get database list |
+| `get_orientdb_cluster` | Get distributed status |
+| `get_orientdb_classes` | Get class definitions |
+| `get_orientdb_indexes` | Get index status |
+| `get_orientdb_connections` | Get active connections |
+| `get_orientdb_profiler` | Get profiler statistics |
+
+---
+
+## Database Systems - NewSQL & Distributed
+
+### TiDB Plugin
+**Scope:** `tidb`
+
+| Query | Description |
+|-------|-------------|
+| `get_tidb_cluster_info` | Get cluster topology |
+| `get_tidb_stores` | Get TiKV store status |
+| `get_tidb_regions` | Get region distribution |
+| `get_tidb_pd_health` | Get PD leader health |
+| `get_tidb_schemas` | Get database schemas |
+| `get_tidb_slow_queries` | Get slow query log |
+| `get_tidb_statements` | Get statement summary |
+| `get_tidb_hotspots` | Get read/write hotspots |
+| `get_tidb_gc_status` | Get GC status |
+| `get_tidb_backup_status` | Get BR backup status |
+
+### YugabyteDB Plugin
+**Scope:** `yugabyte`
+
+| Query | Description |
+|-------|-------------|
+| `get_yb_cluster_info` | Get cluster configuration |
+| `get_yb_masters` | Get master status |
+| `get_yb_tservers` | Get tablet server status |
+| `get_yb_tablets` | Get tablet distribution |
+| `get_yb_tables` | Get table list |
+| `get_yb_namespaces` | Get namespace list |
+| `get_yb_replication` | Get xCluster replication |
+| `get_yb_load_balancer` | Get load balancer status |
+
+### VoltDB Plugin
+**Scope:** `voltdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_voltdb_cluster` | Get cluster overview |
+| `get_voltdb_hosts` | Get host status |
+| `get_voltdb_partitions` | Get partition status |
+| `get_voltdb_procedures` | Get stored procedures |
+| `get_voltdb_dr` | Get DR replication status |
+| `get_voltdb_export` | Get export status |
+| `get_voltdb_import` | Get import status |
+| `get_voltdb_statistics` | Get procedural statistics |
+
+### SingleStore (MemSQL) Plugin
+**Scope:** `singlestore`
+
+| Query | Description |
+|-------|-------------|
+| `get_singlestore_cluster` | Get cluster status |
+| `get_singlestore_leaves` | Get leaf node status |
+| `get_singlestore_aggregators` | Get aggregator status |
+| `get_singlestore_databases` | Get database list |
+| `get_singlestore_pipelines` | Get pipeline status |
+| `get_singlestore_replication` | Get replication status |
+| `get_singlestore_mv_status` | Get management views |
+| `get_singlestore_workloads` | Get resource pools |
+
+### Vitess Plugin
+**Scope:** `vitess`
+
+| Query | Description |
+|-------|-------------|
+| `get_vitess_topology` | Get cluster topology |
+| `get_vitess_cells` | Get cell status |
+| `get_vitess_keyspaces` | Get keyspace list |
+| `get_vitess_shards` | Get shard distribution |
+| `get_vitess_tablets` | Get tablet status |
+| `get_vitess_vschema` | Get VSchema definition |
+| `get_vitess_vtgate` | Get VTGate status |
+| `get_vitess_replication` | Get replication lag |
+
+### Spanner Plugin
+**Scope:** `spanner`
+
+| Query | Description |
+|-------|-------------|
+| `get_spanner_instances` | Get instance list |
+| `get_spanner_databases` | Get database list |
+| `get_spanner_sessions` | Get session pool status |
+| `get_spanner_operations` | Get long-running operations |
+| `get_spanner_backup` | Get backup status |
+| `get_spanner_iam` | Get IAM policies |
+
+---
+
+## Database Systems - In-Memory & Cache
+
+### Memcached Plugin
+**Scope:** `memcached`
+
+| Query | Description |
+|-------|-------------|
+| `get_memcached_stats` | Get general statistics |
+| `get_memcached_slabs` | Get slab allocation |
+| `get_memcached_items` | Get item statistics |
+| `get_memcached_settings` | Get server settings |
+| `get_memcached_conns` | Get connection stats |
+| `get_memcached_sizes` | Get item size distribution |
+
+### Hazelcast Plugin
+**Scope:** `hazelcast`
+
+| Query | Description |
+|-------|-------------|
+| `get_hazelcast_cluster` | Get cluster state |
+| `get_hazelcast_members` | Get member list |
+| `get_hazelcast_maps` | Get IMap statistics |
+| `get_hazelcast_queues` | Get IQueue statistics |
+| `get_hazelcast_topics` | Get ITopic statistics |
+| `get_hazelcast_executors` | Get executor stats |
+| `get_hazelcast_caches` | Get JCache statistics |
+| `get_hazelcast_wan` | Get WAN replication |
+| `get_hazelcast_cp` | Get CP subsystem status |
+
+### Apache Ignite Plugin
+**Scope:** `ignite`
+
+| Query | Description |
+|-------|-------------|
+| `get_ignite_cluster` | Get cluster topology |
+| `get_ignite_nodes` | Get node attributes |
+| `get_ignite_caches` | Get cache statistics |
+| `get_ignite_baseline` | Get baseline topology |
+| `get_ignite_compute` | Get compute task stats |
+| `get_ignite_services` | Get deployed services |
+| `get_ignite_sql` | Get SQL query stats |
+| `get_ignite_persistence` | Get persistence status |
+
+### Aerospike Plugin
+**Scope:** `aerospike`
+
+| Query | Description |
+|-------|-------------|
+| `get_aerospike_info` | Get server info |
+| `get_aerospike_namespaces` | Get namespace stats |
+| `get_aerospike_sets` | Get set statistics |
+| `get_aerospike_bins` | Get bin statistics |
+| `get_aerospike_sindex` | Get secondary indexes |
+| `get_aerospike_xdr` | Get XDR replication |
+| `get_aerospike_jobs` | Get scan/query jobs |
+| `get_aerospike_latency` | Get latency histograms |
+
+### Apache Geode Plugin
+**Scope:** `geode`
+
+| Query | Description |
+|-------|-------------|
+| `get_geode_cluster` | Get cluster status |
+| `get_geode_members` | Get member list |
+| `get_geode_regions` | Get region statistics |
+| `get_geode_locators` | Get locator status |
+| `get_geode_gateways` | Get WAN gateway status |
+| `get_geode_indexes` | Get index list |
+| `get_geode_pdx` | Get PDX type registry |
+| `get_geode_disk_stores` | Get disk store status |
+
+### KeyDB Plugin
+**Scope:** `keydb`
+
+| Query | Description |
+|-------|-------------|
+| `get_keydb_info` | Get server info |
+| `get_keydb_active_replica` | Get active replication status |
+| `get_keydb_mvcc` | Get MVCC statistics |
+| `get_keydb_flash` | Get flash storage stats |
+| `get_keydb_subkey_expires` | Get subkey expiration stats |
+
+### Dragonfly Plugin
+**Scope:** `dragonfly`
+
+| Query | Description |
+|-------|-------------|
+| `get_dragonfly_info` | Get server info |
+| `get_dragonfly_memory` | Get memory breakdown |
+| `get_dragonfly_replication` | Get replication status |
+| `get_dragonfly_cluster` | Get cluster info |
+| `get_dragonfly_metrics` | Get performance metrics |
+
+---
+
+## Database Systems - Embedded & Edge
+
+### SQLite Plugin
+**Scope:** `sqlite`
+
+| Query | Description |
+|-------|-------------|
+| `get_sqlite_version` | Get SQLite version |
+| `get_sqlite_databases` | Enumerate SQLite files |
+| `get_sqlite_schema` | Get database schema |
+| `get_sqlite_integrity` | Run integrity check |
+| `get_sqlite_stats` | Get table statistics |
+| `get_sqlite_indexes` | Get index list |
+| `get_sqlite_wal_status` | Get WAL checkpoint status |
+| `get_sqlite_compile_options` | Get compile options |
+
+### DuckDB Plugin
+**Scope:** `duckdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_duckdb_version` | Get DuckDB version |
+| `get_duckdb_databases` | Get attached databases |
+| `get_duckdb_tables` | Get table list |
+| `get_duckdb_extensions` | Get loaded extensions |
+| `get_duckdb_settings` | Get configuration |
+| `get_duckdb_memory` | Get memory usage |
+
+### LevelDB/RocksDB Plugin
+**Scope:** `rocksdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_rocksdb_stats` | Get statistics |
+| `get_rocksdb_properties` | Get DB properties |
+| `get_rocksdb_levels` | Get level statistics |
+| `get_rocksdb_compaction` | Get compaction stats |
+| `get_rocksdb_memtable` | Get memtable status |
+| `get_rocksdb_sstables` | Get SSTable info |
+| `get_rocksdb_options` | Get option settings |
+
+### Berkeley DB Plugin
+**Scope:** `berkeleydb`
+
+| Query | Description |
+|-------|-------------|
+| `get_bdb_version` | Get DB version |
+| `get_bdb_stats` | Get database statistics |
+| `get_bdb_environment` | Get environment status |
+| `get_bdb_locks` | Get lock statistics |
+| `get_bdb_logs` | Get log file status |
+| `get_bdb_replication` | Get replication status |
+
+### LMDB Plugin
+**Scope:** `lmdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_lmdb_info` | Get environment info |
+| `get_lmdb_stat` | Get database statistics |
+| `get_lmdb_readers` | Get reader table |
+| `get_lmdb_size` | Get map size usage |
+
+### EdgeDB Plugin
+**Scope:** `edgedb`
+
+| Query | Description |
+|-------|-------------|
+| `get_edgedb_server_info` | Get server version |
+| `get_edgedb_databases` | Get database list |
+| `get_edgedb_branches` | Get schema branches |
+| `get_edgedb_migrations` | Get migration status |
+| `get_edgedb_roles` | Get role list |
+| `get_edgedb_config` | Get instance config |
+
+### SurrealDB Plugin
+**Scope:** `surrealdb`
+
+| Query | Description |
+|-------|-------------|
+| `get_surrealdb_health` | Get server health |
+| `get_surrealdb_namespaces` | Get namespace list |
+| `get_surrealdb_databases` | Get database list |
+| `get_surrealdb_tables` | Get table definitions |
+| `get_surrealdb_users` | Get user list |
+| `get_surrealdb_tokens` | Get token metadata |
 
 ---
 
@@ -917,6 +1592,676 @@ Premium plugin offerings for enterprise environments. Each plugin provides speci
 | `get_auth0_actions` | Get Actions configuration |
 | `get_auth0_logs` | Get authentication logs |
 | `get_auth0_anomaly` | Get anomaly detection |
+
+---
+
+## Antivirus & Anti-Malware
+
+### Symantec Endpoint Protection Plugin
+**Scope:** `symantec_sep`
+
+| Query | Description |
+|-------|-------------|
+| `get_sep_server_status` | Get SEPM server status |
+| `get_sep_clients` | Get managed client inventory |
+| `get_sep_client_status` | Get client protection status |
+| `get_sep_definitions` | Get virus definition versions |
+| `get_sep_threats` | Get detected threat history |
+| `get_sep_scans` | Get scan status and schedules |
+| `get_sep_policies` | Get policy assignments |
+| `get_sep_groups` | Get group hierarchy |
+| `get_sep_quarantine` | Get quarantine contents |
+| `get_sep_reports` | Get security report data |
+| `get_sep_replication` | Get site replication status |
+
+### McAfee ePO Plugin
+**Scope:** `mcafee_epo`
+
+| Query | Description |
+|-------|-------------|
+| `get_epo_server_info` | Get ePO server status |
+| `get_epo_agents` | Get managed agent inventory |
+| `get_epo_agent_status` | Get agent communication status |
+| `get_epo_dat_versions` | Get DAT file versions |
+| `get_epo_engine_versions` | Get engine versions |
+| `get_epo_threats` | Get threat event history |
+| `get_epo_policies` | Get policy catalog |
+| `get_epo_tasks` | Get client task status |
+| `get_epo_queries` | Get saved query results |
+| `get_epo_tags` | Get system tag assignments |
+| `get_epo_rsd` | Get Rogue System Detection |
+
+### Trend Micro Apex One Plugin
+**Scope:** `trendmicro_apex`
+
+| Query | Description |
+|-------|-------------|
+| `get_apex_server_status` | Get Apex One server status |
+| `get_apex_agents` | Get agent inventory |
+| `get_apex_protection_status` | Get real-time scan status |
+| `get_apex_pattern_versions` | Get pattern file versions |
+| `get_apex_threats` | Get threat log |
+| `get_apex_dlp_incidents` | Get DLP incidents |
+| `get_apex_application_control` | Get app control status |
+| `get_apex_vulnerability` | Get vulnerability protection |
+| `get_apex_policies` | Get policy settings |
+| `get_apex_suspicious_objects` | Get suspicious object list |
+
+### Sophos Central Plugin
+**Scope:** `sophos`
+
+| Query | Description |
+|-------|-------------|
+| `get_sophos_endpoints` | Get endpoint inventory |
+| `get_sophos_endpoint_status` | Get protection status |
+| `get_sophos_alerts` | Get security alerts |
+| `get_sophos_threats` | Get threat history |
+| `get_sophos_policies` | Get policy assignments |
+| `get_sophos_exclusions` | Get scan exclusions |
+| `get_sophos_tamper_protection` | Get tamper protection status |
+| `get_sophos_web_control` | Get web filtering status |
+| `get_sophos_peripheral_control` | Get device control status |
+| `get_sophos_firewall` | Get endpoint firewall status |
+
+### Kaspersky Security Center Plugin
+**Scope:** `kaspersky_ksc`
+
+| Query | Description |
+|-------|-------------|
+| `get_ksc_server_status` | Get administration server status |
+| `get_ksc_hosts` | Get managed host inventory |
+| `get_ksc_protection_status` | Get protection component status |
+| `get_ksc_database_versions` | Get database update versions |
+| `get_ksc_threats` | Get threat detection history |
+| `get_ksc_tasks` | Get task execution status |
+| `get_ksc_policies` | Get policy settings |
+| `get_ksc_reports` | Get security reports |
+| `get_ksc_network_attacks` | Get network attack blocks |
+| `get_ksc_vulnerabilities` | Get software vulnerabilities |
+| `get_ksc_encryption` | Get disk encryption status |
+
+### ESET PROTECT Plugin
+**Scope:** `eset`
+
+| Query | Description |
+|-------|-------------|
+| `get_eset_server_status` | Get PROTECT server status |
+| `get_eset_computers` | Get managed computer list |
+| `get_eset_protection_status` | Get module status |
+| `get_eset_detections` | Get detection history |
+| `get_eset_quarantine` | Get quarantine contents |
+| `get_eset_policies` | Get policy configuration |
+| `get_eset_tasks` | Get client task status |
+| `get_eset_updates` | Get module update status |
+| `get_eset_firewall_rules` | Get personal firewall rules |
+| `get_eset_web_control` | Get web access rules |
+
+### Bitdefender GravityZone Plugin
+**Scope:** `bitdefender_gz`
+
+| Query | Description |
+|-------|-------------|
+| `get_gz_endpoints` | Get managed endpoint list |
+| `get_gz_protection_status` | Get protection status |
+| `get_gz_threats` | Get malware detection log |
+| `get_gz_quarantine` | Get quarantine items |
+| `get_gz_policies` | Get security policies |
+| `get_gz_sandbox` | Get sandbox analysis results |
+| `get_gz_network_incidents` | Get network attack blocks |
+| `get_gz_reports` | Get security reports |
+| `get_gz_patch_status` | Get patch management status |
+| `get_gz_risk_analytics` | Get endpoint risk scores |
+
+### Windows Defender / Microsoft Defender Plugin
+**Scope:** `defender`
+
+| Query | Description |
+|-------|-------------|
+| `get_defender_status` | Get protection status |
+| `get_defender_preferences` | Get configuration preferences |
+| `get_defender_threat_history` | Get threat detection history |
+| `get_defender_scan_history` | Get scan history |
+| `get_defender_definitions` | Get definition versions |
+| `get_defender_exclusions` | Get exclusion paths/processes |
+| `get_defender_threats_detected` | Get current threats |
+| `get_defender_quarantine` | Get quarantine items |
+| `get_defender_network_protection` | Get network protection status |
+| `get_defender_controlled_folder` | Get controlled folder access |
+| `get_defender_attack_surface` | Get ASR rules status |
+| `get_defender_exploit_protection` | Get exploit guard settings |
+
+### ClamAV Plugin
+**Scope:** `clamav`
+
+| Query | Description |
+|-------|-------------|
+| `get_clamav_version` | Get ClamAV version |
+| `get_clamav_database` | Get signature database info |
+| `get_clamav_config` | Get clamd configuration |
+| `get_clamav_scan_queue` | Get scan queue status |
+| `get_clamav_stats` | Get scanning statistics |
+| `get_clamav_logs` | Get recent scan logs |
+| `get_freshclam_status` | Get update daemon status |
+
+---
+
+## Endpoint Detection & Response (EDR/XDR)
+
+### CrowdStrike Falcon Plugin
+**Scope:** `crowdstrike`
+
+| Query | Description |
+|-------|-------------|
+| `get_falcon_hosts` | Get managed host inventory |
+| `get_falcon_host_details` | Get host sensor details |
+| `get_falcon_detections` | Get detection alerts |
+| `get_falcon_incidents` | Get security incidents |
+| `get_falcon_iocs` | Get IOC matches |
+| `get_falcon_prevention_policy` | Get prevention policies |
+| `get_falcon_response_policy` | Get response policies |
+| `get_falcon_device_control` | Get USB device control |
+| `get_falcon_firewall_rules` | Get host firewall rules |
+| `get_falcon_spotlight` | Get vulnerability data |
+| `get_falcon_discover` | Get asset discovery data |
+| `get_falcon_identity` | Get identity protection |
+| `get_falcon_overwatch` | Get OverWatch alerts |
+
+### Microsoft Defender for Endpoint Plugin
+**Scope:** `mde`
+
+| Query | Description |
+|-------|-------------|
+| `get_mde_machines` | Get onboarded machines |
+| `get_mde_machine_health` | Get machine health status |
+| `get_mde_alerts` | Get security alerts |
+| `get_mde_incidents` | Get security incidents |
+| `get_mde_vulnerabilities` | Get TVM vulnerabilities |
+| `get_mde_recommendations` | Get security recommendations |
+| `get_mde_software_inventory` | Get software inventory |
+| `get_mde_indicators` | Get custom indicators |
+| `get_mde_threat_analytics` | Get threat analytics |
+| `get_mde_live_response` | Get live response sessions |
+| `get_mde_advanced_hunting` | Run advanced hunting query |
+| `get_mde_automated_investigation` | Get AIR status |
+
+### SentinelOne Plugin
+**Scope:** `sentinelone`
+
+| Query | Description |
+|-------|-------------|
+| `get_s1_agents` | Get agent inventory |
+| `get_s1_agent_details` | Get agent configuration |
+| `get_s1_threats` | Get threat detections |
+| `get_s1_activities` | Get activity log |
+| `get_s1_applications` | Get application inventory |
+| `get_s1_exclusions` | Get exclusion rules |
+| `get_s1_policies` | Get policy settings |
+| `get_s1_groups` | Get group hierarchy |
+| `get_s1_sites` | Get site configuration |
+| `get_s1_deep_visibility` | Query Deep Visibility |
+| `get_s1_ranger` | Get network discovery |
+| `get_s1_remote_scripts` | Get script library |
+
+### Carbon Black (VMware) Plugin
+**Scope:** `carbonblack`
+
+| Query | Description |
+|-------|-------------|
+| `get_cb_devices` | Get device inventory |
+| `get_cb_device_status` | Get sensor status |
+| `get_cb_alerts` | Get security alerts |
+| `get_cb_watchlists` | Get watchlist hits |
+| `get_cb_processes` | Get process events |
+| `get_cb_policies` | Get policy configuration |
+| `get_cb_reputation` | Get file reputation |
+| `get_cb_usb_devices` | Get USB device events |
+| `get_cb_network_events` | Get network connections |
+| `get_cb_live_query` | Run OSQuery on endpoints |
+| `get_cb_audit_logs` | Get audit trail |
+
+### Cortex XDR (Palo Alto) Plugin
+**Scope:** `cortex_xdr`
+
+| Query | Description |
+|-------|-------------|
+| `get_xdr_endpoints` | Get endpoint inventory |
+| `get_xdr_endpoint_status` | Get agent status |
+| `get_xdr_incidents` | Get security incidents |
+| `get_xdr_alerts` | Get alert details |
+| `get_xdr_investigations` | Get investigation status |
+| `get_xdr_xql_query` | Run XQL search |
+| `get_xdr_response_actions` | Get response action history |
+| `get_xdr_policies` | Get security policies |
+| `get_xdr_exclusions` | Get exclusion rules |
+| `get_xdr_host_isolations` | Get isolated hosts |
+| `get_xdr_threat_intel` | Get threat intelligence |
+
+### Cybereason Plugin
+**Scope:** `cybereason`
+
+| Query | Description |
+|-------|-------------|
+| `get_cybereason_sensors` | Get sensor inventory |
+| `get_cybereason_malops` | Get MalOp detections |
+| `get_cybereason_suspicions` | Get suspicious elements |
+| `get_cybereason_machines` | Get machine details |
+| `get_cybereason_processes` | Get process tree |
+| `get_cybereason_files` | Get file reputation |
+| `get_cybereason_connections` | Get network connections |
+| `get_cybereason_policies` | Get policy settings |
+| `get_cybereason_response` | Get response actions |
+| `get_cybereason_hunting` | Get threat hunting queries |
+
+### Elastic Security Plugin
+**Scope:** `elastic_security`
+
+| Query | Description |
+|-------|-------------|
+| `get_elastic_sec_agents` | Get Fleet agents |
+| `get_elastic_sec_alerts` | Get detection alerts |
+| `get_elastic_sec_rules` | Get detection rules |
+| `get_elastic_sec_exceptions` | Get rule exceptions |
+| `get_elastic_sec_cases` | Get case management |
+| `get_elastic_sec_timeline` | Get investigation timeline |
+| `get_elastic_sec_indicators` | Get threat indicators |
+| `get_elastic_sec_osquery` | Get OSQuery results |
+| `get_elastic_sec_response` | Get response actions |
+
+### Tanium Plugin
+**Scope:** `tanium`
+
+| Query | Description |
+|-------|-------------|
+| `get_tanium_clients` | Get client inventory |
+| `get_tanium_questions` | Get saved questions |
+| `get_tanium_sensor_results` | Get sensor data |
+| `get_tanium_packages` | Get package library |
+| `get_tanium_actions` | Get action status |
+| `get_tanium_threat_response` | Get TR alerts |
+| `get_tanium_comply` | Get compliance status |
+| `get_tanium_patch` | Get patch status |
+| `get_tanium_asset` | Get asset inventory |
+| `get_tanium_discover` | Get unmanaged assets |
+
+---
+
+## Endpoint Protection Platforms (EPP)
+
+### Trellix (formerly FireEye/McAfee) Plugin
+**Scope:** `trellix`
+
+| Query | Description |
+|-------|-------------|
+| `get_trellix_endpoints` | Get managed endpoints |
+| `get_trellix_alerts` | Get security alerts |
+| `get_trellix_helix` | Get Helix detections |
+| `get_trellix_investigations` | Get investigation status |
+| `get_trellix_policies` | Get policy configuration |
+| `get_trellix_rules` | Get detection rules |
+| `get_trellix_intel` | Get threat intelligence |
+
+### Cylance (BlackBerry) Plugin
+**Scope:** `cylance`
+
+| Query | Description |
+|-------|-------------|
+| `get_cylance_devices` | Get device inventory |
+| `get_cylance_threats` | Get threat detections |
+| `get_cylance_scripts` | Get script control events |
+| `get_cylance_policies` | Get protection policies |
+| `get_cylance_zones` | Get zone configuration |
+| `get_cylance_global_list` | Get global safe/quarantine list |
+| `get_cylance_instaquery` | Run InstaQuery search |
+
+### Malwarebytes Plugin
+**Scope:** `malwarebytes`
+
+| Query | Description |
+|-------|-------------|
+| `get_mb_endpoints` | Get endpoint inventory |
+| `get_mb_protection_status` | Get protection status |
+| `get_mb_detections` | Get threat detections |
+| `get_mb_quarantine` | Get quarantine contents |
+| `get_mb_policies` | Get policy settings |
+| `get_mb_scans` | Get scan history |
+| `get_mb_exclusions` | Get exclusion rules |
+| `get_mb_software_inventory` | Get software list |
+
+### Webroot Plugin
+**Scope:** `webroot`
+
+| Query | Description |
+|-------|-------------|
+| `get_webroot_endpoints` | Get endpoint inventory |
+| `get_webroot_status` | Get protection status |
+| `get_webroot_threats` | Get threat history |
+| `get_webroot_policies` | Get policy assignments |
+| `get_webroot_overrides` | Get policy overrides |
+| `get_webroot_groups` | Get group configuration |
+| `get_webroot_dns` | Get DNS protection status |
+
+---
+
+## Mobile Device Management (MDM/UEM)
+
+### Microsoft Intune Plugin
+**Scope:** `intune`
+
+| Query | Description |
+|-------|-------------|
+| `get_intune_devices` | Get managed device inventory |
+| `get_intune_device_compliance` | Get compliance status |
+| `get_intune_device_config` | Get configuration profiles |
+| `get_intune_apps` | Get managed app inventory |
+| `get_intune_app_protection` | Get app protection policies |
+| `get_intune_policies` | Get device policies |
+| `get_intune_enrollment` | Get enrollment status |
+| `get_intune_autopilot` | Get Autopilot devices |
+| `get_intune_scripts` | Get PowerShell script status |
+| `get_intune_updates` | Get Windows Update status |
+| `get_intune_conditional_access` | Get CA policy status |
+
+### VMware Workspace ONE Plugin
+**Scope:** `workspaceone`
+
+| Query | Description |
+|-------|-------------|
+| `get_ws1_devices` | Get device inventory |
+| `get_ws1_device_details` | Get device configuration |
+| `get_ws1_compliance` | Get compliance status |
+| `get_ws1_profiles` | Get profile assignments |
+| `get_ws1_apps` | Get application catalog |
+| `get_ws1_smart_groups` | Get smart group membership |
+| `get_ws1_tunnel` | Get Tunnel client status |
+| `get_ws1_uem_console` | Get console health |
+| `get_ws1_intelligence` | Get Intelligence insights |
+
+### Jamf Pro Plugin
+**Scope:** `jamf`
+
+| Query | Description |
+|-------|-------------|
+| `get_jamf_computers` | Get computer inventory |
+| `get_jamf_mobile_devices` | Get mobile device list |
+| `get_jamf_policies` | Get policy status |
+| `get_jamf_profiles` | Get configuration profiles |
+| `get_jamf_packages` | Get package deployment |
+| `get_jamf_scripts` | Get script status |
+| `get_jamf_patch` | Get patch management |
+| `get_jamf_smart_groups` | Get smart group membership |
+| `get_jamf_extensions` | Get extension attributes |
+| `get_jamf_prestage` | Get prestage enrollment |
+| `get_jamf_protect` | Get Jamf Protect status |
+
+### MobileIron (Ivanti) Plugin
+**Scope:** `mobileiron`
+
+| Query | Description |
+|-------|-------------|
+| `get_mi_devices` | Get device inventory |
+| `get_mi_compliance` | Get compliance status |
+| `get_mi_labels` | Get label assignments |
+| `get_mi_policies` | Get security policies |
+| `get_mi_apps` | Get app catalog |
+| `get_mi_certificates` | Get certificate status |
+| `get_mi_tunnel` | Get Tunnel status |
+| `get_mi_sentry` | Get Sentry gateway status |
+
+### Kandji Plugin
+**Scope:** `kandji`
+
+| Query | Description |
+|-------|-------------|
+| `get_kandji_devices` | Get device inventory |
+| `get_kandji_blueprints` | Get blueprint status |
+| `get_kandji_library_items` | Get library item deployments |
+| `get_kandji_compliance` | Get compliance data |
+| `get_kandji_threats` | Get detected threats |
+| `get_kandji_laps` | Get LAPS passwords (metadata) |
+| `get_kandji_device_actions` | Get action history |
+
+### Google Workspace MDM Plugin
+**Scope:** `google_mdm`
+
+| Query | Description |
+|-------|-------------|
+| `get_google_mobile_devices` | Get mobile device list |
+| `get_google_chrome_devices` | Get Chrome OS devices |
+| `get_google_device_policies` | Get device policies |
+| `get_google_app_management` | Get managed apps |
+| `get_google_endpoint_verification` | Get endpoint verification |
+| `get_google_context_aware` | Get context-aware access |
+
+### SOTI MobiControl Plugin
+**Scope:** `soti`
+
+| Query | Description |
+|-------|-------------|
+| `get_soti_devices` | Get device inventory |
+| `get_soti_profiles` | Get profile assignments |
+| `get_soti_packages` | Get package deployments |
+| `get_soti_geofences` | Get geofence status |
+| `get_soti_alerts` | Get device alerts |
+| `get_soti_rules` | Get automation rules |
+
+---
+
+## Data Loss Prevention (DLP)
+
+### Symantec DLP Plugin
+**Scope:** `symantec_dlp`
+
+| Query | Description |
+|-------|-------------|
+| `get_sdlp_servers` | Get detection server status |
+| `get_sdlp_incidents` | Get incident list |
+| `get_sdlp_policies` | Get policy configuration |
+| `get_sdlp_response_rules` | Get response rule status |
+| `get_sdlp_agents` | Get endpoint agent status |
+| `get_sdlp_discover` | Get Discover scan status |
+| `get_sdlp_network_monitor` | Get Network Monitor status |
+| `get_sdlp_email_monitor` | Get email inspection status |
+| `get_sdlp_reports` | Get DLP reports |
+| `get_sdlp_data_profiles` | Get data profile matches |
+
+### Microsoft Purview DLP Plugin
+**Scope:** `purview_dlp`
+
+| Query | Description |
+|-------|-------------|
+| `get_purview_dlp_policies` | Get DLP policy status |
+| `get_purview_dlp_alerts` | Get DLP alerts |
+| `get_purview_sensitivity_labels` | Get sensitivity labels |
+| `get_purview_label_policies` | Get label policy assignments |
+| `get_purview_content_explorer` | Get content classification |
+| `get_purview_activity_explorer` | Get activity data |
+| `get_purview_endpoint_dlp` | Get endpoint DLP status |
+| `get_purview_trainable_classifiers` | Get classifier status |
+| `get_purview_exact_data_match` | Get EDM schema status |
+
+### Forcepoint DLP Plugin
+**Scope:** `forcepoint_dlp`
+
+| Query | Description |
+|-------|-------------|
+| `get_forcepoint_incidents` | Get incident list |
+| `get_forcepoint_policies` | Get policy configuration |
+| `get_forcepoint_channels` | Get channel status |
+| `get_forcepoint_endpoints` | Get endpoint agent status |
+| `get_forcepoint_discovery` | Get discovery scan status |
+| `get_forcepoint_fingerprints` | Get fingerprint database |
+| `get_forcepoint_reports` | Get DLP reports |
+
+### Digital Guardian Plugin
+**Scope:** `digital_guardian`
+
+| Query | Description |
+|-------|-------------|
+| `get_dg_agents` | Get agent inventory |
+| `get_dg_policies` | Get policy configuration |
+| `get_dg_events` | Get security events |
+| `get_dg_classifications` | Get data classifications |
+| `get_dg_rules` | Get control rules |
+| `get_dg_incidents` | Get incident list |
+| `get_dg_reports` | Get analytics reports |
+
+### Netskope DLP Plugin
+**Scope:** `netskope_dlp`
+
+| Query | Description |
+|-------|-------------|
+| `get_netskope_dlp_policies` | Get DLP policies |
+| `get_netskope_dlp_incidents` | Get DLP incidents |
+| `get_netskope_dlp_profiles` | Get DLP profiles |
+| `get_netskope_file_policies` | Get file policy status |
+| `get_netskope_alerts` | Get security alerts |
+| `get_netskope_users` | Get user activity |
+
+### Code42 Incydr Plugin
+**Scope:** `code42`
+
+| Query | Description |
+|-------|-------------|
+| `get_incydr_alerts` | Get security alerts |
+| `get_incydr_file_events` | Get file activity |
+| `get_incydr_users` | Get user risk scores |
+| `get_incydr_watchlists` | Get watchlist status |
+| `get_incydr_departing` | Get departing employee risk |
+| `get_incydr_trusted_activities` | Get trusted activities |
+| `get_incydr_actors` | Get actor profiles |
+
+---
+
+## SIEM & Security Analytics
+
+### Splunk Enterprise Security Plugin
+**Scope:** `splunk_es`
+
+| Query | Description |
+|-------|-------------|
+| `get_splunk_es_notable` | Get notable events |
+| `get_splunk_es_investigations` | Get investigation status |
+| `get_splunk_es_risk` | Get risk scores |
+| `get_splunk_es_assets` | Get asset inventory |
+| `get_splunk_es_identities` | Get identity information |
+| `get_splunk_es_threat_intel` | Get threat intelligence |
+| `get_splunk_es_correlation` | Get correlation search status |
+| `get_splunk_es_suppressions` | Get suppression rules |
+| `get_splunk_es_data_models` | Get data model acceleration |
+
+### Microsoft Sentinel Plugin
+**Scope:** `sentinel`
+
+| Query | Description |
+|-------|-------------|
+| `get_sentinel_incidents` | Get security incidents |
+| `get_sentinel_alerts` | Get alert rules |
+| `get_sentinel_hunting` | Get hunting queries |
+| `get_sentinel_watchlists` | Get watchlist data |
+| `get_sentinel_connectors` | Get data connector status |
+| `get_sentinel_analytics` | Get analytics rules |
+| `get_sentinel_automation` | Get automation rules |
+| `get_sentinel_workbooks` | Get workbook status |
+| `get_sentinel_notebooks` | Get notebook status |
+| `get_sentinel_ti` | Get threat indicators |
+
+### IBM QRadar Plugin
+**Scope:** `qradar`
+
+| Query | Description |
+|-------|-------------|
+| `get_qradar_offenses` | Get offense list |
+| `get_qradar_events` | Get event data |
+| `get_qradar_flows` | Get flow data |
+| `get_qradar_log_sources` | Get log source status |
+| `get_qradar_rules` | Get correlation rules |
+| `get_qradar_reference_sets` | Get reference set data |
+| `get_qradar_asset_model` | Get asset inventory |
+| `get_qradar_vulnerability` | Get vulnerability data |
+| `get_qradar_reports` | Get report status |
+
+### LogRhythm Plugin
+**Scope:** `logrhythm`
+
+| Query | Description |
+|-------|-------------|
+| `get_lr_alarms` | Get alarm list |
+| `get_lr_cases` | Get case status |
+| `get_lr_events` | Get log events |
+| `get_lr_ai_engine` | Get AI Engine rules |
+| `get_lr_log_sources` | Get log source health |
+| `get_lr_entities` | Get entity data |
+| `get_lr_lists` | Get list contents |
+| `get_lr_playbooks` | Get playbook status |
+
+### Exabeam Plugin
+**Scope:** `exabeam`
+
+| Query | Description |
+|-------|-------------|
+| `get_exabeam_incidents` | Get incident queue |
+| `get_exabeam_notable` | Get notable users |
+| `get_exabeam_timelines` | Get user timelines |
+| `get_exabeam_watchlists` | Get watchlist members |
+| `get_exabeam_rules` | Get correlation rules |
+| `get_exabeam_models` | Get ML model status |
+| `get_exabeam_data_lake` | Get Data Lake queries |
+| `get_exabeam_parsers` | Get parser status |
+
+### Securonix Plugin
+**Scope:** `securonix`
+
+| Query | Description |
+|-------|-------------|
+| `get_securonix_incidents` | Get incident list |
+| `get_securonix_violations` | Get policy violations |
+| `get_securonix_threats` | Get threat indicators |
+| `get_securonix_watchlists` | Get watchlist status |
+| `get_securonix_lookup` | Get lookup table data |
+| `get_securonix_activity` | Get activity data |
+| `get_securonix_risk` | Get risk scores |
+
+### Sumo Logic Plugin
+**Scope:** `sumologic`
+
+| Query | Description |
+|-------|-------------|
+| `get_sumo_collectors` | Get collector status |
+| `get_sumo_sources` | Get source configuration |
+| `get_sumo_scheduled_views` | Get scheduled view status |
+| `get_sumo_content` | Get content library |
+| `get_sumo_cse_insights` | Get Cloud SIEM insights |
+| `get_sumo_cse_signals` | Get signal data |
+| `get_sumo_cse_entities` | Get entity inventory |
+
+### Chronicle (Google) Plugin
+**Scope:** `chronicle`
+
+| Query | Description |
+|-------|-------------|
+| `get_chronicle_alerts` | Get security alerts |
+| `get_chronicle_iocs` | Get IOC matches |
+| `get_chronicle_assets` | Get asset data |
+| `get_chronicle_events` | Get UDM events |
+| `get_chronicle_rules` | Get YARA-L rules |
+| `get_chronicle_reference_lists` | Get reference list data |
+| `get_chronicle_retrohunts` | Get retrohunt status |
+
+### Wazuh Plugin
+**Scope:** `wazuh`
+
+| Query | Description |
+|-------|-------------|
+| `get_wazuh_agents` | Get agent inventory |
+| `get_wazuh_agent_status` | Get agent health |
+| `get_wazuh_alerts` | Get security alerts |
+| `get_wazuh_rules` | Get ruleset |
+| `get_wazuh_decoders` | Get decoder list |
+| `get_wazuh_sca` | Get SCA results |
+| `get_wazuh_fim` | Get FIM events |
+| `get_wazuh_vulnerability` | Get vulnerability data |
+| `get_wazuh_syscollector` | Get inventory data |
+| `get_wazuh_rootcheck` | Get rootkit detection |
 
 ---
 
@@ -2199,6 +3544,356 @@ Premium plugin offerings for enterprise environments. Each plugin provides speci
 | `get_tenable_plugins` | Get plugin info |
 | `get_tenable_agents` | Get Nessus agent status |
 | `get_tenable_compliance` | Get compliance audits |
+
+---
+
+## Network Access Control (NAC)
+
+### Cisco ISE Plugin
+**Scope:** `cisco_ise`
+
+| Query | Description |
+|-------|-------------|
+| `get_ise_deployment` | Get deployment status |
+| `get_ise_nodes` | Get ISE node health |
+| `get_ise_endpoints` | Get endpoint inventory |
+| `get_ise_sessions` | Get active RADIUS sessions |
+| `get_ise_authentications` | Get authentication logs |
+| `get_ise_authorization_policies` | Get authz policy status |
+| `get_ise_posture` | Get posture assessment results |
+| `get_ise_profiling` | Get endpoint profiling |
+| `get_ise_guest` | Get guest portal status |
+| `get_ise_certificates` | Get certificate status |
+| `get_ise_trustsec` | Get TrustSec SGT status |
+| `get_ise_network_devices` | Get NAD inventory |
+
+### Aruba ClearPass Plugin
+**Scope:** `clearpass`
+
+| Query | Description |
+|-------|-------------|
+| `get_clearpass_cluster` | Get cluster status |
+| `get_clearpass_servers` | Get server health |
+| `get_clearpass_endpoints` | Get endpoint inventory |
+| `get_clearpass_sessions` | Get active sessions |
+| `get_clearpass_authentications` | Get authentication log |
+| `get_clearpass_enforcement` | Get enforcement policies |
+| `get_clearpass_posture` | Get OnGuard status |
+| `get_clearpass_onboard` | Get certificate status |
+| `get_clearpass_guest` | Get guest accounts |
+| `get_clearpass_insight` | Get analytics data |
+
+### Forescout Plugin
+**Scope:** `forescout`
+
+| Query | Description |
+|-------|-------------|
+| `get_forescout_appliances` | Get appliance status |
+| `get_forescout_hosts` | Get discovered hosts |
+| `get_forescout_segments` | Get network segments |
+| `get_forescout_policies` | Get policy status |
+| `get_forescout_compliance` | Get compliance status |
+| `get_forescout_actions` | Get remediation actions |
+| `get_forescout_modules` | Get eyeExtend modules |
+| `get_forescout_classifications` | Get device classifications |
+
+### Portnox Plugin
+**Scope:** `portnox`
+
+| Query | Description |
+|-------|-------------|
+| `get_portnox_devices` | Get device inventory |
+| `get_portnox_users` | Get user sessions |
+| `get_portnox_compliance` | Get compliance status |
+| `get_portnox_policies` | Get access policies |
+| `get_portnox_alerts` | Get security alerts |
+| `get_portnox_network` | Get network topology |
+
+### PacketFence Plugin
+**Scope:** `packetfence`
+
+| Query | Description |
+|-------|-------------|
+| `get_pf_nodes` | Get node inventory |
+| `get_pf_violations` | Get security violations |
+| `get_pf_switches` | Get switch inventory |
+| `get_pf_users` | Get user list |
+| `get_pf_connections` | Get connection profiles |
+| `get_pf_services` | Get service status |
+
+---
+
+## Privileged Access Management (PAM)
+
+### CyberArk Privileged Access Plugin
+**Scope:** `cyberark_pam`
+
+| Query | Description |
+|-------|-------------|
+| `get_cyberark_vault` | Get Vault status |
+| `get_cyberark_safes` | Get safe inventory |
+| `get_cyberark_accounts` | Get account metadata |
+| `get_cyberark_platforms` | Get platform definitions |
+| `get_cyberark_policies` | Get master policies |
+| `get_cyberark_psm_sessions` | Get PSM session list |
+| `get_cyberark_psm_recordings` | Get recording metadata |
+| `get_cyberark_cpm_status` | Get CPM sync status |
+| `get_cyberark_pta_alerts` | Get PTA security alerts |
+| `get_cyberark_aam` | Get Application Access Manager |
+| `get_cyberark_conjur` | Get Conjur secrets metadata |
+
+### BeyondTrust Plugin
+**Scope:** `beyondtrust`
+
+| Query | Description |
+|-------|-------------|
+| `get_bt_safes` | Get Password Safe inventory |
+| `get_bt_managed_accounts` | Get managed accounts |
+| `get_bt_sessions` | Get session recordings |
+| `get_bt_requests` | Get access requests |
+| `get_bt_policies` | Get access policies |
+| `get_bt_ad_bridge` | Get AD Bridge status |
+| `get_bt_privilege_management` | Get EPM policies |
+| `get_bt_remote_support` | Get RS sessions |
+
+### Delinea (Thycotic) Plugin
+**Scope:** `delinea`
+
+| Query | Description |
+|-------|-------------|
+| `get_ss_folders` | Get Secret Server folders |
+| `get_ss_secrets` | Get secret metadata |
+| `get_ss_users` | Get user inventory |
+| `get_ss_roles` | Get role definitions |
+| `get_ss_policies` | Get password policies |
+| `get_ss_heartbeat` | Get heartbeat status |
+| `get_ss_sessions` | Get session recordings |
+| `get_ss_discovery` | Get discovery results |
+| `get_privilege_manager` | Get PM endpoint status |
+
+### HashiCorp Boundary Plugin
+**Scope:** `boundary`
+
+| Query | Description |
+|-------|-------------|
+| `get_boundary_scopes` | Get org/project scopes |
+| `get_boundary_auth_methods` | Get auth method config |
+| `get_boundary_users` | Get user inventory |
+| `get_boundary_groups` | Get group memberships |
+| `get_boundary_roles` | Get role grants |
+| `get_boundary_targets` | Get target inventory |
+| `get_boundary_host_catalogs` | Get host catalogs |
+| `get_boundary_sessions` | Get active sessions |
+| `get_boundary_credential_stores` | Get credential stores |
+
+### Teleport Plugin
+**Scope:** `teleport`
+
+| Query | Description |
+|-------|-------------|
+| `get_teleport_cluster` | Get cluster status |
+| `get_teleport_nodes` | Get SSH node inventory |
+| `get_teleport_apps` | Get application inventory |
+| `get_teleport_databases` | Get database inventory |
+| `get_teleport_kubernetes` | Get Kubernetes clusters |
+| `get_teleport_users` | Get user directory |
+| `get_teleport_roles` | Get role definitions |
+| `get_teleport_sessions` | Get active sessions |
+| `get_teleport_audit` | Get audit events |
+| `get_teleport_access_requests` | Get access request status |
+
+### Wallix Bastion Plugin
+**Scope:** `wallix`
+
+| Query | Description |
+|-------|-------------|
+| `get_wallix_devices` | Get device inventory |
+| `get_wallix_accounts` | Get target accounts |
+| `get_wallix_users` | Get user directory |
+| `get_wallix_groups` | Get group memberships |
+| `get_wallix_authorizations` | Get authorization rules |
+| `get_wallix_sessions` | Get session list |
+| `get_wallix_recordings` | Get recording metadata |
+| `get_wallix_approvals` | Get approval workflow |
+
+### One Identity Safeguard Plugin
+**Scope:** `safeguard`
+
+| Query | Description |
+|-------|-------------|
+| `get_safeguard_appliances` | Get appliance cluster |
+| `get_safeguard_assets` | Get asset inventory |
+| `get_safeguard_accounts` | Get account inventory |
+| `get_safeguard_users` | Get user directory |
+| `get_safeguard_entitlements` | Get access policies |
+| `get_safeguard_sessions` | Get session recordings |
+| `get_safeguard_access_requests` | Get request queue |
+| `get_safeguard_password_checkout` | Get checkout history |
+
+---
+
+## Vulnerability Management
+
+### Rapid7 InsightVM Plugin
+**Scope:** `insightvm`
+
+| Query | Description |
+|-------|-------------|
+| `get_insightvm_sites` | Get site inventory |
+| `get_insightvm_assets` | Get asset inventory |
+| `get_insightvm_scans` | Get scan status |
+| `get_insightvm_vulnerabilities` | Get vulnerability findings |
+| `get_insightvm_exploits` | Get exploitable vulns |
+| `get_insightvm_solutions` | Get remediation solutions |
+| `get_insightvm_policies` | Get policy compliance |
+| `get_insightvm_tags` | Get asset tags |
+| `get_insightvm_reports` | Get report data |
+| `get_insightvm_agents` | Get Insight Agent status |
+
+### Qualys VMDR Plugin
+**Scope:** `qualys_vmdr`
+
+| Query | Description |
+|-------|-------------|
+| `get_qualys_assets` | Get asset inventory |
+| `get_qualys_asset_groups` | Get asset groups |
+| `get_qualys_scans` | Get scan schedules |
+| `get_qualys_scan_results` | Get scan results |
+| `get_qualys_vulnerabilities` | Get QID findings |
+| `get_qualys_patches` | Get patch availability |
+| `get_qualys_reports` | Get report templates |
+| `get_qualys_tags` | Get asset tags |
+| `get_qualys_trurisk` | Get TruRisk scores |
+
+### Tenable.io Plugin
+**Scope:** `tenable_io`
+
+| Query | Description |
+|-------|-------------|
+| `get_tio_assets` | Get asset inventory |
+| `get_tio_vulnerabilities` | Get vulnerability findings |
+| `get_tio_scans` | Get scan status |
+| `get_tio_scanners` | Get scanner inventory |
+| `get_tio_agents` | Get Nessus Agent status |
+| `get_tio_plugins` | Get plugin details |
+| `get_tio_tags` | Get asset tags |
+| `get_tio_groups` | Get access groups |
+| `get_tio_exports` | Get export jobs |
+| `get_tio_vpr` | Get VPR scores |
+| `get_tio_asm` | Get Attack Surface data |
+
+### Nessus Plugin
+**Scope:** `nessus`
+
+| Query | Description |
+|-------|-------------|
+| `get_nessus_server_info` | Get server status |
+| `get_nessus_scans` | Get scan list |
+| `get_nessus_scan_results` | Get scan results |
+| `get_nessus_policies` | Get scan policies |
+| `get_nessus_plugins` | Get plugin families |
+| `get_nessus_folders` | Get folder structure |
+| `get_nessus_agents` | Get linked agents |
+| `get_nessus_agent_groups` | Get agent groups |
+
+### Greenbone/OpenVAS Plugin
+**Scope:** `openvas`
+
+| Query | Description |
+|-------|-------------|
+| `get_openvas_status` | Get scanner status |
+| `get_openvas_targets` | Get target list |
+| `get_openvas_tasks` | Get scan tasks |
+| `get_openvas_reports` | Get scan reports |
+| `get_openvas_results` | Get vulnerability results |
+| `get_openvas_nvts` | Get NVT feed status |
+| `get_openvas_schedules` | Get scan schedules |
+| `get_openvas_alerts` | Get alert definitions |
+
+### Nexpose Plugin
+**Scope:** `nexpose`
+
+| Query | Description |
+|-------|-------------|
+| `get_nexpose_sites` | Get site inventory |
+| `get_nexpose_assets` | Get asset inventory |
+| `get_nexpose_scans` | Get scan history |
+| `get_nexpose_vulnerabilities` | Get vulnerability data |
+| `get_nexpose_policies` | Get policy compliance |
+| `get_nexpose_engines` | Get scan engine status |
+| `get_nexpose_reports` | Get report configurations |
+| `get_nexpose_tags` | Get tag hierarchy |
+
+### Snyk Plugin
+**Scope:** `snyk`
+
+| Query | Description |
+|-------|-------------|
+| `get_snyk_organizations` | Get org inventory |
+| `get_snyk_projects` | Get project list |
+| `get_snyk_issues` | Get vulnerability issues |
+| `get_snyk_dependencies` | Get dependency graph |
+| `get_snyk_licenses` | Get license issues |
+| `get_snyk_ignores` | Get ignored issues |
+| `get_snyk_test_results` | Get test results |
+| `get_snyk_iac` | Get IaC findings |
+| `get_snyk_code` | Get SAST findings |
+| `get_snyk_container` | Get container findings |
+
+### Wiz Plugin
+**Scope:** `wiz`
+
+| Query | Description |
+|-------|-------------|
+| `get_wiz_issues` | Get security issues |
+| `get_wiz_vulnerabilities` | Get vulnerability findings |
+| `get_wiz_inventory` | Get cloud inventory |
+| `get_wiz_configurations` | Get misconfigurations |
+| `get_wiz_secrets` | Get exposed secrets |
+| `get_wiz_data` | Get data findings |
+| `get_wiz_network` | Get network exposure |
+| `get_wiz_containers` | Get container findings |
+| `get_wiz_kubernetes` | Get K8s security |
+| `get_wiz_iac` | Get IaC analysis |
+
+### Orca Security Plugin
+**Scope:** `orca`
+
+| Query | Description |
+|-------|-------------|
+| `get_orca_alerts` | Get security alerts |
+| `get_orca_assets` | Get cloud asset inventory |
+| `get_orca_vulnerabilities` | Get vulnerability findings |
+| `get_orca_compliance` | Get compliance status |
+| `get_orca_data_risk` | Get data at risk |
+| `get_orca_attack_paths` | Get attack path analysis |
+| `get_orca_iam` | Get IAM findings |
+| `get_orca_malware` | Get malware detections |
+
+### Anchore Plugin
+**Scope:** `anchore`
+
+| Query | Description |
+|-------|-------------|
+| `get_anchore_images` | Get analyzed images |
+| `get_anchore_vulnerabilities` | Get vulnerability findings |
+| `get_anchore_policies` | Get policy bundles |
+| `get_anchore_policy_eval` | Get policy evaluation |
+| `get_anchore_registries` | Get registry credentials |
+| `get_anchore_feeds` | Get feed sync status |
+| `get_anchore_subscriptions` | Get tag subscriptions |
+
+### Trivy Plugin
+**Scope:** `trivy`
+
+| Query | Description |
+|-------|-------------|
+| `get_trivy_image_scan` | Get container image scan |
+| `get_trivy_fs_scan` | Get filesystem scan |
+| `get_trivy_repo_scan` | Get repository scan |
+| `get_trivy_k8s_scan` | Get Kubernetes scan |
+| `get_trivy_sbom` | Get SBOM output |
+| `get_trivy_db_status` | Get vulnerability DB status |
 
 ---
 
