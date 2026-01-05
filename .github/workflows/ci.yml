@@ -305,7 +305,7 @@ jobs:
       - name: Dispatch to Pro Repository
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.PRO_DISPATCH_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           repository: levantar-ai/mcp-sysinfo-pro
           event-type: oss-release
           client-payload: |
