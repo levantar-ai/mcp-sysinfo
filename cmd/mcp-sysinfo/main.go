@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/agent"
 	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
@@ -86,6 +87,12 @@ func main() {
 	// TLS flags
 	tlsCert := flag.String("tls-cert", "", "TLS certificate file")
 	tlsKey := flag.String("tls-key", "", "TLS key file")
+
+	// SaaS agent mode flags
+	saasURL := flag.String("saas-url", "", "SaaS backend URL for agent registration")
+	apiKey := flag.String("api-key", "", "API key for SaaS authentication (or MCP_SYSINFO_API_KEY env var)")
+	callbackURL := flag.String("callback-url", "", "URL where SaaS can reach this agent (auto-detected if not set)")
+	configDir := flag.String("config-dir", "", "Config directory for certs and state (default: ~/.mcp-sysinfo)")
 
 	// Redaction flags
 	enableRedaction := flag.Bool("redact", false, "Enable output redaction of sensitive data")
@@ -211,40 +218,119 @@ func main() {
 			}
 		}
 
-		if httpConfig.ServerURL == "" {
-			// Default server URL based on listen address
-			scheme := "http"
-			if *tlsCert != "" {
-				scheme = "https"
-			}
-			httpConfig.ServerURL = fmt.Sprintf("%s://%s", scheme, *listenAddr)
+		// Check environment variable for API key if not provided via flag
+		effectiveAPIKey := *apiKey
+		if effectiveAPIKey == "" {
+			effectiveAPIKey = os.Getenv("MCP_SYSINFO_API_KEY")
 		}
 
-		// Configure authentication - OIDC takes precedence over OAuth introspection
-		if *oidcIssuer != "" {
-			if *oidcAudience == "" {
-				fmt.Fprintln(os.Stderr, "Error: --oidc-audience required with --oidc-issuer")
+		// SaaS agent mode - auto-generate cert and register
+		if *saasURL != "" {
+			if effectiveAPIKey == "" {
+				fmt.Fprintln(os.Stderr, "Error: --api-key or MCP_SYSINFO_API_KEY required with --saas-url")
 				os.Exit(1)
 			}
 
-			httpConfig.OIDC = &mcp.OIDCConfig{
-				Issuer:         *oidcIssuer,
-				Audience:       *oidcAudience,
-				RequiredScopes: []string{}, // Allow any scope, tool-level checks
-			}
-		} else if *authServer != "" {
-			// Fall back to OAuth introspection
-			if *clientID == "" || *clientSecret == "" {
-				fmt.Fprintln(os.Stderr, "Error: --client-id and --client-secret required with --auth-server")
+			log.Println("Starting in SaaS agent mode...")
+
+			// Initialize certificate manager
+			certMgr, err := agent.NewCertManager(*configDir)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error initializing certificate manager: %v\n", err)
 				os.Exit(1)
 			}
 
-			httpConfig.Auth = &mcp.OAuthConfig{
-				AuthServerURL:     *authServer,
-				ClientID:          *clientID,
-				ClientSecret:      *clientSecret,
-				ResourceServerURL: httpConfig.ServerURL,
-				RequiredScopes:    []string{}, // Allow any scope, tool-level checks
+			// Extract hosts from listen address for cert SANs
+			hosts := []string{}
+			if *callbackURL != "" {
+				// Parse host from callback URL
+				// Simple extraction - could be improved
+				hosts = append(hosts, *callbackURL)
+			}
+
+			// Ensure certificate exists (auto-generate if needed)
+			certInfo, err := certMgr.EnsureCert(hosts)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error ensuring certificate: %v\n", err)
+				os.Exit(1)
+			}
+			log.Printf("Using certificate: %s (expires: %s)", certInfo.CertPath, certInfo.NotAfter.Format(time.RFC3339))
+
+			// Use auto-generated cert
+			httpConfig.TLSCert = certInfo.CertPath
+			httpConfig.TLSKey = certInfo.KeyPath
+
+			// Determine callback URL
+			effectiveCallbackURL := *callbackURL
+			if effectiveCallbackURL == "" {
+				effectiveCallbackURL = fmt.Sprintf("https://%s", *listenAddr)
+			}
+
+			// Set server URL for metadata
+			if httpConfig.ServerURL == "" {
+				httpConfig.ServerURL = effectiveCallbackURL
+			}
+
+			// Register with SaaS
+			registrar := agent.NewRegistrar(&agent.RegistrationConfig{
+				SaaSURL:     *saasURL,
+				APIKey:      effectiveAPIKey,
+				CallbackURL: effectiveCallbackURL,
+				PublicCert:  certInfo.PublicCert,
+			}, *configDir)
+
+			regResult, err := registrar.Register(ctx)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error registering with SaaS: %v\n", err)
+				os.Exit(1)
+			}
+			log.Printf("Registered with SaaS: agent_id=%s", regResult.AgentID)
+
+			// Set up JWKS validator for incoming requests from SaaS
+			if regResult.JWKSURL != "" {
+				httpConfig.JWKSValidator = agent.NewJWKSValidator(&agent.JWKSValidatorConfig{
+					JWKSURL: regResult.JWKSURL,
+				})
+				log.Printf("JWKS validation enabled: %s", regResult.JWKSURL)
+			}
+
+		} else {
+			// Standard mode - use provided certs or no TLS
+			if httpConfig.ServerURL == "" {
+				// Default server URL based on listen address
+				scheme := "http"
+				if *tlsCert != "" {
+					scheme = "https"
+				}
+				httpConfig.ServerURL = fmt.Sprintf("%s://%s", scheme, *listenAddr)
+			}
+
+			// Configure authentication - OIDC takes precedence over OAuth introspection
+			if *oidcIssuer != "" {
+				if *oidcAudience == "" {
+					fmt.Fprintln(os.Stderr, "Error: --oidc-audience required with --oidc-issuer")
+					os.Exit(1)
+				}
+
+				httpConfig.OIDC = &mcp.OIDCConfig{
+					Issuer:         *oidcIssuer,
+					Audience:       *oidcAudience,
+					RequiredScopes: []string{}, // Allow any scope, tool-level checks
+				}
+			} else if *authServer != "" {
+				// Fall back to OAuth introspection
+				if *clientID == "" || *clientSecret == "" {
+					fmt.Fprintln(os.Stderr, "Error: --client-id and --client-secret required with --auth-server")
+					os.Exit(1)
+				}
+
+				httpConfig.Auth = &mcp.OAuthConfig{
+					AuthServerURL:     *authServer,
+					ClientID:          *clientID,
+					ClientSecret:      *clientSecret,
+					ResourceServerURL: httpConfig.ServerURL,
+					RequiredScopes:    []string{}, // Allow any scope, tool-level checks
+				}
 			}
 		}
 
@@ -285,6 +371,7 @@ func printHelp() {
 USAGE:
     mcp-sysinfo [OPTIONS]                    Run as MCP server (stdio)
     mcp-sysinfo --transport http [OPTIONS]   Run as HTTP server with OAuth
+    mcp-sysinfo --transport http --saas-url <url> --api-key <key>  SaaS agent mode
     mcp-sysinfo --query <NAME> [--json]      Run query directly (testing)
 
 TRANSPORT OPTIONS:
@@ -294,6 +381,12 @@ TRANSPORT OPTIONS:
     --token <secret>     Bearer token for HTTP auth (or MCP_SYSINFO_TOKEN env var)
     --tls-cert <file>    TLS certificate file (enables HTTPS)
     --tls-key <file>     TLS key file
+
+SAAS AGENT MODE (auto-generates TLS cert, registers with SaaS):
+    --saas-url <url>     SaaS backend URL for agent registration
+    --api-key <key>      API key for SaaS auth (or MCP_SYSINFO_API_KEY env var)
+    --callback-url <url> URL where SaaS can reach this agent (auto-detected)
+    --config-dir <path>  Config directory for certs/state (default: ~/.mcp-sysinfo)
 
 OIDC OPTIONS (for HTTP transport - local JWT validation):
     --oidc-issuer <url>  OIDC issuer URL (e.g., https://enterprise.okta.com)
@@ -352,6 +445,12 @@ EXAMPLES:
         --auth-server http://localhost:8444 \
         --client-id mcp-sysinfo \
         --client-secret SECRET
+
+    # Run as SaaS agent (auto-generates cert, registers with SaaS)
+    mcp-sysinfo --transport http \
+        --listen 0.0.0.0:8443 \
+        --saas-url https://api.example-saas.com \
+        --api-key sk_live_abc123...
 
     # Test a query directly
     mcp-sysinfo --query get_cpu_info --json

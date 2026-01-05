@@ -22,6 +22,11 @@ type contextKey string
 
 const identityKey contextKey = "identity"
 
+// JWKSValidatorInterface defines the interface for JWKS-based JWT validation.
+type JWKSValidatorInterface interface {
+	ValidateToken(ctx context.Context, token string) (subject string, scopes []string, err error)
+}
+
 // HTTPConfig configures the HTTP transport.
 type HTTPConfig struct {
 	// ListenAddr is the address to listen on
@@ -44,6 +49,9 @@ type HTTPConfig struct {
 	// OIDC configuration (nil = no OIDC) - uses local JWT validation
 	// If both Auth and OIDC are set, OIDC takes precedence
 	OIDC *OIDCConfig
+
+	// JWKSValidator for SaaS mode - validates JWTs from SaaS using cached JWKS
+	JWKSValidator JWKSValidatorInterface
 }
 
 // OIDCConfig configures OIDC authentication with local JWT validation.
@@ -178,8 +186,8 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 	clientIP := h.getClientIP(r)
 	ctx := context.WithValue(r.Context(), ContextKeyClientIP, clientIP)
 
-	// Authenticate if auth is configured (bearer token, OIDC, or OAuth introspection)
-	if h.config.BearerToken != "" || h.config.OIDC != nil || h.config.Auth != nil {
+	// Authenticate if auth is configured (bearer token, JWKS, OIDC, or OAuth introspection)
+	if h.config.BearerToken != "" || h.config.JWKSValidator != nil || h.config.OIDC != nil || h.config.Auth != nil {
 		identity, err := h.authenticate(r)
 		if err != nil {
 			// Audit authentication failure
@@ -256,7 +264,7 @@ type Identity struct {
 	Scopes   []string
 }
 
-// authenticate validates the token using bearer token, OIDC, or OAuth introspection.
+// authenticate validates the token using bearer token, JWKS, OIDC, or OAuth introspection.
 func (h *HTTPServer) authenticate(r *http.Request) (*Identity, error) {
 	// Extract Bearer token
 	authHeader := r.Header.Get("Authorization")
@@ -281,6 +289,19 @@ func (h *HTTPServer) authenticate(r *http.Request) (*Identity, error) {
 			}, nil
 		}
 		return nil, fmt.Errorf("invalid token")
+	}
+
+	// Use JWKS validator if configured (SaaS agent mode)
+	if h.config.JWKSValidator != nil {
+		subject, scopes, err := h.config.JWKSValidator.ValidateToken(r.Context(), token)
+		if err != nil {
+			return nil, err
+		}
+		return &Identity{
+			Subject:  subject,
+			ClientID: "saas",
+			Scopes:   scopes,
+		}, nil
 	}
 
 	// Use OIDC if configured, otherwise fall back to introspection
