@@ -288,30 +288,3 @@ jobs:
           VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-  # Notify Pro repository of new build/release
-  notify-pro:
-    name: Notify Pro Repository
-    needs: [build, release]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Get version
-        id: version
-        run: |
-          VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "dev")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Dispatch to Pro Repository
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
-          repository: levantar-ai/mcp-sysinfo-pro
-          event-type: oss-release
-          client-payload: |
-            {
-              "ref": "${{ github.ref }}",
-              "sha": "${{ github.sha }}",
-              "version": "${{ steps.version.outputs.version }}",
-              "run_id": "${{ github.run_id }}"
-            }
