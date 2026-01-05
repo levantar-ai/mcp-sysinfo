@@ -320,6 +320,38 @@ docker compose --profile privileged up mcp-sysinfo-privileged
 
 See [examples/](examples/) for Go and Python client examples.
 
+### Claude Code Integration
+
+Add mcp-sysinfo to [Claude Code](https://claude.ai/code) for AI-powered system diagnostics:
+
+**Local machine (stdio):**
+
+```bash
+# Linux/macOS
+claude mcp add --transport stdio sysinfo -- /path/to/mcp-sysinfo
+
+# Windows
+claude mcp add --transport stdio sysinfo -- C:\path\to\mcp-sysinfo-windows-amd64.exe
+```
+
+**Remote machine (HTTP) - e.g., Windows VM:**
+
+```bash
+# On the remote machine, start HTTP server
+./mcp-sysinfo --http :8080 --token my-secret-token
+
+# On your local machine, connect Claude Code
+claude mcp add --transport http sysinfo-remote http://192.168.1.100:8080 \
+  --header "Authorization: Bearer my-secret-token"
+```
+
+**Verify with:**
+
+```bash
+claude mcp list   # List configured servers
+/mcp              # Check status inside Claude Code
+```
+
 ### Resource Impact
 
 Every query respects strict budgets:

@@ -1,6 +1,117 @@
 # Quick Start
 
-## Docker (Fastest Way to Try)
+## Installation
+
+### Download Pre-built Binary
+
+Download the latest release for your platform from [GitHub Releases](https://github.com/levantar-ai/mcp-sysinfo/releases):
+
+| Platform | Binary |
+|----------|--------|
+| Linux (x64) | `mcp-sysinfo-linux-amd64` |
+| Linux (ARM64) | `mcp-sysinfo-linux-arm64` |
+| macOS (Intel) | `mcp-sysinfo-darwin-amd64` |
+| macOS (Apple Silicon) | `mcp-sysinfo-darwin-arm64` |
+| Windows (x64) | `mcp-sysinfo-windows-amd64.exe` |
+
+```bash
+# Linux/macOS
+chmod +x mcp-sysinfo-*
+./mcp-sysinfo-linux-amd64 --version
+
+# Windows (PowerShell)
+.\mcp-sysinfo-windows-amd64.exe --version
+```
+
+### Building from Source
+
+```bash
+git clone https://github.com/levantar-ai/mcp-sysinfo
+cd mcp-sysinfo
+go build -o mcp-sysinfo ./cmd/mcp-sysinfo
+```
+
+---
+
+## Claude Code Integration
+
+### Local Machine (Stdio Mode)
+
+Add mcp-sysinfo to Claude Code for local system diagnostics:
+
+**Linux/macOS:**
+
+```bash
+claude mcp add --transport stdio sysinfo -- /path/to/mcp-sysinfo
+```
+
+**Windows (PowerShell):**
+
+```powershell
+claude mcp add --transport stdio sysinfo -- C:\path\to\mcp-sysinfo-windows-amd64.exe
+```
+
+**With sensitive queries enabled:**
+
+```bash
+claude mcp add --transport stdio sysinfo -- /path/to/mcp-sysinfo --scope sensitive
+```
+
+### Remote Machine (HTTP Mode)
+
+Connect Claude Code to mcp-sysinfo running on a remote machine (e.g., a Windows VM):
+
+**Step 1: Start mcp-sysinfo on the remote machine**
+
+```powershell
+# On the Windows VM (replace with your token)
+.\mcp-sysinfo-windows-amd64.exe --http :8080 --token my-secret-token
+```
+
+**Step 2: Add to Claude Code on your local machine**
+
+```bash
+# Replace 192.168.1.100 with your VM's IP address
+claude mcp add --transport http sysinfo-vm http://192.168.1.100:8080 \
+  --header "Authorization: Bearer my-secret-token"
+```
+
+### Project-Shared Configuration
+
+For team projects, add to `.mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "sysinfo": {
+      "type": "stdio",
+      "command": "/usr/local/bin/mcp-sysinfo",
+      "args": ["--scope", "core,logs"]
+    },
+    "sysinfo-windows-vm": {
+      "type": "http",
+      "url": "http://192.168.1.100:8080",
+      "headers": {
+        "Authorization": "Bearer ${SYSINFO_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+### Verify Configuration
+
+```bash
+# List configured MCP servers
+claude mcp list
+
+# Check server status (inside Claude Code)
+/mcp
+```
+
+---
+
+## Docker (Quick Demo)
 
 ```bash
 # Clone the repository
@@ -22,30 +133,11 @@ For full system access (privileged mode):
 docker compose --profile privileged up mcp-sysinfo-privileged
 ```
 
-## Building from Source
+---
 
-```bash
-# Clone and build
-git clone https://github.com/levantar-ai/mcp-sysinfo
-cd mcp-sysinfo
-go build -o mcp-sysinfo ./cmd/mcp-sysinfo
-```
+## Direct Query Mode
 
-## Running the Server
-
-### Stdio Mode (MCP Clients)
-
-For use with Claude Desktop and other MCP clients:
-
-```bash
-./mcp-sysinfo
-```
-
-The server communicates via JSON-RPC over stdin/stdout.
-
-### Direct Query Mode
-
-Run queries directly from the command line:
+Run queries directly from the command line (useful for testing):
 
 ```bash
 # Get CPU information
@@ -56,11 +148,16 @@ Run queries directly from the command line:
 
 # Get memory information
 ./mcp-sysinfo --query get_memory_info --json
+
+# Windows
+.\mcp-sysinfo-windows-amd64.exe --query get_cpu_info --json
 ```
 
-### HTTP Mode
+---
 
-Start an HTTP server for remote access:
+## HTTP Mode
+
+Start an HTTP server for remote access or integration with other tools:
 
 ```bash
 ./mcp-sysinfo --http :8080 --token your-secret-token
@@ -80,9 +177,14 @@ curl -X POST http://localhost:8080/ \
   }'
 ```
 
-## Configuring Claude Desktop
+---
+
+## Claude Desktop Integration
 
 Add to your Claude Desktop configuration (`claude_desktop_config.json`):
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -95,6 +197,8 @@ Add to your Claude Desktop configuration (`claude_desktop_config.json`):
 }
 ```
 
+---
+
 ## Available Queries
 
 List all available queries:
@@ -103,7 +207,7 @@ List all available queries:
 ./mcp-sysinfo --list
 ```
 
-See the [Query Reference](../queries/index.md) for detailed documentation of all 51 queries.
+See the [Query Reference](../queries/index.md) for detailed documentation of all 120 queries.
 
 ## Example Output
 
