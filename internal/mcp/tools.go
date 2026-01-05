@@ -7,6 +7,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
+	"github.com/levantar-ai/mcp-sysinfo/internal/gpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/hardware"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
@@ -55,6 +56,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 1.10: Windows Enterprise Features (scope: windows)
 	registerWindowsEnterpriseTools(s)
+
+	// Phase 2: Enhanced Diagnostics (scope: enhanced)
+	registerEnhancedDiagnosticsTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -2150,6 +2154,93 @@ func registerWindowsEnterpriseTools(s *Server) {
 	}, "windows", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := windows.NewCollector()
 		result, err := c.GetIISAuthConfig()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+// registerEnhancedDiagnosticsTools registers Phase 2 Enhanced Diagnostics tools.
+func registerEnhancedDiagnosticsTools(s *Server) {
+	// ==========================================================================
+	// Phase 2.1: GPU Diagnostics
+	// ==========================================================================
+
+	// Get GPU Info
+	s.RegisterTool(Tool{
+		Name:        "get_gpu_info",
+		Description: "Get GPU information including memory, utilization, temperature, and processes",
+		InputSchema: InputSchema{Type: "object"},
+	}, "enhanced", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := gpu.NewCollector()
+		result, err := c.GetGPUInfo()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// ==========================================================================
+	// Phase 2.2: Container Metrics
+	// ==========================================================================
+
+	// Get Container Stats
+	s.RegisterTool(Tool{
+		Name:        "get_container_stats",
+		Description: "Get real-time CPU, memory, network, and I/O stats for Docker/Podman containers",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"container_id": {
+					Type:        "string",
+					Description: "Container ID or name (optional, returns all running containers if not specified)",
+				},
+			},
+		},
+	}, "enhanced", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		containerID, _ := args["container_id"].(string)
+		c := container.NewCollector()
+		result, err := c.GetContainerStats(containerID)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get Container Logs
+	s.RegisterTool(Tool{
+		Name:        "get_container_logs",
+		Description: "Get logs from a Docker/Podman container",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"container_id": {
+					Type:        "string",
+					Description: "Container ID or name",
+				},
+				"lines": {
+					Type:        "integer",
+					Description: "Number of lines to return (default 100)",
+					Default:     100,
+				},
+				"since": {
+					Type:        "string",
+					Description: "Return logs since this timestamp (RFC3339 or Unix timestamp)",
+				},
+			},
+			Required: []string{"container_id"},
+		},
+	}, "enhanced", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		containerID, _ := args["container_id"].(string)
+		lines := 100
+		if l, ok := args["lines"].(float64); ok {
+			lines = int(l)
+		}
+		since, _ := args["since"].(string)
+
+		c := container.NewCollector()
+		result, err := c.GetContainerLogs(containerID, lines, since)
 		if err != nil {
 			return nil, err
 		}

@@ -1,6 +1,6 @@
 # Query Reference
 
-MCP System Info provides **117 queries** across multiple categories for comprehensive system diagnostics.
+MCP System Info provides **120 queries** across multiple categories for comprehensive system diagnostics.
 
 !!! note "Auto-Generated"
     This documentation is automatically generated from the source code on each release.
@@ -16,6 +16,7 @@ MCP System Info provides **117 queries** across multiple categories for comprehe
 | [Application Discovery](hooks/index.md#application-discovery) | 2 | Discover installed applications and read config files. |
 | [Triage & Summary](hooks/index.md#triage) | 25 | High-level queries for incident triage and security posture. |
 | [Windows Enterprise](windows/index.md) | 15 | Windows-only: Registry, DCOM/COM, IIS web server. |
+| [Enhanced Diagnostics](enhanced/index.md) | 3 | GPU info, container stats, and container logs. |
 
 ## Platform Support
 

@@ -55,7 +55,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 1.10 Complete (117 queries implemented)**
+**Status: Phase 2.2 Complete (120 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -265,6 +265,25 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - SSL certificate bindings with certificate details
 - Handler mappings and module configuration
 - Authentication settings (Anonymous, Basic, Windows, Digest)
+
+### Phase 2.1-2.2: GPU & Container Metrics ✅ (3/3)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_gpu_info` | GPU details (memory, utilization, temp) | ✅ | ✅ | ✅ |
+| `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
+| `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
+
+**GPU support:**
+- NVIDIA GPUs via nvidia-smi (memory, utilization, temperature, power, clocks, processes)
+- AMD GPUs via sysfs/ROCm (memory, utilization, temperature, clocks)
+- Intel GPUs via sysfs (Arc, Xe, UHD graphics)
+- Apple Silicon GPUs via system_profiler
+
+**Container support:**
+- Docker and Podman containers
+- Real-time CPU, memory, network, and block I/O statistics
+- Log streaming with timestamp parsing and stdout/stderr separation
 
 ### What You Can Do Now
 
@@ -624,7 +643,8 @@ curl http://localhost:8080/metrics
 | **1.10** | Windows Enterprise | ✅ Complete | 15/15 |
 | **1.11** | Deep IIS Configuration | 📋 Planned | 0/35 |
 | **1.12** | Complete IIS Coverage | 📋 Planned | 0/47 |
-| 2 | GPU, Containers, Services | 📋 Planned | 0/6 |
+| **2.1-2.2** | GPU & Container Metrics | ✅ Complete | 3/3 |
+| 2.3 | Services & VM Detection | 📋 Planned | 0/3 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
 | 5 | Analytics & Trends | 📋 Planned | 0/4 |
@@ -633,7 +653,12 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 117/246 queries (48%)**
+**Implemented: 120/246 queries (49%)**
+
+**Phase 2.1-2.2 GPU & Container Metrics (Complete):**
+- GPU information (NVIDIA/AMD/Intel detection, utilization, memory, temperature)
+- Container stats (real-time CPU/memory/network/I/O for Docker/Podman)
+- Container logs (stdout/stderr streaming with timestamps)
 
 **Phase 1.10 Windows Enterprise Features (Complete):**
 - Registry queries (read keys, enumerate, security descriptors)

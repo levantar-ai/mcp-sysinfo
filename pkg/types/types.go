@@ -1968,3 +1968,104 @@ type SecurityPostureSnapshotResult struct {
 	Recommendations []string                      `json:"recommendations,omitempty"`
 	Timestamp       time.Time                     `json:"timestamp"`
 }
+
+// ============================================================================
+// Phase 2: Enhanced Diagnostics Types
+// ============================================================================
+
+// GPUInfoResult represents GPU diagnostics query results.
+type GPUInfoResult struct {
+	GPUs      []GPUDevice `json:"gpus"`
+	Count     int         `json:"count"`
+	Error     string      `json:"error,omitempty"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+// GPUDevice represents detailed GPU information.
+type GPUDevice struct {
+	Index           int          `json:"index"`
+	Name            string       `json:"name"`
+	Vendor          string       `json:"vendor"`                     // nvidia, amd, intel, apple
+	Driver          string       `json:"driver,omitempty"`           // Driver version
+	VBIOS           string       `json:"vbios,omitempty"`            // Video BIOS version
+	PCIBusID        string       `json:"pci_bus_id,omitempty"`       // PCI bus ID
+	MemoryTotal     uint64       `json:"memory_total"`               // Total memory in bytes
+	MemoryUsed      uint64       `json:"memory_used"`                // Used memory in bytes
+	MemoryFree      uint64       `json:"memory_free"`                // Free memory in bytes
+	Utilization     float64      `json:"utilization"`                // GPU utilization percentage
+	MemoryUtil      float64      `json:"memory_utilization"`         // Memory utilization percentage
+	Temperature     float64      `json:"temperature,omitempty"`      // Temperature in Celsius
+	TemperatureMax  float64      `json:"temperature_max,omitempty"`  // Max safe temperature
+	FanSpeed        int          `json:"fan_speed,omitempty"`        // Fan speed percentage
+	PowerDraw       float64      `json:"power_draw,omitempty"`       // Power draw in watts
+	PowerLimit      float64      `json:"power_limit,omitempty"`      // Power limit in watts
+	ClockGraphics   int          `json:"clock_graphics,omitempty"`   // Graphics clock in MHz
+	ClockMemory     int          `json:"clock_memory,omitempty"`     // Memory clock in MHz
+	ClockSM         int          `json:"clock_sm,omitempty"`         // SM clock in MHz
+	ComputeMode     string       `json:"compute_mode,omitempty"`     // Compute mode
+	PersistenceMode bool         `json:"persistence_mode,omitempty"` // Persistence mode enabled
+	UUID            string       `json:"uuid,omitempty"`             // GPU UUID
+	Serial          string       `json:"serial,omitempty"`           // Serial number
+	Architecture    string       `json:"architecture,omitempty"`     // GPU architecture
+	CUDACores       int          `json:"cuda_cores,omitempty"`       // NVIDIA CUDA cores
+	ComputeUnits    int          `json:"compute_units,omitempty"`    // AMD compute units
+	TensorCores     int          `json:"tensor_cores,omitempty"`     // Tensor cores
+	ProcessCount    int          `json:"process_count,omitempty"`    // Running GPU processes
+	EccErrors       int          `json:"ecc_errors,omitempty"`       // ECC memory errors
+	Processes       []GPUProcess `json:"processes,omitempty"`        // Processes using GPU
+}
+
+// GPUProcess represents a process using the GPU.
+type GPUProcess struct {
+	PID        int32  `json:"pid"`
+	Name       string `json:"name,omitempty"`
+	MemoryUsed uint64 `json:"memory_used"`    // GPU memory used by process
+	Type       string `json:"type,omitempty"` // C (compute), G (graphics)
+}
+
+// ContainerStatsResult represents container runtime statistics.
+type ContainerStatsResult struct {
+	Stats     []ContainerStats `json:"stats"`
+	Count     int              `json:"count"`
+	Error     string           `json:"error,omitempty"`
+	Timestamp time.Time        `json:"timestamp"`
+}
+
+// ContainerStats represents real-time stats for a container.
+type ContainerStats struct {
+	ID               string    `json:"id"`
+	Name             string    `json:"name"`
+	CPUPercent       float64   `json:"cpu_percent"`
+	CPUSystemNanos   uint64    `json:"cpu_system_nanos,omitempty"`
+	CPUUserNanos     uint64    `json:"cpu_user_nanos,omitempty"`
+	MemoryUsage      uint64    `json:"memory_usage"`
+	MemoryLimit      uint64    `json:"memory_limit"`
+	MemoryPercent    float64   `json:"memory_percent"`
+	MemoryCache      uint64    `json:"memory_cache,omitempty"`
+	NetworkRxBytes   uint64    `json:"network_rx_bytes"`
+	NetworkTxBytes   uint64    `json:"network_tx_bytes"`
+	NetworkRxPackets uint64    `json:"network_rx_packets,omitempty"`
+	NetworkTxPackets uint64    `json:"network_tx_packets,omitempty"`
+	BlockReadBytes   uint64    `json:"block_read_bytes,omitempty"`
+	BlockWriteBytes  uint64    `json:"block_write_bytes,omitempty"`
+	PIDs             int       `json:"pids,omitempty"`
+	ReadTime         time.Time `json:"read_time"`
+}
+
+// ContainerLogsResult represents container log output.
+type ContainerLogsResult struct {
+	ContainerID string         `json:"container_id"`
+	Name        string         `json:"name"`
+	Logs        []ContainerLog `json:"logs"`
+	Count       int            `json:"count"`
+	Truncated   bool           `json:"truncated"`
+	Error       string         `json:"error,omitempty"`
+	Timestamp   time.Time      `json:"timestamp"`
+}
+
+// ContainerLog represents a single container log entry.
+type ContainerLog struct {
+	Timestamp time.Time `json:"timestamp"`
+	Stream    string    `json:"stream"` // stdout, stderr
+	Message   string    `json:"message"`
+}

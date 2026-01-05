@@ -290,3 +290,282 @@ type dockerHistoryLayer struct {
 	Size      int64    `json:"Size"`
 	Comment   string   `json:"Comment"`
 }
+
+// GetContainerStats returns real-time stats for running containers.
+func (c *Collector) GetContainerStats(containerID string) (*types.ContainerStatsResult, error) {
+	result := &types.ContainerStatsResult{
+		Stats:     []types.ContainerStats{},
+		Timestamp: time.Now(),
+	}
+
+	// If a specific container is requested, get stats for that container
+	if containerID != "" {
+		stats, err := c.getContainerStats(containerID)
+		if err != nil {
+			result.Error = err.Error()
+			return result, nil
+		}
+		result.Stats = append(result.Stats, *stats)
+		result.Count = 1
+		return result, nil
+	}
+
+	// Otherwise, get stats for all running containers
+	containers, err := c.GetDockerContainers()
+	if err != nil {
+		result.Error = err.Error()
+		return result, nil
+	}
+
+	for _, ctr := range containers.Containers {
+		if ctr.State != "running" {
+			continue
+		}
+		stats, err := c.getContainerStats(ctr.ID)
+		if err != nil {
+			continue // Skip containers we can't get stats for
+		}
+		stats.Name = ctr.Name
+		result.Stats = append(result.Stats, *stats)
+	}
+
+	result.Count = len(result.Stats)
+	return result, nil
+}
+
+func (c *Collector) getContainerStats(containerID string) (*types.ContainerStats, error) {
+	resp, err := c.doRequest("GET", fmt.Sprintf("/containers/%s/stats?stream=false", containerID))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("Docker API error: %s", string(body))
+	}
+
+	var dockerStats dockerStatsResponse
+	if err := json.NewDecoder(resp.Body).Decode(&dockerStats); err != nil {
+		return nil, fmt.Errorf("failed to parse stats: %v", err)
+	}
+
+	stats := &types.ContainerStats{
+		ID:       shortenID(containerID),
+		ReadTime: dockerStats.Read,
+	}
+
+	// Calculate CPU percentage
+	cpuDelta := float64(dockerStats.CPUStats.CPUUsage.TotalUsage - dockerStats.PreCPUStats.CPUUsage.TotalUsage)
+	systemDelta := float64(dockerStats.CPUStats.SystemCPUUsage - dockerStats.PreCPUStats.SystemCPUUsage)
+	if systemDelta > 0 && cpuDelta > 0 {
+		numCPUs := float64(dockerStats.CPUStats.OnlineCPUs)
+		if numCPUs == 0 {
+			numCPUs = float64(len(dockerStats.CPUStats.CPUUsage.PercpuUsage))
+		}
+		if numCPUs == 0 {
+			numCPUs = 1
+		}
+		stats.CPUPercent = (cpuDelta / systemDelta) * numCPUs * 100.0
+	}
+
+	stats.CPUSystemNanos = dockerStats.CPUStats.SystemCPUUsage
+	stats.CPUUserNanos = dockerStats.CPUStats.CPUUsage.UsageInUsermode
+
+	// Memory stats
+	stats.MemoryUsage = dockerStats.MemoryStats.Usage
+	stats.MemoryLimit = dockerStats.MemoryStats.Limit
+	if stats.MemoryLimit > 0 {
+		stats.MemoryPercent = float64(stats.MemoryUsage) / float64(stats.MemoryLimit) * 100
+	}
+	stats.MemoryCache = dockerStats.MemoryStats.Stats.Cache
+
+	// Network stats - aggregate all interfaces
+	for _, netStats := range dockerStats.Networks {
+		stats.NetworkRxBytes += netStats.RxBytes
+		stats.NetworkTxBytes += netStats.TxBytes
+		stats.NetworkRxPackets += netStats.RxPackets
+		stats.NetworkTxPackets += netStats.TxPackets
+	}
+
+	// Block I/O stats
+	for _, entry := range dockerStats.BlkioStats.IOServiceBytesRecursive {
+		switch entry.Op {
+		case "Read":
+			stats.BlockReadBytes += entry.Value
+		case "Write":
+			stats.BlockWriteBytes += entry.Value
+		}
+	}
+
+	// PIDs
+	stats.PIDs = dockerStats.PidsStats.Current
+
+	return stats, nil
+}
+
+// GetContainerLogs returns logs from a container.
+func (c *Collector) GetContainerLogs(containerID string, lines int, since string) (*types.ContainerLogsResult, error) {
+	result := &types.ContainerLogsResult{
+		ContainerID: containerID,
+		Logs:        []types.ContainerLog{},
+		Timestamp:   time.Now(),
+	}
+
+	if containerID == "" {
+		result.Error = "container ID is required"
+		return result, nil
+	}
+
+	// Build query parameters
+	query := fmt.Sprintf("/containers/%s/logs?stdout=true&stderr=true&timestamps=true", containerID)
+	if lines > 0 {
+		query += fmt.Sprintf("&tail=%d", lines)
+	} else {
+		query += "&tail=100" // Default to last 100 lines
+	}
+	if since != "" {
+		query += fmt.Sprintf("&since=%s", since)
+	}
+
+	resp, err := c.doRequest("GET", query)
+	if err != nil {
+		result.Error = err.Error()
+		return result, nil
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		result.Error = fmt.Sprintf("Docker API error: %s", string(body))
+		return result, nil
+	}
+
+	// Docker log format: first 8 bytes are header (1 byte stream type, 3 bytes padding, 4 bytes size)
+	// Stream type: 0=stdin, 1=stdout, 2=stderr
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		result.Error = fmt.Sprintf("failed to read logs: %v", err)
+		return result, nil
+	}
+
+	// Parse multiplexed output
+	result.Logs = parseDockerLogs(body)
+	result.Count = len(result.Logs)
+
+	// Get container name
+	containers, err := c.GetDockerContainers()
+	if err == nil {
+		for _, ctr := range containers.Containers {
+			if strings.HasPrefix(containerID, ctr.ID) || ctr.ID == containerID {
+				result.Name = ctr.Name
+				break
+			}
+		}
+	}
+
+	return result, nil
+}
+
+func parseDockerLogs(data []byte) []types.ContainerLog {
+	var logs []types.ContainerLog
+
+	i := 0
+	for i < len(data) {
+		// Need at least 8 bytes for header
+		if i+8 > len(data) {
+			break
+		}
+
+		// First byte is stream type
+		streamType := data[i]
+		stream := "stdout"
+		if streamType == 2 {
+			stream = "stderr"
+		}
+
+		// Bytes 4-7 are the size (big endian)
+		size := int(data[i+4])<<24 | int(data[i+5])<<16 | int(data[i+6])<<8 | int(data[i+7])
+
+		// Skip header
+		i += 8
+
+		// Read the message
+		if i+size > len(data) {
+			size = len(data) - i
+		}
+
+		message := string(data[i : i+size])
+		i += size
+
+		// Parse timestamp from message (format: 2024-01-15T10:30:00.123456789Z message)
+		var timestamp time.Time
+		if len(message) > 30 && message[4] == '-' && message[7] == '-' {
+			// Find the space after timestamp
+			spaceIdx := strings.Index(message, " ")
+			if spaceIdx > 0 {
+				tsStr := message[:spaceIdx]
+				if ts, err := time.Parse(time.RFC3339Nano, tsStr); err == nil {
+					timestamp = ts
+					message = message[spaceIdx+1:]
+				}
+			}
+		}
+
+		logs = append(logs, types.ContainerLog{
+			Timestamp: timestamp,
+			Stream:    stream,
+			Message:   strings.TrimRight(message, "\n"),
+		})
+	}
+
+	return logs
+}
+
+// Docker stats API response structures
+type dockerStatsResponse struct {
+	Read     time.Time `json:"read"`
+	PreRead  time.Time `json:"preread"`
+	CPUStats struct {
+		CPUUsage struct {
+			TotalUsage        uint64   `json:"total_usage"`
+			PercpuUsage       []uint64 `json:"percpu_usage"`
+			UsageInKernelmode uint64   `json:"usage_in_kernelmode"`
+			UsageInUsermode   uint64   `json:"usage_in_usermode"`
+		} `json:"cpu_usage"`
+		SystemCPUUsage uint64 `json:"system_cpu_usage"`
+		OnlineCPUs     int    `json:"online_cpus"`
+	} `json:"cpu_stats"`
+	PreCPUStats struct {
+		CPUUsage struct {
+			TotalUsage        uint64   `json:"total_usage"`
+			PercpuUsage       []uint64 `json:"percpu_usage"`
+			UsageInKernelmode uint64   `json:"usage_in_kernelmode"`
+			UsageInUsermode   uint64   `json:"usage_in_usermode"`
+		} `json:"cpu_usage"`
+		SystemCPUUsage uint64 `json:"system_cpu_usage"`
+		OnlineCPUs     int    `json:"online_cpus"`
+	} `json:"precpu_stats"`
+	MemoryStats struct {
+		Usage uint64 `json:"usage"`
+		Limit uint64 `json:"limit"`
+		Stats struct {
+			Cache uint64 `json:"cache"`
+		} `json:"stats"`
+	} `json:"memory_stats"`
+	Networks map[string]struct {
+		RxBytes   uint64 `json:"rx_bytes"`
+		TxBytes   uint64 `json:"tx_bytes"`
+		RxPackets uint64 `json:"rx_packets"`
+		TxPackets uint64 `json:"tx_packets"`
+	} `json:"networks"`
+	BlkioStats struct {
+		IOServiceBytesRecursive []struct {
+			Op    string `json:"op"`
+			Value uint64 `json:"value"`
+		} `json:"io_service_bytes_recursive"`
+	} `json:"blkio_stats"`
+	PidsStats struct {
+		Current int `json:"current"`
+	} `json:"pids_stats"`
+}

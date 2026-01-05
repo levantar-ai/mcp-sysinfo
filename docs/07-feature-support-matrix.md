@@ -22,14 +22,15 @@ A summary of feature support across Linux, macOS, and Windows.
 ║  Phase 1.10 (Win)   Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
 ║  Phase 1.11         Deep IIS Configuration                       35   📋 Plan║
 ║  Phase 1.12         Complete IIS Coverage                        47   📋 Plan║
-║  Phase 2            Enhanced (GPU, Battery, Containers)           6   📋 Plan║
+║  Phase 2.1-2.2      GPU & Container Metrics                       3   ✅ Done║
+║  Phase 2.3          Services & VM Detection                       3   📋 Plan║
 ║  Phase 3            Analytics (Historical, Trends, Anomaly)       4   📋 Plan║
 ║  Phase 4            Automation (Alerts, Remediation)              4   📋 Plan║
 ║  Phase 5            Security (Scan, Compliance, Forensics)        4   📋 Plan║
 ║  Phase 6            Integration (Cloud, Plugins, Multi-host)      4   📋 Plan║
 ║  Phase 7            LLM Features (NL Queries, Auto-diagnostics)   3   📋 Plan║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  IMPLEMENTED: 117 queries    PLANNED: 129 queries    TOTAL: 246             ║
+║  IMPLEMENTED: 120 queries    PLANNED: 126 queries    TOTAL: 246             ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
