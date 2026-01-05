@@ -26,6 +26,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/netconfig"
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/osinfo"
+	"github.com/levantar-ai/mcp-sysinfo/internal/plugins"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
 	"github.com/levantar-ai/mcp-sysinfo/internal/redact"
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
@@ -179,6 +180,9 @@ func main() {
 	// Create MCP server
 	mcpServer := mcp.NewServer("mcp-sysinfo", version)
 	mcp.RegisterAllTools(mcpServer)
+
+	// Register enterprise plugins (no-op if built without enterprise tag)
+	plugins.RegisterPlugins(mcpServer)
 
 	// Set up context with signal handling
 	ctx, cancel := context.WithCancel(context.Background())
