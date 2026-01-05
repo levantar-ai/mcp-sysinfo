@@ -1,11 +1,11 @@
 # MCP System Info
 
 [![CI](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml/badge.svg)](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 **Read-only AI diagnostics plane for secure incident triage and evidence capture.**
 
-A security-first MCP server that provides structured, auditable access to system state without granting shell access to AI agents. Designed for production environments where you need AI-assisted diagnostics without the risks of arbitrary command execution.
+A security-first MCP server that provides structured, auditable access to system state without granting shell access to AI agents. Designed for production environments where you need AI-assisted di[...] 
 
 ## Why This Exists
 
@@ -729,4 +729,8 @@ All queries are cross-platform (Linux, macOS, Windows) using only native OS APIs
 
 ## License
 
-MIT
+levantar-ai/mcp-sysinfo is licensed under the GNU Affero General Public License v3 (AGPLv3).
+
+We offer a commercial licensing option for enterprises who require a proprietary license (for example to embed this project into closed-source products, or to run closed modifications in a hosted service). If you are interested in enterprise licensing, support, or custom modules, please contact: sales@levantar.ai
+
+For licensing questions, contact: licensing@levantar.ai
