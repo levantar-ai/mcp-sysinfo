@@ -3,7 +3,7 @@
 package plugin
 
 import (
-	"github.com/levantar-ai/mcp-sysinfo/internal/mcp"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/mcp"
 )
 
 // Plugin defines the interface all plugins must implement.

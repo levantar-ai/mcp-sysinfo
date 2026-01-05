@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/levantar-ai/mcp-sysinfo/internal/mcp"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/mcp"
 )
 
 // mockPlugin implements Plugin for testing

@@ -4,7 +4,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/levantar-ai/mcp-sysinfo/internal/mcp"
+	"github.com/levantar-ai/mcp-sysinfo/pkg/mcp"
 )
 
 // Registry holds all registered plugins.
