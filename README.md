@@ -337,10 +337,10 @@ claude mcp add --transport stdio sysinfo -- C:\path\to\mcp-sysinfo-windows-amd64
 **Remote Windows VM (HTTP):**
 
 ```powershell
-# 1. On Windows VM: Download and start server
+# 1. On Windows VM: Download and start server with token auth
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -Uri "https://github.com/levantar-ai/mcp-sysinfo/releases/latest/download/mcp-sysinfo-windows-amd64" -OutFile "mcp-sysinfo.exe"
-.\mcp-sysinfo.exe --http :8080 --token my-secret-token
+.\mcp-sysinfo.exe --transport http --listen 0.0.0.0:8080 --token my-secret-token
 
 # 2. Open firewall if needed
 New-NetFirewallRule -DisplayName "MCP SysInfo" -Direction Inbound -Port 8080 -Protocol TCP -Action Allow

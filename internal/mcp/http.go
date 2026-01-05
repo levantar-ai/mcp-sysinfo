@@ -34,6 +34,10 @@ type HTTPConfig struct {
 	TLSCert string
 	TLSKey  string
 
+	// BearerToken for simple token authentication (no external auth server)
+	// If set, requests must include "Authorization: Bearer <token>"
+	BearerToken string
+
 	// Auth configuration (nil = no auth) - uses token introspection
 	Auth *OAuthConfig
 
@@ -117,7 +121,9 @@ func (h *HTTPServer) Start() error {
 
 	// Set server info metric
 	authMethod := "none"
-	if h.config.OIDC != nil {
+	if h.config.BearerToken != "" {
+		authMethod = "bearer-token"
+	} else if h.config.OIDC != nil {
 		authMethod = "oidc"
 	} else if h.config.Auth != nil {
 		authMethod = "oauth-introspection"
@@ -136,7 +142,9 @@ func (h *HTTPServer) Start() error {
 
 	log.Printf("MCP HTTP Server starting on %s", h.config.ListenAddr)
 	log.Printf("  Server URL: %s", h.config.ServerURL)
-	if h.config.OIDC != nil {
+	if h.config.BearerToken != "" {
+		log.Printf("  Auth:       Bearer token")
+	} else if h.config.OIDC != nil {
 		log.Printf("  Auth:       OIDC (local JWT validation)")
 		log.Printf("  Issuer:     %s", h.config.OIDC.Issuer)
 		log.Printf("  Audience:   %s", h.config.OIDC.Audience)
@@ -170,8 +178,8 @@ func (h *HTTPServer) handleMCP(w http.ResponseWriter, r *http.Request) {
 	clientIP := h.getClientIP(r)
 	ctx := context.WithValue(r.Context(), ContextKeyClientIP, clientIP)
 
-	// Authenticate if auth is configured (OIDC or OAuth introspection)
-	if h.config.OIDC != nil || h.config.Auth != nil {
+	// Authenticate if auth is configured (bearer token, OIDC, or OAuth introspection)
+	if h.config.BearerToken != "" || h.config.OIDC != nil || h.config.Auth != nil {
 		identity, err := h.authenticate(r)
 		if err != nil {
 			// Audit authentication failure
@@ -248,7 +256,7 @@ type Identity struct {
 	Scopes   []string
 }
 
-// authenticate validates the token using OIDC or OAuth introspection.
+// authenticate validates the token using bearer token, OIDC, or OAuth introspection.
 func (h *HTTPServer) authenticate(r *http.Request) (*Identity, error) {
 	// Extract Bearer token
 	authHeader := r.Header.Get("Authorization")
@@ -262,6 +270,18 @@ func (h *HTTPServer) authenticate(r *http.Request) (*Identity, error) {
 	}
 
 	token := parts[1]
+
+	// Simple bearer token authentication (highest priority)
+	if h.config.BearerToken != "" {
+		if token == h.config.BearerToken {
+			return &Identity{
+				Subject:  "bearer-token",
+				ClientID: "static-token",
+				Scopes:   []string{"*"}, // Full access with static token
+			}, nil
+		}
+		return nil, fmt.Errorf("invalid token")
+	}
 
 	// Use OIDC if configured, otherwise fall back to introspection
 	if h.oidcValidator != nil {
@@ -445,7 +465,9 @@ func (h *HTTPServer) handleProtectedResourceMetadata(w http.ResponseWriter, r *h
 // handleHealth returns server health.
 func (h *HTTPServer) handleHealth(w http.ResponseWriter, r *http.Request) {
 	authMethod := "none"
-	if h.config.OIDC != nil {
+	if h.config.BearerToken != "" {
+		authMethod = "bearer-token"
+	} else if h.config.OIDC != nil {
 		authMethod = "oidc"
 	} else if h.config.Auth != nil {
 		authMethod = "oauth-introspection"

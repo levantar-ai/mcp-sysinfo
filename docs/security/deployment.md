@@ -37,7 +37,7 @@ After=network.target
 Type=simple
 User=mcp-sysinfo
 Group=mcp-sysinfo
-ExecStart=/usr/local/bin/mcp-sysinfo --http 127.0.0.1:8080
+ExecStart=/usr/local/bin/mcp-sysinfo --transport http --listen 127.0.0.1:8080
 Environment=MCP_SYSINFO_TOKEN=your-secret-token
 Environment=MCP_SYSINFO_AUDIT_LOG=/var/log/mcp-sysinfo/audit.jsonl
 Restart=always

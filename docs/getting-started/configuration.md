@@ -6,9 +6,11 @@
 |--------|-------------|---------|
 | `--query` | Run a specific query and exit | - |
 | `--json` | Output JSON format | false |
-| `--http` | Start HTTP server on address | - |
-| `--token` | Bearer token for HTTP auth | - |
+| `--transport` | Transport mode: `stdio` or `http` | `stdio` |
+| `--listen` | HTTP listen address (requires `--transport http`) | `127.0.0.1:8080` |
+| `--token` | Bearer token for HTTP authentication | - |
 | `--scopes` | Comma-separated list of enabled scopes | `core,logs,hooks,sbom` |
+| `--scope` | Alias for `--scopes` | - |
 | `--enable-sensitive` | Enable sensitive scope queries | false |
 | `--audit-log` | Path to audit log file | - |
 | `--list` | List available queries | false |
@@ -18,7 +20,7 @@
 
 | Variable | Description |
 |----------|-------------|
-| `MCP_SYSINFO_TOKEN` | Default bearer token for HTTP mode |
+| `MCP_SYSINFO_TOKEN` | Bearer token for HTTP authentication |
 | `MCP_SYSINFO_SCOPES` | Default enabled scopes |
 | `MCP_SYSINFO_AUDIT_LOG` | Default audit log path |
 

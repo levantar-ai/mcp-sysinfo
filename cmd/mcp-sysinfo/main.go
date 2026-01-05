@@ -72,6 +72,7 @@ func main() {
 	transport := flag.String("transport", "stdio", "Transport: stdio (default), http")
 	listenAddr := flag.String("listen", "127.0.0.1:8080", "Listen address for HTTP transport")
 	serverURL := flag.String("server-url", "", "Public server URL (for OAuth metadata)")
+	bearerToken := flag.String("token", "", "Bearer token for HTTP authentication (simple shared secret)")
 
 	// OAuth flags (for HTTP transport with token introspection)
 	authServer := flag.String("auth-server", "", "OAuth authorization server URL (for token introspection)")
@@ -194,12 +195,20 @@ func main() {
 		}
 
 	case "http":
-		// HTTP transport with optional OAuth
+		// HTTP transport with optional auth
 		httpConfig := &mcp.HTTPConfig{
-			ListenAddr: *listenAddr,
-			ServerURL:  *serverURL,
-			TLSCert:    *tlsCert,
-			TLSKey:     *tlsKey,
+			ListenAddr:  *listenAddr,
+			ServerURL:   *serverURL,
+			TLSCert:     *tlsCert,
+			TLSKey:      *tlsKey,
+			BearerToken: *bearerToken,
+		}
+
+		// Check environment variable for token if not provided via flag
+		if httpConfig.BearerToken == "" {
+			if envToken := os.Getenv("MCP_SYSINFO_TOKEN"); envToken != "" {
+				httpConfig.BearerToken = envToken
+			}
 		}
 
 		if httpConfig.ServerURL == "" {
@@ -282,6 +291,7 @@ TRANSPORT OPTIONS:
     --transport <type>   Transport: stdio (default), http
     --listen <addr>      HTTP listen address (default: 127.0.0.1:8080)
     --server-url <url>   Public server URL (for OAuth metadata)
+    --token <secret>     Bearer token for HTTP auth (or MCP_SYSINFO_TOKEN env var)
     --tls-cert <file>    TLS certificate file (enables HTTPS)
     --tls-key <file>     TLS key file
 
@@ -318,8 +328,11 @@ EXAMPLES:
     # Run as MCP server (for Claude Desktop, etc.)
     mcp-sysinfo
 
-    # Run as HTTP server without auth (development)
+    # Run as HTTP server without auth (development only)
     mcp-sysinfo --transport http --listen 127.0.0.1:8080
+
+    # Run as HTTP server with bearer token auth
+    mcp-sysinfo --transport http --listen 0.0.0.0:8080 --token my-secret-token
 
     # Run as HTTP server with OIDC (enterprise IdP)
     mcp-sysinfo --transport http \

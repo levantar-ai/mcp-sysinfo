@@ -85,12 +85,11 @@ curl -L -o mcp-sysinfo.exe "https://github.com/levantar-ai/mcp-sysinfo/releases/
 **Step 2: Start the HTTP server on the Windows VM**
 
 ```powershell
-# Basic (core queries only)
-.\mcp-sysinfo.exe --http :8080 --token my-secret-token
-
-# With all scopes including sensitive queries
-.\mcp-sysinfo.exe --http :8080 --token my-secret-token --scope sensitive
+# Listen on all interfaces so host can connect
+.\mcp-sysinfo.exe --transport http --listen 0.0.0.0:8080
 ```
+
+> **Note:** This runs without authentication (suitable for local VMs). For production, use OIDC or OAuth authentication - see [Security docs](../security/index.md).
 
 **Step 3: Open Windows Firewall (if needed)**
 
@@ -111,8 +110,7 @@ ipconfig | findstr /i "IPv4"
 
 ```bash
 # Replace 10.211.55.x with your VM's actual IP address
-claude mcp add --transport http sysinfo-windows http://10.211.55.x:8080 \
-  --header "Authorization: Bearer my-secret-token"
+claude mcp add --transport http sysinfo-windows http://10.211.55.x:8080
 ```
 
 **Step 6: Verify the connection**
@@ -215,12 +213,27 @@ Run queries directly from the command line (useful for testing):
 Start an HTTP server for remote access or integration with other tools:
 
 ```bash
-./mcp-sysinfo --http :8080 --token your-secret-token
+# Without authentication (development only)
+./mcp-sysinfo --transport http --listen :8080
+
+# With bearer token authentication (recommended)
+./mcp-sysinfo --transport http --listen :8080 --token your-secret-token
 ```
 
 Then query via HTTP:
 
 ```bash
+# Without auth
+curl -X POST http://localhost:8080/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {"name": "get_cpu_info"}
+  }'
+
+# With bearer token auth
 curl -X POST http://localhost:8080/ \
   -H "Authorization: Bearer your-secret-token" \
   -H "Content-Type: application/json" \
