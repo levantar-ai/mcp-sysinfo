@@ -21,6 +21,8 @@ var (
 	procProcess32Next            = kernel32.NewProc("Process32NextW")
 	procGetProcessTimes          = kernel32.NewProc("GetProcessTimes")
 	procGetProcessMemoryInfo     = psapi.NewProc("GetProcessMemoryInfo")
+	procGlobalMemoryStatusEx     = kernel32.NewProc("GlobalMemoryStatusEx")
+	procGetSystemInfo            = kernel32.NewProc("GetSystemInfo")
 )
 
 const (
@@ -53,6 +55,34 @@ type processMemoryCounters struct {
 	QuotaNonPagedPoolUsage     uintptr
 	PagefileUsage              uintptr
 	PeakPagefileUsage          uintptr
+}
+
+// MEMORYSTATUSEX structure for GlobalMemoryStatusEx
+type memoryStatusEx struct {
+	Length               uint32
+	MemoryLoad           uint32
+	TotalPhys            uint64
+	AvailPhys            uint64
+	TotalPageFile        uint64
+	AvailPageFile        uint64
+	TotalVirtual         uint64
+	AvailVirtual         uint64
+	AvailExtendedVirtual uint64
+}
+
+// SYSTEM_INFO structure for GetSystemInfo
+type systemInfo struct {
+	ProcessorArchitecture     uint16
+	Reserved                  uint16
+	PageSize                  uint32
+	MinimumApplicationAddress uintptr
+	MaximumApplicationAddress uintptr
+	ActiveProcessorMask       uintptr
+	NumberOfProcessors        uint32
+	ProcessorType             uint32
+	AllocationGranularity     uint32
+	ProcessorLevel            uint16
+	ProcessorRevision         uint16
 }
 
 // cpuSnapshot holds CPU time data for delta calculation
@@ -115,9 +145,10 @@ func getProcessCPUTimes(pid uint32) (cpuSnapshot, error) {
 
 // getTotalPhysicalMemory returns total system memory in bytes.
 func getTotalPhysicalMemory() uint64 {
-	var memStatus windows.MemoryStatusEx
+	var memStatus memoryStatusEx
 	memStatus.Length = uint32(unsafe.Sizeof(memStatus))
-	if err := windows.GlobalMemoryStatusEx(&memStatus); err != nil {
+	ret, _, _ := procGlobalMemoryStatusEx.Call(uintptr(unsafe.Pointer(&memStatus)))
+	if ret == 0 {
 		return 1 // Avoid divide by zero
 	}
 	return memStatus.TotalPhys
@@ -190,8 +221,8 @@ func (c *Collector) collectSampled(sampleDurationMs int) (*types.ProcessList, er
 	}
 
 	// Get number of CPU cores for percentage calculation
-	var sysInfo windows.SystemInfo
-	windows.GetSystemInfo(&sysInfo)
+	var sysInfo systemInfo
+	procGetSystemInfo.Call(uintptr(unsafe.Pointer(&sysInfo)))
 	numCPU := int(sysInfo.NumberOfProcessors)
 	if numCPU < 1 {
 		numCPU = 1
