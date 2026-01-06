@@ -57,9 +57,9 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ---
 
-## What Works Today
+## Query Reference
 
-**Status: Phase 2.0 Complete (129 queries implemented)**
+**Implemented: 129 queries | Planned: 113 queries | Total: 242 queries**
 
 ### Phase 1.0: Core Metrics (7/7)
 
@@ -229,6 +229,150 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
 | `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
 | `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
+
+### Phase 1.7: Deep IIS Configuration 📋 (0/35)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_iis_request_filtering` | Request filtering rules | - | - | 📋 |
+| `get_iis_ip_security` | IP allow/deny rules | - | - | 📋 |
+| `get_iis_url_authorization` | URL authorization rules | - | - | 📋 |
+| `get_iis_isapi_filters` | ISAPI filters | - | - | 📋 |
+| `get_iis_isapi_cgi_restrictions` | ISAPI/CGI restrictions | - | - | 📋 |
+| `get_iis_url_rewrite` | URL rewrite rules | - | - | 📋 |
+| `get_iis_redirect_rules` | HTTP redirect rules | - | - | 📋 |
+| `get_iis_failed_request_rules` | Failed request tracing rules | - | - | 📋 |
+| `get_iis_compression` | Static/dynamic compression | - | - | 📋 |
+| `get_iis_output_caching` | Output caching rules | - | - | 📋 |
+| `get_iis_static_content` | Static content config | - | - | 📋 |
+| `get_iis_default_document` | Default document list | - | - | 📋 |
+| `get_iis_directory_browse` | Directory browsing | - | - | 📋 |
+| `get_iis_custom_headers` | Custom HTTP headers | - | - | 📋 |
+| `get_iis_mime_types` | MIME type mappings | - | - | 📋 |
+| `get_iis_error_pages` | Custom error pages | - | - | 📋 |
+| `get_iis_cors_config` | CORS configuration | - | - | 📋 |
+| `get_iis_apppool_recycling` | App pool recycling settings | - | - | 📋 |
+| `get_iis_apppool_process_model` | App pool process model | - | - | 📋 |
+| `get_iis_apppool_cpu` | CPU throttling settings | - | - | 📋 |
+| `get_iis_apppool_failure` | Rapid-fail protection | - | - | 📋 |
+| `get_iis_aspnet_compilation` | ASP.NET compilation | - | - | 📋 |
+| `get_iis_aspnet_session` | ASP.NET session state | - | - | 📋 |
+| `get_iis_aspnet_machinekey` | Machine key config | - | - | 📋 |
+| `get_iis_aspnet_custom_errors` | ASP.NET custom errors | - | - | 📋 |
+| `get_iis_aspnet_globalization` | Globalization settings | - | - | 📋 |
+| `get_iis_logging` | W3C/IIS logging config | - | - | 📋 |
+| `get_iis_log_fields` | Custom log fields | - | - | 📋 |
+| `get_iis_failed_requests` | Failed request traces | - | - | 📋 |
+| `get_iis_worker_processes` | Running w3wp processes | - | - | 📋 |
+| `get_iis_site_state` | Site state and counters | - | - | 📋 |
+| `get_iis_websocket` | WebSocket settings | - | - | 📋 |
+| `get_iis_http2` | HTTP/2 settings | - | - | 📋 |
+| `get_iis_request_limits` | Request size limits | - | - | 📋 |
+| `get_iis_fastcgi` | FastCGI configuration | - | - | 📋 |
+
+### Phase 1.8: Complete IIS Coverage 📋 (0/47)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_iis_application_init` | Application initialization | - | - | 📋 |
+| `get_iis_config_diff` | Config vs server defaults | - | - | 📋 |
+| `get_iis_locked_sections` | Locked config sections | - | - | 📋 |
+| `get_iis_delegation_rules` | Feature delegation | - | - | 📋 |
+| `get_iis_ftp_sites` | FTP sites | - | - | 📋 |
+| `get_iis_ftp_ssl` | FTP over SSL | - | - | 📋 |
+| `get_iis_ftp_user_isolation` | FTP user isolation | - | - | 📋 |
+| `get_iis_ftp_authorization` | FTP authorization | - | - | 📋 |
+| `get_iis_ftp_ip_security` | FTP IP security | - | - | 📋 |
+| `get_iis_ftp_logging` | FTP logging | - | - | 📋 |
+| `get_iis_ftp_firewall` | FTP firewall settings | - | - | 📋 |
+| `get_iis_asp_settings` | Classic ASP settings | - | - | 📋 |
+| `get_iis_asp_session` | ASP session state | - | - | 📋 |
+| `get_iis_asp_limits` | ASP limits | - | - | 📋 |
+| `get_iis_asp_com_plus` | COM+ settings | - | - | 📋 |
+| `get_iis_asp_cache` | ASP script cache | - | - | 📋 |
+| `get_iis_server_farms` | Web farm definitions | - | - | 📋 |
+| `get_iis_arr_cache` | ARR disk cache | - | - | 📋 |
+| `get_iis_arr_health` | ARR health probes | - | - | 📋 |
+| `get_iis_arr_affinity` | Session affinity | - | - | 📋 |
+| `get_iis_arr_routing` | Reverse proxy rules | - | - | 📋 |
+| `get_iis_arr_settings` | ARR proxy settings | - | - | 📋 |
+| `get_iis_client_cert_mapping` | Client cert mapping | - | - | 📋 |
+| `get_iis_aspnet_impersonation` | ASP.NET impersonation | - | - | 📋 |
+| `get_iis_forms_auth` | Forms authentication | - | - | 📋 |
+| `get_iis_hidden_segments` | Hidden URL segments | - | - | 📋 |
+| `get_iis_webdav` | WebDAV authoring | - | - | 📋 |
+| `get_iis_double_escaping` | Allow double escaping | - | - | 📋 |
+| `get_iis_high_bit_chars` | Allow high bit chars | - | - | 📋 |
+| `get_iis_query_strings` | Query string filtering | - | - | 📋 |
+| `get_iis_file_extensions` | File extension rules | - | - | 📋 |
+| `get_iis_kernel_cache` | HTTP.sys kernel cache | - | - | 📋 |
+| *+ 15 more queries* | | - | - | 📋 |
+
+### Phase 3: Storage Deep Dive 📋 (0/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_smart_health` | SMART disk health data | 📋 | 📋 | 📋 |
+| `get_io_latency` | Disk I/O latency tracking | 📋 | 📋 | 📋 |
+| `get_fs_events` | Filesystem event monitoring | 📋 | 📋 | 📋 |
+| `get_mount_changes` | Mount point change detection | 📋 | 📋 | 📋 |
+| `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | 📋 | 📋 | 📋 |
+
+### Phase 4: Network Intelligence 📋 (0/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_connection_tracking` | Per-connection stats with process mapping | 📋 | 📋 | 📋 |
+| `get_dns_stats` | DNS resolution statistics | 📋 | 📋 | 📋 |
+| `get_firewall_deep` | Deep firewall rule inspection | 📋 | 📋 | 📋 |
+| `get_wifi_metrics` | WiFi signal strength and quality | 📋 | 📋 | 📋 |
+| `get_network_latency` | Network latency probes (ICMP/TCP/HTTP) | 📋 | 📋 | 📋 |
+
+### Phase 5: Analytics & Trends 📋 (0/4)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_historical_metrics` | Historical CPU/memory/disk trends | 📋 | 📋 | 📋 |
+| `get_anomaly_detection` | Detect anomalous patterns | 📋 | 📋 | 📋 |
+| `get_capacity_forecast` | Capacity planning forecasts | 📋 | 📋 | 📋 |
+| `get_trend_analysis` | Performance trend analysis | 📋 | 📋 | 📋 |
+
+### Phase 6: Automation & Alerting 📋 (0/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `set_alert_threshold` | Configure alert thresholds | 📋 | 📋 | 📋 |
+| `get_alert_status` | Current alert status | 📋 | 📋 | 📋 |
+| `get_remediation_suggestions` | AI-generated fix suggestions | 📋 | 📋 | 📋 |
+| `execute_safe_remediation` | Execute pre-approved fixes | 📋 | 📋 | 📋 |
+| `get_runbook_recommendations` | Runbook recommendations | 📋 | 📋 | 📋 |
+
+### Phase 7: Security & Compliance 📋 (0/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_security_scan` | Deep security vulnerability scan | 📋 | 📋 | 📋 |
+| `get_compliance_check` | CIS/STIG compliance checking | 📋 | 📋 | 📋 |
+| `get_forensic_snapshot` | Forensic data collection | 📋 | 📋 | 📋 |
+| `get_audit_trail` | Security audit trail | 📋 | 📋 | 📋 |
+| `get_hardening_recommendations` | Security hardening tips | 📋 | 📋 | 📋 |
+
+### Phase 8: Integration & Plugins 📋 (0/4)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_prometheus_export` | Export metrics in Prometheus format | 📋 | 📋 | 📋 |
+| `get_cloud_inventory` | Cloud resource inventory | 📋 | 📋 | 📋 |
+| `get_multi_host_summary` | Multi-host aggregated view | 📋 | 📋 | 📋 |
+| `get_plugin_status` | Custom plugin status | 📋 | 📋 | 📋 |
+
+### Phase 9: LLM Features 📋 (0/3)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `query_natural_language` | Natural language system queries | 📋 | 📋 | 📋 |
+| `get_auto_diagnosis` | AI-powered auto-diagnosis | 📋 | 📋 | 📋 |
+| `get_explanation` | Explain system state in plain English | 📋 | 📋 | 📋 |
 
 ---
 
