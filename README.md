@@ -59,7 +59,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## Query Reference
 
-**Implemented: 129 queries | Planned: 113 queries | Total: 242 queries**
+**Implemented: 134 queries | Planned: 138 queries | Total: 272 queries**
 
 ### Phase 1.0: Core Metrics (7/7)
 
@@ -240,10 +240,63 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_mount_changes` | Mount point change detection | ✅ | ✅ | ✅ |
 | `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | ✅ | ✅ | ✅ |
 
-### Phase 1.7: Deep IIS Configuration 📋 (0/35)
+### Phase 1.9: Platform Security Controls 🔄 (0/28)
+
+Extended platform-specific security controls for endpoint security posture assessment.
+
+#### Windows Security Controls (12 queries)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
+| `get_windows_defender_status` | Defender RTP, signatures, tamper protection | - | - | 🔄 |
+| `get_windows_firewall_profiles` | Firewall profile states (Domain/Private/Public) | - | - | 🔄 |
+| `get_bitlocker_status` | BitLocker encryption status per volume | - | - | 🔄 |
+| `get_windows_smb_shares` | SMB shares and permissions summary | - | - | 🔄 |
+| `get_windows_rdp_config` | RDP enabled, NLA status, port config | - | - | 🔄 |
+| `get_windows_winrm_config` | WinRM listener and auth config | - | - | 🔄 |
+| `get_windows_applocker_policy` | AppLocker enforcement mode | - | - | 🔄 |
+| `get_windows_wdac_status` | WDAC/Code Integrity policy state | - | - | 🔄 |
+| `get_windows_local_security_policy` | Password, lockout, audit policy summary | - | - | 🔄 |
+| `get_windows_gpo_applied` | Applied GPOs for computer scope | - | - | 🔄 |
+| `get_windows_credential_guard` | Credential Guard/LSA protection status | - | - | 🔄 |
+| `get_windows_update_health` | Update health, pending updates, WSUS/WUfB | - | - | 🔄 |
+
+#### macOS Security Controls (8 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_macos_filevault_status` | FileVault disk encryption status | - | 🔄 | - |
+| `get_macos_gatekeeper_status` | Gatekeeper and notarization status | - | 🔄 | - |
+| `get_macos_sip_status` | System Integrity Protection status | - | 🔄 | - |
+| `get_macos_xprotect_status` | XProtect/MRT version and status | - | 🔄 | - |
+| `get_macos_pf_rules` | Packet Filter status and rules summary | - | 🔄 | - |
+| `get_macos_mdm_profiles` | Installed MDM configuration profiles | - | 🔄 | - |
+| `get_macos_tcc_permissions` | TCC permissions summary (sensitive) | - | 🔄 | - |
+| `get_macos_security_log_events` | Unified log security events | - | 🔄 | - |
+
+#### Linux Security Controls (7 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_linux_auditd_status` | auditd status and rule summary | 🔄 | - | - |
+| `get_linux_kernel_lockdown` | Kernel lockdown mode | 🔄 | - | - |
+| `get_linux_sysctl_security` | Key sysctl hardening values | 🔄 | - | - |
+| `get_linux_firewall_backend` | Active firewall (nftables/iptables/ufw) | 🔄 | - | - |
+| `get_linux_mac_detailed` | Detailed SELinux/AppArmor status | 🔄 | - | - |
+| `get_linux_package_repos` | Package repository summary | 🔄 | - | - |
+| `get_linux_auto_updates` | Unattended upgrades status | 🔄 | - | - |
+
+#### Cross-Platform (1 query)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_vendor_services` | OS vendor services inventory | 🔄 | 🔄 | 🔄 |
+
+### Phase 1.7: Deep IIS Configuration 📋 (0/36)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_iis_http_sys_listeners` | HTTP.sys listener endpoints and SSL bindings | - | - | 📋 |
 | `get_iis_request_filtering` | Request filtering rules | - | - | 📋 |
 | `get_iis_ip_security` | IP allow/deny rules | - | - | 📋 |
 | `get_iis_url_authorization` | URL authorization rules | - | - | 📋 |
@@ -280,10 +333,11 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_iis_request_limits` | Request size limits | - | - | 📋 |
 | `get_iis_fastcgi` | FastCGI configuration | - | - | 📋 |
 
-### Phase 1.8: Complete IIS Coverage 📋 (0/47)
+### Phase 1.8: Complete IIS Coverage 📋 (0/48)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
+| `get_iis_config_effective_diff` | Effective config diff (defaults vs overrides) | - | - | 📋 |
 | `get_iis_application_init` | Application initialization | - | - | 📋 |
 | `get_iis_config_diff` | Config vs server defaults | - | - | 📋 |
 | `get_iis_locked_sections` | Locked config sections | - | - | 📋 |
@@ -726,8 +780,9 @@ curl http://localhost:8080/metrics
 | **1.4** | App Discovery & Config | ✅ Complete | 2/2 |
 | **1.5** | Triage & Summary | ✅ Complete | 25/25 |
 | **1.6** | Windows Enterprise | ✅ Complete | 15/15 |
-| **1.7** | Deep IIS Configuration | 📋 Planned | 0/35 |
-| **1.8** | Complete IIS Coverage | 📋 Planned | 0/47 |
+| **1.7** | Deep IIS Configuration | 📋 Planned | 0/36 |
+| **1.8** | Complete IIS Coverage | 📋 Planned | 0/48 |
+| **1.9** | Platform Security Controls | 🔄 In Progress | 0/28 |
 | **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
 | **3** | Storage Deep Dive | ✅ Complete | 5/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
@@ -737,7 +792,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 134/242 queries (55%)**
+**Implemented: 134/272 queries (49%)**
 
 ### Cross-Platform Architecture
 

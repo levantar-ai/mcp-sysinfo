@@ -1206,6 +1206,96 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 
 ---
 
+## Phase 3.5: Platform Security Controls (28 Queries) 🔄 IN PROGRESS
+
+Extended platform-specific security controls for endpoint security posture assessment.
+
+### Windows Security Controls (12 queries)
+
+| Query | Description | Status |
+|-------|-------------|--------|
+| `get_windows_defender_status` | Defender RTP, signatures, tamper protection | 🔄 |
+| `get_windows_firewall_profiles` | Firewall profile states | 🔄 |
+| `get_bitlocker_status` | BitLocker encryption status per volume | 🔄 |
+| `get_windows_smb_shares` | SMB shares and permissions summary | 🔄 |
+| `get_windows_rdp_config` | RDP enabled, NLA status, port config | 🔄 |
+| `get_windows_winrm_config` | WinRM listener and auth config | 🔄 |
+| `get_windows_applocker_policy` | AppLocker enforcement mode | 🔄 |
+| `get_windows_wdac_status` | WDAC/Code Integrity policy state | 🔄 |
+| `get_windows_local_security_policy` | Password, lockout, audit policy | 🔄 |
+| `get_windows_gpo_applied` | Applied GPOs for computer scope | 🔄 |
+| `get_windows_credential_guard` | Credential Guard/LSA protection | 🔄 |
+| `get_windows_update_health` | Update health, pending, WSUS/WUfB | 🔄 |
+
+#### Implementation
+- [ ] 🪟 `Get-MpComputerStatus` for Defender
+- [ ] 🪟 `Get-NetFirewallProfile` for firewall
+- [ ] 🪟 `manage-bde -status` or WMI for BitLocker
+- [ ] 🪟 `Get-SmbShare`, `Get-SmbShareAccess` for SMB
+- [ ] 🪟 Registry `fDenyTSConnections` for RDP
+- [ ] 🪟 `winrm get winrm/config` for WinRM
+- [ ] 🪟 `Get-AppLockerPolicy -Effective` for AppLocker
+- [ ] 🪟 CI policy registry/files for WDAC
+- [ ] 🪟 `secedit export`, `auditpol` for security policy
+- [ ] 🪟 `gpresult /r` or WMI RSOP for GPO
+- [ ] 🪟 WMI `Win32_DeviceGuard` for Credential Guard
+- [ ] 🪟 COM/WUA APIs for update health
+
+### macOS Security Controls (8 queries)
+
+| Query | Description | Status |
+|-------|-------------|--------|
+| `get_macos_filevault_status` | FileVault disk encryption status | 🔄 |
+| `get_macos_gatekeeper_status` | Gatekeeper and notarization status | 🔄 |
+| `get_macos_sip_status` | System Integrity Protection status | 🔄 |
+| `get_macos_xprotect_status` | XProtect/MRT version and status | 🔄 |
+| `get_macos_pf_rules` | Packet Filter status and rules summary | 🔄 |
+| `get_macos_mdm_profiles` | Installed MDM configuration profiles | 🔄 |
+| `get_macos_tcc_permissions` | TCC permissions summary (sensitive) | 🔄 |
+| `get_macos_security_log_events` | Unified log security events | 🔄 |
+
+#### Implementation
+- [ ] 🍎 `fdesetup status` for FileVault
+- [ ] 🍎 `spctl --status` for Gatekeeper
+- [ ] 🍎 `csrutil status` for SIP
+- [ ] 🍎 Plist reads for XProtect version
+- [ ] 🍎 `pfctl -s info`, `pfctl -sr` for pf rules
+- [ ] 🍎 `profiles status`, `profiles list` for MDM
+- [ ] 🍎 TCC database queries (redacted) for permissions
+- [ ] 🍎 `log show --predicate` for security events
+
+### Linux Security Controls (7 queries)
+
+| Query | Description | Status |
+|-------|-------------|--------|
+| `get_linux_auditd_status` | auditd status and rule summary | 🔄 |
+| `get_linux_kernel_lockdown` | Kernel lockdown mode | 🔄 |
+| `get_linux_sysctl_security` | Key sysctl hardening values | 🔄 |
+| `get_linux_firewall_backend` | Active firewall (nftables/iptables/ufw) | 🔄 |
+| `get_linux_mac_detailed` | Detailed SELinux/AppArmor status | 🔄 |
+| `get_linux_package_repos` | Package repository summary | 🔄 |
+| `get_linux_auto_updates` | Unattended upgrades status | 🔄 |
+
+#### Implementation
+- [ ] 🐧 `systemctl status auditd`, `auditctl -s/-l` for auditd
+- [ ] 🐧 `/sys/kernel/security/lockdown` for lockdown mode
+- [ ] 🐧 `sysctl -a` filtered for security sysctls
+- [ ] 🐧 `nft list ruleset`, `iptables -S`, `firewall-cmd`, `ufw status`
+- [ ] 🐧 `sestatus`, `getenforce`, `aa-status` for MAC
+- [ ] 🐧 APT sources, YUM/DNF repos for package repos
+- [ ] 🐧 `systemctl status unattended-upgrades`, dnf-automatic
+
+### Cross-Platform (1 query)
+
+| Query | Description | Status |
+|-------|-------------|--------|
+| `get_vendor_services` | OS vendor services inventory | 🔄 |
+
+#### Implementation
+- [ ] 🐧🍎🪟 Service enumeration + vendor component allowlist
+
+---
+
 ## Phase 4: Network Intelligence
 
 ### 4.1 Per-Connection Tracking
