@@ -31,16 +31,16 @@ go build -o mcp-sysinfo ./cmd/mcp-sysinfo
 
 | Phase | Focus | Queries |
 |-------|-------|---------|
-| **1.0** | Core Metrics | 8/8 |
+| **1.0** | Core Metrics | 7/7 |
 | **1.1** | Log Access | 6/6 |
 | **1.2** | System Hooks + Security | 37/37 |
-| **1.3** | SBOM & Inventory | 33/33 |
+| **1.3** | SBOM & Inventory | 31/31 |
 | **1.4** | Application Discovery | 2/2 |
 | **1.5** | Triage & Summary | 25/25 |
 | **1.6** | Windows Enterprise | 15/15 |
-| **2.0** | Enhanced Diagnostics | 5/5 |
+| **2.0** | Enhanced Diagnostics | 6/6 |
 
-**131 queries implemented** across Linux, macOS, and Windows.
+**129 queries implemented** across Linux, macOS, and Windows.
 
 ## Features
 

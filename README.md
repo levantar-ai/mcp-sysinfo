@@ -59,7 +59,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 2.0 Complete (131 queries implemented)**
+**Status: Phase 2.0 Complete (129 queries implemented)**
 
 ### Phase 1.0: Core Metrics (7/7)
 
@@ -84,7 +84,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_app_logs` | Application-specific logs | ✅ | ✅ | ✅ |
 | `get_event_log` | Windows Event Log | - | - | ✅ |
 
-### Phase 1.2: System Hooks (31/31)
+### Phase 1.2: System Hooks + Security (37/37)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -119,8 +119,14 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_core_dumps` | Core dump information | ✅ | ✅ | ✅ |
 | `get_power_state` | Power/battery state | ✅ | ✅ | ✅ |
 | `get_numa_topology` | NUMA topology | ✅ | - | - |
+| `get_env_vars` | Environment variables (redacted) | ✅ | ✅ | ✅ |
+| `get_user_accounts` | User accounts and groups | ✅ | ✅ | ✅ |
+| `get_sudo_config` | Sudo configuration | ✅ | ✅ | - |
+| `get_ssh_config` | SSH daemon configuration | ✅ | ✅ | ✅ |
+| `get_mac_status` | SELinux/AppArmor status | ✅ | - | - |
+| `get_certificates` | System certificates | ✅ | ✅ | ✅ |
 
-### Phase 1.3: Software Inventory ✅ (33/33)
+### Phase 1.3: Software Inventory ✅ (31/31)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -270,7 +276,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - Handler mappings and module configuration
 - Authentication settings (Anonymous, Basic, Windows, Digest)
 
-### Phase 2.0: Enhanced Diagnostics ✅ (5/5)
+### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -278,6 +284,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
 | `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
 | `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
+| `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
 | `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
 
 **GPU support:**
@@ -420,7 +427,7 @@ High-level queries for incident triage and security posture assessment.
 - Services: failed units, pending timers, enabled services, pending updates
 - Meta queries: incident triage snapshot, security posture snapshot, full system snapshot
 
-### Phase 2.0: Enhanced Diagnostics ✅ Complete (5/5 queries)
+### Phase 2.0: Enhanced Diagnostics ✅ Complete (6/6 queries)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -428,6 +435,7 @@ High-level queries for incident triage and security posture assessment.
 | `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
 | `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
 | `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
+| `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
 | `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
 
 **System Report Features:**
@@ -448,10 +456,13 @@ High-level queries for incident triage and security posture assessment.
 |-------|-------|
 | 1.7 | Deep IIS Configuration (35 queries) |
 | 1.8 | Complete IIS Coverage (47 queries) |
-| 3 | Analytics, trends, anomaly detection |
-| 4 | Compliance scoring, forensics |
-| 5 | Prometheus export, plugins |
-| 6 | Natural language queries |
+| 3 | Storage Deep Dive (5 queries) |
+| 4 | Network Intelligence (5 queries) |
+| 5 | Analytics & Trends (4 queries) |
+| 6 | Automation & Alerting (5 queries) |
+| 7 | Security & Compliance (5 queries) |
+| 8 | Integration & Plugins (4 queries) |
+| 9 | LLM Features (3 queries) |
 
 ---
 
@@ -709,16 +720,16 @@ curl http://localhost:8080/metrics
 
 | Phase | Focus | Progress | Queries |
 |-------|-------|----------|---------|
-| **1.0** | Core Metrics | ✅ Complete | 8/8 |
+| **1.0** | Core Metrics | ✅ Complete | 7/7 |
 | **1.1** | Log Access | ✅ Complete | 6/6 |
 | **1.2** | System Hooks + Security | ✅ Complete | 37/37 |
-| **1.3** | SBOM & Inventory | ✅ Complete | 33/33 |
+| **1.3** | SBOM & Inventory | ✅ Complete | 31/31 |
 | **1.4** | App Discovery & Config | ✅ Complete | 2/2 |
 | **1.5** | Triage & Summary | ✅ Complete | 25/25 |
 | **1.6** | Windows Enterprise | ✅ Complete | 15/15 |
 | **1.7** | Deep IIS Configuration | 📋 Planned | 0/35 |
 | **1.8** | Complete IIS Coverage | 📋 Planned | 0/47 |
-| **2.0** | Enhanced Diagnostics | ✅ Complete | 5/5 |
+| **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
 | 5 | Analytics & Trends | 📋 Planned | 0/4 |
@@ -727,25 +738,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 131/244 queries (54%)**
-
-**Phase 2.0 Enhanced Diagnostics (Complete):**
-- GPU information (NVIDIA/AMD/Intel detection, utilization, memory, temperature)
-- Container stats (real-time CPU/memory/network/I/O for Docker/Podman)
-- Container logs (stdout/stderr streaming with timestamps)
-- System reports with parallel data collection
-- Process CPU sampling with time-delta measurement
-
-**Phase 1.6 Windows Enterprise Features (Complete):**
-- Registry queries (read keys, enumerate, security descriptors)
-- DCOM/COM security (applications, permissions, identities)
-- IIS web server (sites, app pools, bindings, SSL, handlers)
-
-**Phase 1.7-1.8 IIS Deep Dive (Planned - 82 queries):**
-- Request filtering, URL rewrite, compression, caching
-- App pool recycling, process model, CPU throttling
-- ASP.NET configuration, FTP server, HTTP.sys integration
-- ARR load balancing, Classic ASP, runtime monitoring
+**Implemented: 129/242 queries (53%)**
 
 ### Cross-Platform Architecture
 

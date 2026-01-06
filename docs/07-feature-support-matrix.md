@@ -13,23 +13,25 @@ A summary of feature support across Linux, macOS, and Windows.
 ║                                                                              ║
 ║  Phase              Description                              Queries  Status ║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  Phase 1.0 (MVP)    Core system metrics                           8   ✅ Done║
+║  Phase 1.0 (MVP)    Core system metrics                           7   ✅ Done║
 ║  Phase 1.1 (Logs)   System & app log access for diagnostics       6   ✅ Done║
 ║  Phase 1.2 (Hooks)  Deep system introspection + security         37   ✅ Done║
-║  Phase 1.3 (SBOM)   Software inventory & vulnerability           33   ✅ Done║
+║  Phase 1.3 (SBOM)   Software inventory & vulnerability           31   ✅ Done║
 ║  Phase 1.4 (Apps)   Application discovery & config                2   ✅ Done║
 ║  Phase 1.5 (Triage) Triage & summary queries                     25   ✅ Done║
 ║  Phase 1.6 (Win)    Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
 ║  Phase 1.7          Deep IIS Configuration                       35   📋 Plan║
 ║  Phase 1.8          Complete IIS Coverage                        47   📋 Plan║
-║  Phase 2.0          Enhanced diagnostics (GPU, containers)        5   ✅ Done║
-║  Phase 3            Analytics (Historical, Trends, Anomaly)       4   📋 Plan║
-║  Phase 4            Automation (Alerts, Remediation)              4   📋 Plan║
-║  Phase 5            Security (Scan, Compliance, Forensics)        4   📋 Plan║
-║  Phase 6            Integration (Cloud, Plugins, Multi-host)      4   📋 Plan║
-║  Phase 7            LLM Features (NL Queries, Auto-diagnostics)   3   📋 Plan║
+║  Phase 2.0          Enhanced diagnostics (GPU, containers)        6   ✅ Done║
+║  Phase 3            Storage Deep Dive                             5   📋 Plan║
+║  Phase 4            Network Intelligence                          5   📋 Plan║
+║  Phase 5            Analytics & Trends                            4   📋 Plan║
+║  Phase 6            Automation & Alerting                         5   📋 Plan║
+║  Phase 7            Security & Compliance                         5   📋 Plan║
+║  Phase 8            Integration & Plugins                         4   📋 Plan║
+║  Phase 9            LLM Features                                  3   📋 Plan║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  IMPLEMENTED: 131 queries    PLANNED: 97 queries     TOTAL: 228             ║
+║  IMPLEMENTED: 129 queries    PLANNED: 113 queries    TOTAL: 242             ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -79,7 +81,7 @@ Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
 | "Service down" | "nginx down - 'Too many open files' in error.log, restart loop 5x" |
 | "Disk full" | "/var/log/app.log is 45GB, growing 100MB/min due to debug enabled" |
 
-**Status: 0/6 queries implemented**
+**Status: 6/6 queries implemented** ✅
 
 ---
 
@@ -219,7 +221,7 @@ Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.m
 | `check_osv_vulns` | OSV database (network) | ✅ | ✅ | ✅ | 🟠 |
 | `check_nvd_vulns` | NVD database (network) | ✅ | ✅ | ✅ | 🟠 |
 
-**Status: 33/33 queries implemented** ✅
+**Status: 31/31 queries implemented** ✅
 
 ---
 
@@ -233,7 +235,7 @@ Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.m
 | `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ | ✅ Done |
 | `generate_iis_report` | IIS diagnostic report | N/A | N/A | ✅ | ✅ Done |
 
-**Status: 5/5 queries implemented** ✅
+**Status: 6/6 queries implemented** ✅
 
 ---
 
