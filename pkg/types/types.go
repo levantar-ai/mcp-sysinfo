@@ -2069,3 +2069,190 @@ type ContainerLog struct {
 	Stream    string    `json:"stream"` // stdout, stderr
 	Message   string    `json:"message"`
 }
+
+// =============================================================================
+// Phase 3: Storage Deep Dive Types
+// =============================================================================
+
+// SMARTHealthResult contains SMART disk health information.
+type SMARTHealthResult struct {
+	Disks     []SMARTDisk `json:"disks"`
+	Count     int         `json:"count"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+// SMARTDisk represents SMART health data for a single disk.
+type SMARTDisk struct {
+	Device       string            `json:"device"`
+	Model        string            `json:"model,omitempty"`
+	Serial       string            `json:"serial,omitempty"`
+	Firmware     string            `json:"firmware,omitempty"`
+	Type         string            `json:"type"` // HDD, SSD, NVMe
+	Healthy      bool              `json:"healthy"`
+	Temperature  int               `json:"temperature_celsius,omitempty"`
+	PowerOnHours uint64            `json:"power_on_hours,omitempty"`
+	PowerCycles  uint64            `json:"power_cycles,omitempty"`
+	Attributes   []SMARTAttribute  `json:"attributes,omitempty"`
+	NVMeHealth   *NVMeHealthInfo   `json:"nvme_health,omitempty"`
+	Warnings     []string          `json:"warnings,omitempty"`
+	Error        string            `json:"error,omitempty"`
+}
+
+// SMARTAttribute represents a single SMART attribute.
+type SMARTAttribute struct {
+	ID         int    `json:"id"`
+	Name       string `json:"name"`
+	Value      int    `json:"value"`
+	Worst      int    `json:"worst"`
+	Threshold  int    `json:"threshold"`
+	RawValue   uint64 `json:"raw_value"`
+	Status     string `json:"status"` // ok, warning, critical
+}
+
+// NVMeHealthInfo contains NVMe-specific health information.
+type NVMeHealthInfo struct {
+	PercentageUsed    int    `json:"percentage_used"`
+	AvailableSpare    int    `json:"available_spare"`
+	SpareThreshold    int    `json:"spare_threshold"`
+	DataUnitsRead     uint64 `json:"data_units_read"`
+	DataUnitsWritten  uint64 `json:"data_units_written"`
+	MediaErrors       uint64 `json:"media_errors"`
+	CriticalWarning   int    `json:"critical_warning"`
+}
+
+// IOLatencyResult contains disk I/O latency information.
+type IOLatencyResult struct {
+	Devices   []IOLatencyDevice `json:"devices"`
+	Count     int               `json:"count"`
+	Timestamp time.Time         `json:"timestamp"`
+}
+
+// IOLatencyDevice represents I/O latency stats for a device.
+type IOLatencyDevice struct {
+	Device         string  `json:"device"`
+	ReadLatencyMs  float64 `json:"read_latency_ms"`
+	WriteLatencyMs float64 `json:"write_latency_ms"`
+	ReadIOPS       float64 `json:"read_iops"`
+	WriteIOPS      float64 `json:"write_iops"`
+	ReadThroughput uint64  `json:"read_throughput_bytes"`
+	WriteThroughput uint64 `json:"write_throughput_bytes"`
+	QueueDepth     uint64  `json:"queue_depth"`
+	Utilization    float64 `json:"utilization_percent"`
+}
+
+// VolumeStatusResult contains volume manager status information.
+type VolumeStatusResult struct {
+	ZFSPools    []ZFSPool    `json:"zfs_pools,omitempty"`
+	LVMGroups   []LVMGroup   `json:"lvm_groups,omitempty"`
+	RAIDArrays  []RAIDArray  `json:"raid_arrays,omitempty"`
+	StoragePools []StoragePool `json:"storage_pools,omitempty"` // Windows Storage Spaces
+	Count       int          `json:"count"`
+	Timestamp   time.Time    `json:"timestamp"`
+}
+
+// ZFSPool represents a ZFS pool.
+type ZFSPool struct {
+	Name       string     `json:"name"`
+	State      string     `json:"state"` // ONLINE, DEGRADED, FAULTED, etc.
+	Size       uint64     `json:"size_bytes"`
+	Allocated  uint64     `json:"allocated_bytes"`
+	Free       uint64     `json:"free_bytes"`
+	Fragmentation int     `json:"fragmentation_percent"`
+	Health     string     `json:"health"`
+	VDevs      []ZFSVDev  `json:"vdevs,omitempty"`
+	Errors     string     `json:"errors,omitempty"`
+}
+
+// ZFSVDev represents a ZFS virtual device.
+type ZFSVDev struct {
+	Name   string `json:"name"`
+	Type   string `json:"type"` // disk, mirror, raidz, etc.
+	State  string `json:"state"`
+	Read   uint64 `json:"read_errors"`
+	Write  uint64 `json:"write_errors"`
+	Cksum  uint64 `json:"checksum_errors"`
+}
+
+// LVMGroup represents an LVM volume group.
+type LVMGroup struct {
+	Name        string      `json:"name"`
+	Size        uint64      `json:"size_bytes"`
+	Free        uint64      `json:"free_bytes"`
+	PVCount     int         `json:"pv_count"`
+	LVCount     int         `json:"lv_count"`
+	Volumes     []LVMVolume `json:"volumes,omitempty"`
+}
+
+// LVMVolume represents an LVM logical volume.
+type LVMVolume struct {
+	Name   string `json:"name"`
+	Size   uint64 `json:"size_bytes"`
+	Active bool   `json:"active"`
+	Type   string `json:"type"` // linear, striped, mirror, raid
+}
+
+// RAIDArray represents a software RAID array.
+type RAIDArray struct {
+	Device      string       `json:"device"`
+	Level       string       `json:"level"` // raid0, raid1, raid5, etc.
+	State       string       `json:"state"` // clean, degraded, rebuilding
+	Size        uint64       `json:"size_bytes"`
+	Disks       int          `json:"disk_count"`
+	ActiveDisks int          `json:"active_disks"`
+	SpareDisks  int          `json:"spare_disks"`
+	SyncProgress string      `json:"sync_progress,omitempty"`
+	Members     []RAIDMember `json:"members,omitempty"`
+}
+
+// RAIDMember represents a member disk in a RAID array.
+type RAIDMember struct {
+	Device string `json:"device"`
+	Role   string `json:"role"` // active, spare, faulty
+	State  string `json:"state"`
+}
+
+// StoragePool represents a Windows Storage Space pool.
+type StoragePool struct {
+	Name            string `json:"name"`
+	FriendlyName    string `json:"friendly_name"`
+	HealthStatus    string `json:"health_status"`
+	OperationalStatus string `json:"operational_status"`
+	Size            uint64 `json:"size_bytes"`
+	AllocatedSize   uint64 `json:"allocated_bytes"`
+	ResiliencyType  string `json:"resiliency_type"`
+}
+
+// MountChangesResult contains mount point change information.
+type MountChangesResult struct {
+	CurrentMounts []MountInfo `json:"current_mounts"`
+	RecentChanges []MountChange `json:"recent_changes,omitempty"`
+	Count         int         `json:"count"`
+	Timestamp     time.Time   `json:"timestamp"`
+}
+
+// MountChange represents a mount/unmount event.
+type MountChange struct {
+	Device     string    `json:"device"`
+	Mountpoint string    `json:"mountpoint"`
+	Fstype     string    `json:"fstype"`
+	Action     string    `json:"action"` // mounted, unmounted
+	Timestamp  time.Time `json:"timestamp"`
+}
+
+// FSEventsResult contains filesystem event information.
+type FSEventsResult struct {
+	Supported   bool        `json:"supported"`
+	WatchPaths  []string    `json:"watch_paths,omitempty"`
+	Events      []FSEvent   `json:"events,omitempty"`
+	Count       int         `json:"count"`
+	Message     string      `json:"message,omitempty"`
+	Timestamp   time.Time   `json:"timestamp"`
+}
+
+// FSEvent represents a filesystem event.
+type FSEvent struct {
+	Path      string    `json:"path"`
+	Operation string    `json:"operation"` // create, modify, delete, rename
+	IsDir     bool      `json:"is_dir"`
+	Timestamp time.Time `json:"timestamp"`
+}

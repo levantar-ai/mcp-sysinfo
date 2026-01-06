@@ -230,6 +230,16 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
 | `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
 
+### Phase 3: Storage Deep Dive ✅ (5/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_smart_health` | SMART disk health data | ✅ | ✅ | ✅ |
+| `get_io_latency` | Disk I/O latency tracking | ✅ | ✅ | ✅ |
+| `get_fs_events` | Filesystem event monitoring | ✅ | ✅ | ✅ |
+| `get_mount_changes` | Mount point change detection | ✅ | ✅ | ✅ |
+| `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | ✅ | ✅ | ✅ |
+
 ### Phase 1.7: Deep IIS Configuration 📋 (0/35)
 
 | Query | Description | Linux | macOS | Windows |
@@ -307,16 +317,6 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_iis_file_extensions` | File extension rules | - | - | 📋 |
 | `get_iis_kernel_cache` | HTTP.sys kernel cache | - | - | 📋 |
 | *+ 15 more queries* | | - | - | 📋 |
-
-### Phase 3: Storage Deep Dive 📋 (0/5)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_smart_health` | SMART disk health data | 📋 | 📋 | 📋 |
-| `get_io_latency` | Disk I/O latency tracking | 📋 | 📋 | 📋 |
-| `get_fs_events` | Filesystem event monitoring | 📋 | 📋 | 📋 |
-| `get_mount_changes` | Mount point change detection | 📋 | 📋 | 📋 |
-| `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | 📋 | 📋 | 📋 |
 
 ### Phase 4: Network Intelligence 📋 (0/5)
 
@@ -729,7 +729,7 @@ curl http://localhost:8080/metrics
 | **1.7** | Deep IIS Configuration | 📋 Planned | 0/35 |
 | **1.8** | Complete IIS Coverage | 📋 Planned | 0/47 |
 | **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
-| 3 | Storage Deep Dive | 📋 Planned | 0/5 |
+| **3** | Storage Deep Dive | ✅ Complete | 5/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
 | 5 | Analytics & Trends | 📋 Planned | 0/4 |
 | 6 | Automation & Alerting | 📋 Planned | 0/5 |
@@ -737,7 +737,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 129/242 queries (53%)**
+**Implemented: 134/242 queries (55%)**
 
 ### Cross-Platform Architecture
 

@@ -35,6 +35,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
+	"github.com/levantar-ai/mcp-sysinfo/internal/storage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
@@ -1083,6 +1084,27 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serv
 	case "get_iis_auth_config":
 		c := windows.NewCollector()
 		result, err = c.GetIISAuthConfig()
+
+	// Phase 3: Storage Deep Dive
+	case "get_smart_health":
+		c := storage.NewCollector()
+		result, err = c.GetSMARTHealth()
+
+	case "get_io_latency":
+		c := storage.NewCollector()
+		result, err = c.GetIOLatency()
+
+	case "get_volume_status":
+		c := storage.NewCollector()
+		result, err = c.GetVolumeStatus()
+
+	case "get_mount_changes":
+		c := storage.NewCollector()
+		result, err = c.GetMountChanges()
+
+	case "get_fs_events":
+		c := storage.NewCollector()
+		result, err = c.GetFSEvents()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

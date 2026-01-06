@@ -23,6 +23,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
+	"github.com/levantar-ai/mcp-sysinfo/internal/storage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
@@ -68,6 +69,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 2.3: System Reports (scope: report)
 	registerReportTools(s)
+
+	// Phase 3: Storage Deep Dive (scope: storage)
+	registerStorageTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -2452,6 +2456,83 @@ func registerReportTools(s *Server) {
 
 		rg := report.NewIISReportGenerator(timeout)
 		result, err := rg.GenerateIISReport(ctx, sections)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+// registerStorageTools registers Phase 3 Storage Deep Dive tools.
+func registerStorageTools(s *Server) {
+	// ==========================================================================
+	// Phase 3: Storage Deep Dive
+	// ==========================================================================
+
+	// Get SMART Health
+	s.RegisterTool(Tool{
+		Name:        "get_smart_health",
+		Description: "Get SMART disk health information including temperature, power-on hours, and health status. Requires smartctl or platform-specific APIs",
+		InputSchema: InputSchema{Type: "object"},
+	}, "storage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := storage.NewCollector()
+		result, err := c.GetSMARTHealth()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get I/O Latency
+	s.RegisterTool(Tool{
+		Name:        "get_io_latency",
+		Description: "Get disk I/O latency statistics including read/write latency, IOPS, and queue depth",
+		InputSchema: InputSchema{Type: "object"},
+	}, "storage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := storage.NewCollector()
+		result, err := c.GetIOLatency()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get Volume Status
+	s.RegisterTool(Tool{
+		Name:        "get_volume_status",
+		Description: "Get volume manager status including ZFS pools, LVM groups, MD RAID arrays, and Windows Storage Spaces",
+		InputSchema: InputSchema{Type: "object"},
+	}, "storage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := storage.NewCollector()
+		result, err := c.GetVolumeStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get Mount Changes
+	s.RegisterTool(Tool{
+		Name:        "get_mount_changes",
+		Description: "Get current mount points and filesystem information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "storage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := storage.NewCollector()
+		result, err := c.GetMountChanges()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Get FS Events
+	s.RegisterTool(Tool{
+		Name:        "get_fs_events",
+		Description: "Get filesystem event monitoring capabilities and information for the platform",
+		InputSchema: InputSchema{Type: "object"},
+	}, "storage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := storage.NewCollector()
+		result, err := c.GetFSEvents()
 		if err != nil {
 			return nil, err
 		}

@@ -28,6 +28,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
+	"github.com/levantar-ai/mcp-sysinfo/internal/storage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
@@ -992,4 +993,53 @@ func TestSmoke_Windows_GetProcessesSampled(t *testing.T) {
 		t.Fatalf("get_processes_sampled failed: %v", err)
 	}
 	mustJSON(t, "get_processes_sampled", result)
+}
+
+// =============================================================================
+// Phase 3: Storage Deep Dive (5 queries)
+// =============================================================================
+
+func TestSmoke_Windows_GetSMARTHealth(t *testing.T) {
+	c := storage.NewCollector()
+	result, err := c.GetSMARTHealth()
+	if err != nil {
+		t.Fatalf("get_smart_health failed: %v", err)
+	}
+	mustJSON(t, "get_smart_health", result)
+}
+
+func TestSmoke_Windows_GetIOLatency(t *testing.T) {
+	c := storage.NewCollector()
+	result, err := c.GetIOLatency()
+	if err != nil {
+		t.Fatalf("get_io_latency failed: %v", err)
+	}
+	mustJSON(t, "get_io_latency", result)
+}
+
+func TestSmoke_Windows_GetVolumeStatus(t *testing.T) {
+	c := storage.NewCollector()
+	result, err := c.GetVolumeStatus()
+	if err != nil {
+		t.Fatalf("get_volume_status failed: %v", err)
+	}
+	mustJSON(t, "get_volume_status", result)
+}
+
+func TestSmoke_Windows_GetMountChanges(t *testing.T) {
+	c := storage.NewCollector()
+	result, err := c.GetMountChanges()
+	if err != nil {
+		t.Fatalf("get_mount_changes failed: %v", err)
+	}
+	mustJSON(t, "get_mount_changes", result)
+}
+
+func TestSmoke_Windows_GetFSEvents(t *testing.T) {
+	c := storage.NewCollector()
+	result, err := c.GetFSEvents()
+	if err != nil {
+		t.Fatalf("get_fs_events failed: %v", err)
+	}
+	mustJSON(t, "get_fs_events", result)
 }
