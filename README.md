@@ -219,79 +219,6 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_iis_ssl_certs` | SSL certificate bindings | - | - | ✅ |
 | `get_iis_auth_config` | Authentication settings per site | - | - | ✅ |
 
-### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_gpu_info` | GPU details (memory, utilization, temp) | ✅ | ✅ | ✅ |
-| `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
-| `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
-| `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
-| `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
-| `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
-
-### Phase 3: Storage Deep Dive ✅ (5/5)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_smart_health` | SMART disk health data | ✅ | ✅ | ✅ |
-| `get_io_latency` | Disk I/O latency tracking | ✅ | ✅ | ✅ |
-| `get_fs_events` | Filesystem event monitoring | ✅ | ✅ | ✅ |
-| `get_mount_changes` | Mount point change detection | ✅ | ✅ | ✅ |
-| `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | ✅ | ✅ | ✅ |
-
-### Phase 1.9: Platform Security Controls 🔄 (0/28)
-
-Extended platform-specific security controls for endpoint security posture assessment.
-
-#### Windows Security Controls (12 queries)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_windows_defender_status` | Defender RTP, signatures, tamper protection | - | - | 🔄 |
-| `get_windows_firewall_profiles` | Firewall profile states (Domain/Private/Public) | - | - | 🔄 |
-| `get_bitlocker_status` | BitLocker encryption status per volume | - | - | 🔄 |
-| `get_windows_smb_shares` | SMB shares and permissions summary | - | - | 🔄 |
-| `get_windows_rdp_config` | RDP enabled, NLA status, port config | - | - | 🔄 |
-| `get_windows_winrm_config` | WinRM listener and auth config | - | - | 🔄 |
-| `get_windows_applocker_policy` | AppLocker enforcement mode | - | - | 🔄 |
-| `get_windows_wdac_status` | WDAC/Code Integrity policy state | - | - | 🔄 |
-| `get_windows_local_security_policy` | Password, lockout, audit policy summary | - | - | 🔄 |
-| `get_windows_gpo_applied` | Applied GPOs for computer scope | - | - | 🔄 |
-| `get_windows_credential_guard` | Credential Guard/LSA protection status | - | - | 🔄 |
-| `get_windows_update_health` | Update health, pending updates, WSUS/WUfB | - | - | 🔄 |
-
-#### macOS Security Controls (8 queries)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_macos_filevault_status` | FileVault disk encryption status | - | 🔄 | - |
-| `get_macos_gatekeeper_status` | Gatekeeper and notarization status | - | 🔄 | - |
-| `get_macos_sip_status` | System Integrity Protection status | - | 🔄 | - |
-| `get_macos_xprotect_status` | XProtect/MRT version and status | - | 🔄 | - |
-| `get_macos_pf_rules` | Packet Filter status and rules summary | - | 🔄 | - |
-| `get_macos_mdm_profiles` | Installed MDM configuration profiles | - | 🔄 | - |
-| `get_macos_tcc_permissions` | TCC permissions summary (sensitive) | - | 🔄 | - |
-| `get_macos_security_log_events` | Unified log security events | - | 🔄 | - |
-
-#### Linux Security Controls (7 queries)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_linux_auditd_status` | auditd status and rule summary | 🔄 | - | - |
-| `get_linux_kernel_lockdown` | Kernel lockdown mode | 🔄 | - | - |
-| `get_linux_sysctl_security` | Key sysctl hardening values | 🔄 | - | - |
-| `get_linux_firewall_backend` | Active firewall (nftables/iptables/ufw) | 🔄 | - | - |
-| `get_linux_mac_detailed` | Detailed SELinux/AppArmor status | 🔄 | - | - |
-| `get_linux_package_repos` | Package repository summary | 🔄 | - | - |
-| `get_linux_auto_updates` | Unattended upgrades status | 🔄 | - | - |
-
-#### Cross-Platform (1 query)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_vendor_services` | OS vendor services inventory | 🔄 | 🔄 | 🔄 |
-
 ### Phase 1.7: Deep IIS Configuration 📋 (0/36)
 
 | Query | Description | Linux | macOS | Windows |
@@ -371,6 +298,79 @@ Extended platform-specific security controls for endpoint security posture asses
 | `get_iis_file_extensions` | File extension rules | - | - | 📋 |
 | `get_iis_kernel_cache` | HTTP.sys kernel cache | - | - | 📋 |
 | *+ 15 more queries* | | - | - | 📋 |
+
+### Phase 1.9: Platform Security Controls 🔄 (0/28)
+
+Extended platform-specific security controls for endpoint security posture assessment.
+
+#### Windows Security Controls (12 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_windows_defender_status` | Defender RTP, signatures, tamper protection | - | - | 🔄 |
+| `get_windows_firewall_profiles` | Firewall profile states (Domain/Private/Public) | - | - | 🔄 |
+| `get_bitlocker_status` | BitLocker encryption status per volume | - | - | 🔄 |
+| `get_windows_smb_shares` | SMB shares and permissions summary | - | - | 🔄 |
+| `get_windows_rdp_config` | RDP enabled, NLA status, port config | - | - | 🔄 |
+| `get_windows_winrm_config` | WinRM listener and auth config | - | - | 🔄 |
+| `get_windows_applocker_policy` | AppLocker enforcement mode | - | - | 🔄 |
+| `get_windows_wdac_status` | WDAC/Code Integrity policy state | - | - | 🔄 |
+| `get_windows_local_security_policy` | Password, lockout, audit policy summary | - | - | 🔄 |
+| `get_windows_gpo_applied` | Applied GPOs for computer scope | - | - | 🔄 |
+| `get_windows_credential_guard` | Credential Guard/LSA protection status | - | - | 🔄 |
+| `get_windows_update_health` | Update health, pending updates, WSUS/WUfB | - | - | 🔄 |
+
+#### macOS Security Controls (8 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_macos_filevault_status` | FileVault disk encryption status | - | 🔄 | - |
+| `get_macos_gatekeeper_status` | Gatekeeper and notarization status | - | 🔄 | - |
+| `get_macos_sip_status` | System Integrity Protection status | - | 🔄 | - |
+| `get_macos_xprotect_status` | XProtect/MRT version and status | - | 🔄 | - |
+| `get_macos_pf_rules` | Packet Filter status and rules summary | - | 🔄 | - |
+| `get_macos_mdm_profiles` | Installed MDM configuration profiles | - | 🔄 | - |
+| `get_macos_tcc_permissions` | TCC permissions summary (sensitive) | - | 🔄 | - |
+| `get_macos_security_log_events` | Unified log security events | - | 🔄 | - |
+
+#### Linux Security Controls (7 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_linux_auditd_status` | auditd status and rule summary | 🔄 | - | - |
+| `get_linux_kernel_lockdown` | Kernel lockdown mode | 🔄 | - | - |
+| `get_linux_sysctl_security` | Key sysctl hardening values | 🔄 | - | - |
+| `get_linux_firewall_backend` | Active firewall (nftables/iptables/ufw) | 🔄 | - | - |
+| `get_linux_mac_detailed` | Detailed SELinux/AppArmor status | 🔄 | - | - |
+| `get_linux_package_repos` | Package repository summary | 🔄 | - | - |
+| `get_linux_auto_updates` | Unattended upgrades status | 🔄 | - | - |
+
+#### Cross-Platform (1 query)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_vendor_services` | OS vendor services inventory | 🔄 | 🔄 | 🔄 |
+
+### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_gpu_info` | GPU details (memory, utilization, temp) | ✅ | ✅ | ✅ |
+| `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
+| `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
+| `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
+| `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
+| `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
+
+### Phase 3: Storage Deep Dive ✅ (5/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_smart_health` | SMART disk health data | ✅ | ✅ | ✅ |
+| `get_io_latency` | Disk I/O latency tracking | ✅ | ✅ | ✅ |
+| `get_fs_events` | Filesystem event monitoring | ✅ | ✅ | ✅ |
+| `get_mount_changes` | Mount point change detection | ✅ | ✅ | ✅ |
+| `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | ✅ | ✅ | ✅ |
 
 ### Phase 4: Network Intelligence 📋 (0/5)
 
