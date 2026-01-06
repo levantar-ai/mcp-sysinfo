@@ -162,41 +162,12 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_go_sum` | Parse go.sum | ✅ | ✅ | ✅ |
 | `get_gemfile_lock` | Parse Gemfile.lock | ✅ | ✅ | ✅ |
 
-**Package managers supported:**
-- System: dpkg, rpm, apk, pacman, Homebrew, pkgutil, Chocolatey, winget, Snap, Flatpak, Scoop
-- Language: pip (Python), npm (Node.js), go modules, Cargo (Rust), RubyGems, Maven, Composer (PHP), NuGet (.NET)
-- Lock files: package-lock.json, requirements.txt, Pipfile.lock, Cargo.lock, go.sum, Gemfile.lock
-
-> ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
-
 ### Phase 1.4: Application Discovery ✅ (2/2)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
 | `get_applications` | Discover installed/running apps (web servers, databases, etc.) | ✅ | ✅ | ✅ |
 | `get_app_config` | Read config files with sensitive data redaction | ✅ | ✅ | ✅ |
-
-**Applications detected:**
-- Web servers: nginx, Apache, Caddy, Tomcat
-- Databases: MySQL/MariaDB, PostgreSQL, MongoDB, Redis, Elasticsearch
-- Message queues: RabbitMQ, Kafka
-- Caching: Memcached, Varnish
-- Runtimes: PHP-FPM, Node.js
-- Containers: Docker, Podman
-- Mail: Postfix
-- Security: fail2ban
-- Directory: OpenLDAP
-
-**Config formats supported:**
-- INI, XML, JSON, YAML, TOML
-- nginx conf, Apache conf
-- Environment files (.env)
-
-**Sensitive data redaction:**
-- Passwords, secrets, tokens, API keys
-- Connection strings (MongoDB, MySQL, PostgreSQL, Redis)
-- AWS credentials, Azure keys
-- JWT tokens, PEM private keys
 
 ### Phase 1.5: Triage & Summary ✅ (25/25)
 
@@ -228,18 +199,6 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_security_posture_snapshot` | Security posture summary | ✅ | ✅ | ✅ |
 | `get_full_system_snapshot` | Complete system snapshot | ✅ | ✅ | ✅ |
 
-**Cloud providers detected:**
-- AWS EC2 (IMDSv2), Google Cloud, Microsoft Azure, DigitalOcean, Oracle Cloud
-
-**Language runtimes detected:**
-- Python, Node.js, Go, Ruby, Java, PHP, Rust, .NET, Perl
-
-**Triage categories:**
-- Recent events: reboots, service failures, kernel errors, OOM, resource incidents
-- Security: firewall status, updates, admin accounts, exposed services, SSH config
-- Services: failed units, pending timers, enabled services
-- System health: filesystem status, resource limits, package inventory
-
 ### Phase 1.6: Windows Enterprise Features ✅ (15/15)
 
 | Query | Description | Linux | macOS | Windows |
@@ -260,22 +219,6 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_iis_ssl_certs` | SSL certificate bindings | - | - | ✅ |
 | `get_iis_auth_config` | Authentication settings per site | - | - | ✅ |
 
-**Registry queries:**
-- Read keys, values, and subkeys from any hive (HKLM, HKCU, HKCR, HKU, HKCC)
-- Recursive tree enumeration with depth limits
-- Security descriptor parsing (owner, group, DACL)
-
-**DCOM/COM security:**
-- Enumerate registered DCOM applications
-- Parse launch and access permissions
-- Identify RunAs identities and security defaults
-
-**IIS web server:**
-- Complete site and application pool inventory
-- SSL certificate bindings with certificate details
-- Handler mappings and module configuration
-- Authentication settings (Anonymous, Basic, Windows, Digest)
-
 ### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
 
 | Query | Description | Linux | macOS | Windows |
@@ -287,23 +230,9 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
 | `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
 
-**GPU support:**
-- NVIDIA GPUs via nvidia-smi (memory, utilization, temperature, power, clocks, processes)
-- AMD GPUs via sysfs/ROCm (memory, utilization, temperature, clocks)
-- Intel GPUs via sysfs (Arc, Xe, UHD graphics)
-- Apple Silicon GPUs via system_profiler
+---
 
-**Container support:**
-- Docker and Podman containers
-- Real-time CPU, memory, network, and block I/O statistics
-- Log streaming with timestamp parsing and stdout/stderr separation
-
-**System Reports:**
-- Parallel data collection for all system metrics (16+ collectors)
-- Structured JSON data bindable to HTML templates
-- IIS-specific report for Windows web servers
-
-### What You Can Do Now
+## Quick Start
 
 ```bash
 # Build
@@ -389,80 +318,6 @@ Every query respects strict budgets:
 | Low | <5% | <10MB | <1s | Default allowed |
 | Medium | <10% | <50MB | <5s | Requires opt-in |
 | High | - | - | - | **Blocked** |
-
----
-
-## Roadmap
-
-### Phase 1.2: System Hooks ✅ Complete (31 queries)
-
-Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgroups.
-
-See [docs/08-system-hooks.md](docs/08-system-hooks.md)
-
-### Phase 1.3: SBOM & Inventory ✅ Complete (33/33 queries)
-
-Software Bill of Materials for vulnerability detection.
-
-**Implemented:**
-- PATH executables discovery
-- System package managers (dpkg, rpm, apk, pacman, brew, choco, winget, snap, flatpak, scoop)
-- Language package managers (pip, npm, go modules, Cargo, RubyGems, Maven, Composer, NuGet)
-- Lock file parsing (package-lock.json, requirements.txt, Cargo.lock, go.sum, Gemfile.lock)
-- Platform-specific: macOS Applications, Windows Hotfixes/Programs/Features, Homebrew Casks
-- Container images (Docker API: images, containers, history)
-- SBOM export (CycloneDX 1.4, SPDX 2.3)
-- Vulnerability lookup (OSV, Debian Security Tracker, NVD)
-
-See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
-
-### Phase 1.5: Triage & Summary ✅ Complete (25/25 queries)
-
-High-level queries for incident triage and security posture assessment.
-
-**Implemented:**
-- OS info, system profile, service manager, cloud environment, language runtimes
-- Recent events: reboots, service failures, kernel errors, OOM events, resource incidents
-- Security: firewall/AV status, admin accounts, exposed services, SSH config, resource limits
-- Services: failed units, pending timers, enabled services, pending updates
-- Meta queries: incident triage snapshot, security posture snapshot, full system snapshot
-
-### Phase 2.0: Enhanced Diagnostics ✅ Complete (6/6 queries)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_gpu_info` | GPU details (memory, utilization, temp) | ✅ | ✅ | ✅ |
-| `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
-| `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
-| `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
-| `generate_iis_report` | IIS-specific diagnostic report | - | - | ✅ |
-| `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
-
-**System Report Features:**
-- Parallel data collection for all system metrics (16+ collectors)
-- Return structured JSON data bindable to HTML templates
-- Categories: os, hardware, uptime, cpu, memory, gpu, processes, disks, network, listening_ports, dns, routes, arp, startup_items, programs, runtimes
-- Templates provided in `reports/` directory for customization
-- IIS-specific report for Windows web servers with all IIS config data
-
-**Process CPU Percentage (Fixed):**
-- `CollectSampled()` method uses time-delta sampling for accurate CPU%
-- Takes two CPU time measurements with configurable delay (default: 1000ms)
-- Measures CPU time delta over sampling period for accurate percentages
-
-### Future Phases
-
-| Phase | Focus |
-|-------|-------|
-| 1.7 | Deep IIS Configuration (35 queries) |
-| 1.8 | Complete IIS Coverage (47 queries) |
-| 3 | Storage Deep Dive (5 queries) |
-| 4 | Network Intelligence (5 queries) |
-| 5 | Analytics & Trends (4 queries) |
-| 6 | Automation & Alerting (5 queries) |
-| 7 | Security & Compliance (5 queries) |
-| 8 | Integration & Plugins (4 queries) |
-| 9 | LLM Features (3 queries) |
 
 ---
 
