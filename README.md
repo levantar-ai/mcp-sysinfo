@@ -1,7 +1,7 @@
 # MCP System Info
 
 <p align="center">
-  <img src="images/logo.png" alt="MCP System Info Logo" width="400">
+  <img src="images/logo.png?raw=true" alt="MCP System Info Logo" width="400">
 </p>
 
 [![CI](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml/badge.svg)](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml)
