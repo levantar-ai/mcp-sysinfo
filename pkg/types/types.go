@@ -2256,3 +2256,545 @@ type FSEvent struct {
 	IsDir     bool      `json:"is_dir"`
 	Timestamp time.Time `json:"timestamp"`
 }
+
+// =============================================================================
+// Phase 1.9: Platform Security Controls
+// =============================================================================
+
+// WindowsDefenderStatus represents Windows Defender status.
+type WindowsDefenderStatus struct {
+	RealTimeProtectionEnabled bool      `json:"real_time_protection_enabled"`
+	BehaviorMonitorEnabled    bool      `json:"behavior_monitor_enabled"`
+	IoavProtectionEnabled     bool      `json:"ioav_protection_enabled"`
+	OnAccessProtectionEnabled bool      `json:"on_access_protection_enabled"`
+	AntivirusEnabled          bool      `json:"antivirus_enabled"`
+	AntispywareEnabled        bool      `json:"antispyware_enabled"`
+	TamperProtectionEnabled   bool      `json:"tamper_protection_enabled"`
+	SignatureVersion          string    `json:"signature_version"`
+	SignatureLastUpdated      time.Time `json:"signature_last_updated"`
+	EngineVersion             string    `json:"engine_version"`
+	ProductVersion            string    `json:"product_version"`
+	QuickScanAge              int       `json:"quick_scan_age_days"`
+	FullScanAge               int       `json:"full_scan_age_days"`
+	Error                     string    `json:"error,omitempty"`
+	Timestamp                 time.Time `json:"timestamp"`
+}
+
+// WindowsFirewallProfiles represents Windows Firewall profile states.
+type WindowsFirewallProfiles struct {
+	DomainProfile  FirewallProfile `json:"domain_profile"`
+	PrivateProfile FirewallProfile `json:"private_profile"`
+	PublicProfile  FirewallProfile `json:"public_profile"`
+	Error          string          `json:"error,omitempty"`
+	Timestamp      time.Time       `json:"timestamp"`
+}
+
+// FirewallProfile represents a single Windows Firewall profile.
+type FirewallProfile struct {
+	Name                   string `json:"name"`
+	Enabled                bool   `json:"enabled"`
+	DefaultInboundAction   string `json:"default_inbound_action"`
+	DefaultOutboundAction  string `json:"default_outbound_action"`
+	AllowInboundRules      bool   `json:"allow_inbound_rules"`
+	AllowLocalFirewallRules bool  `json:"allow_local_firewall_rules"`
+	AllowLocalIPsecRules   bool   `json:"allow_local_ipsec_rules"`
+	NotifyOnListen         bool   `json:"notify_on_listen"`
+	LogAllowed             bool   `json:"log_allowed"`
+	LogBlocked             bool   `json:"log_blocked"`
+	LogFilePath            string `json:"log_file_path,omitempty"`
+}
+
+// BitLockerStatus represents BitLocker encryption status.
+type BitLockerStatus struct {
+	Volumes   []BitLockerVolume `json:"volumes"`
+	Count     int               `json:"count"`
+	Error     string            `json:"error,omitempty"`
+	Timestamp time.Time         `json:"timestamp"`
+}
+
+// BitLockerVolume represents a single volume's BitLocker status.
+type BitLockerVolume struct {
+	DriveLetter       string `json:"drive_letter"`
+	VolumeType        string `json:"volume_type"` // OperatingSystem, FixedData, Removable
+	ProtectionStatus  string `json:"protection_status"`
+	LockStatus        string `json:"lock_status"`
+	EncryptionMethod  string `json:"encryption_method,omitempty"`
+	EncryptionPercent int    `json:"encryption_percent"`
+	KeyProtectors     []string `json:"key_protectors,omitempty"`
+}
+
+// WindowsSMBShares represents SMB shares on Windows.
+type WindowsSMBShares struct {
+	Shares    []SMBShare `json:"shares"`
+	Count     int        `json:"count"`
+	Error     string     `json:"error,omitempty"`
+	Timestamp time.Time  `json:"timestamp"`
+}
+
+// SMBShare represents a single SMB share.
+type SMBShare struct {
+	Name              string   `json:"name"`
+	Path              string   `json:"path"`
+	Description       string   `json:"description,omitempty"`
+	ShareType         string   `json:"share_type"`
+	CurrentUsers      int      `json:"current_users"`
+	ConcurrentUserLimit int    `json:"concurrent_user_limit"`
+	CachingMode       string   `json:"caching_mode,omitempty"`
+	EncryptData       bool     `json:"encrypt_data"`
+	FolderEnumMode    string   `json:"folder_enum_mode,omitempty"`
+	Permissions       []string `json:"permissions,omitempty"`
+}
+
+// WindowsRDPConfig represents RDP configuration.
+type WindowsRDPConfig struct {
+	Enabled                bool   `json:"enabled"`
+	Port                   int    `json:"port"`
+	NLARequired            bool   `json:"nla_required"`
+	SecurityLayer          string `json:"security_layer"`
+	UserAuthenticationRequired bool `json:"user_authentication_required"`
+	EncryptionLevel        string `json:"encryption_level"`
+	MaxConnections         int    `json:"max_connections"`
+	AllowedUsers           []string `json:"allowed_users,omitempty"`
+	Error                  string `json:"error,omitempty"`
+	Timestamp              time.Time `json:"timestamp"`
+}
+
+// WindowsWinRMConfig represents WinRM configuration.
+type WindowsWinRMConfig struct {
+	ServiceRunning     bool              `json:"service_running"`
+	HTTPEnabled        bool              `json:"http_enabled"`
+	HTTPSEnabled       bool              `json:"https_enabled"`
+	HTTPPort           int               `json:"http_port"`
+	HTTPSPort          int               `json:"https_port"`
+	AllowUnencrypted   bool              `json:"allow_unencrypted"`
+	BasicAuth          bool              `json:"basic_auth"`
+	KerberosAuth       bool              `json:"kerberos_auth"`
+	NegotiateAuth      bool              `json:"negotiate_auth"`
+	CertificateAuth    bool              `json:"certificate_auth"`
+	CredSSPAuth        bool              `json:"credssp_auth"`
+	Listeners          []WinRMListener   `json:"listeners,omitempty"`
+	TrustedHosts       string            `json:"trusted_hosts,omitempty"`
+	Error              string            `json:"error,omitempty"`
+	Timestamp          time.Time         `json:"timestamp"`
+}
+
+// WinRMListener represents a WinRM listener.
+type WinRMListener struct {
+	Address   string `json:"address"`
+	Transport string `json:"transport"`
+	Port      int    `json:"port"`
+	Hostname  string `json:"hostname,omitempty"`
+	Enabled   bool   `json:"enabled"`
+	URLPrefix string `json:"url_prefix,omitempty"`
+}
+
+// WindowsAppLockerPolicy represents AppLocker policy.
+type WindowsAppLockerPolicy struct {
+	Configured        bool                   `json:"configured"`
+	EnforcementMode   string                 `json:"enforcement_mode"` // NotConfigured, AuditOnly, Enabled
+	RuleCollections   []AppLockerCollection  `json:"rule_collections,omitempty"`
+	Error             string                 `json:"error,omitempty"`
+	Timestamp         time.Time              `json:"timestamp"`
+}
+
+// AppLockerCollection represents an AppLocker rule collection.
+type AppLockerCollection struct {
+	Type              string `json:"type"` // Exe, Msi, Script, Appx, Dll
+	EnforcementMode   string `json:"enforcement_mode"`
+	RuleCount         int    `json:"rule_count"`
+}
+
+// WindowsWDACStatus represents WDAC/Code Integrity status.
+type WindowsWDACStatus struct {
+	Enabled               bool     `json:"enabled"`
+	EnforcementMode       string   `json:"enforcement_mode"` // Audit, Enforced
+	UMCIEnabled           bool     `json:"umci_enabled"` // User Mode Code Integrity
+	KMCIEnabled           bool     `json:"kmci_enabled"` // Kernel Mode Code Integrity
+	PolicyID              string   `json:"policy_id,omitempty"`
+	PolicyVersion         string   `json:"policy_version,omitempty"`
+	ActivePolicies        []string `json:"active_policies,omitempty"`
+	HVCIEnabled           bool     `json:"hvci_enabled"` // Hypervisor-protected Code Integrity
+	Error                 string   `json:"error,omitempty"`
+	Timestamp             time.Time `json:"timestamp"`
+}
+
+// WindowsLocalSecurityPolicy represents local security policy summary.
+type WindowsLocalSecurityPolicy struct {
+	PasswordPolicy        PasswordPolicy    `json:"password_policy"`
+	AccountLockoutPolicy  LockoutPolicy     `json:"account_lockout_policy"`
+	AuditPolicy           AuditPolicies     `json:"audit_policy"`
+	UserRightsAssignments map[string][]string `json:"user_rights_assignments,omitempty"`
+	Error                 string            `json:"error,omitempty"`
+	Timestamp             time.Time         `json:"timestamp"`
+}
+
+// PasswordPolicy represents password policy settings.
+type PasswordPolicy struct {
+	MinimumLength           int  `json:"minimum_length"`
+	ComplexityEnabled       bool `json:"complexity_enabled"`
+	MaximumAge              int  `json:"maximum_age_days"`
+	MinimumAge              int  `json:"minimum_age_days"`
+	HistoryCount            int  `json:"history_count"`
+	ReversibleEncryption    bool `json:"reversible_encryption"`
+}
+
+// LockoutPolicy represents account lockout settings.
+type LockoutPolicy struct {
+	LockoutThreshold      int `json:"lockout_threshold"`
+	LockoutDuration       int `json:"lockout_duration_minutes"`
+	ResetCounterAfter     int `json:"reset_counter_after_minutes"`
+}
+
+// AuditPolicies represents audit policy settings.
+type AuditPolicies struct {
+	AccountLogon          string `json:"account_logon"`
+	AccountManagement     string `json:"account_management"`
+	DetailedTracking      string `json:"detailed_tracking"`
+	DSAccess              string `json:"ds_access"`
+	LogonLogoff           string `json:"logon_logoff"`
+	ObjectAccess          string `json:"object_access"`
+	PolicyChange          string `json:"policy_change"`
+	PrivilegeUse          string `json:"privilege_use"`
+	System                string `json:"system"`
+}
+
+// WindowsGPOApplied represents applied Group Policy Objects.
+type WindowsGPOApplied struct {
+	ComputerGPOs    []AppliedGPO `json:"computer_gpos"`
+	UserGPOs        []AppliedGPO `json:"user_gpos,omitempty"`
+	LastRefresh     time.Time    `json:"last_refresh"`
+	DomainJoined    bool         `json:"domain_joined"`
+	DomainName      string       `json:"domain_name,omitempty"`
+	Error           string       `json:"error,omitempty"`
+	Timestamp       time.Time    `json:"timestamp"`
+}
+
+// AppliedGPO represents a single applied GPO.
+type AppliedGPO struct {
+	Name            string    `json:"name"`
+	GUID            string    `json:"guid,omitempty"`
+	Link            string    `json:"link,omitempty"`
+	Enabled         bool      `json:"enabled"`
+	AccessDenied    bool      `json:"access_denied"`
+	FilterAllowed   bool      `json:"filter_allowed"`
+	Revision        int       `json:"revision"`
+	Extensions      []string  `json:"extensions,omitempty"`
+}
+
+// WindowsCredentialGuard represents Credential Guard status.
+type WindowsCredentialGuard struct {
+	CredentialGuardEnabled     bool   `json:"credential_guard_enabled"`
+	LsaCfgFlags                int    `json:"lsa_cfg_flags"`
+	SecurityServicesRunning    []string `json:"security_services_running,omitempty"`
+	SecurityServicesConfigured []string `json:"security_services_configured,omitempty"`
+	VirtualizationBasedSecurity bool  `json:"virtualization_based_security"`
+	RequirePlatformSecurityFeatures string `json:"require_platform_security_features,omitempty"`
+	LsaIsoEnabled              bool   `json:"lsa_iso_enabled"`
+	Error                      string `json:"error,omitempty"`
+	Timestamp                  time.Time `json:"timestamp"`
+}
+
+// WindowsUpdateHealth represents Windows Update status.
+type WindowsUpdateHealth struct {
+	ServiceRunning         bool               `json:"service_running"`
+	LastCheckTime          time.Time          `json:"last_check_time"`
+	LastInstallTime        time.Time          `json:"last_install_time"`
+	PendingUpdates         []PendingUpdate    `json:"pending_updates,omitempty"`
+	PendingCount           int                `json:"pending_count"`
+	RebootRequired         bool               `json:"reboot_required"`
+	UpdateSource           string             `json:"update_source"` // WindowsUpdate, WSUS, WUfB
+	WSUSServer             string             `json:"wsus_server,omitempty"`
+	DeferFeatureUpdates    int                `json:"defer_feature_updates_days"`
+	DeferQualityUpdates    int                `json:"defer_quality_updates_days"`
+	Error                  string             `json:"error,omitempty"`
+	Timestamp              time.Time          `json:"timestamp"`
+}
+
+// PendingUpdate represents a pending Windows update.
+type PendingUpdate struct {
+	Title       string `json:"title"`
+	KB          string `json:"kb,omitempty"`
+	Category    string `json:"category"`
+	Severity    string `json:"severity,omitempty"`
+	IsDownloaded bool  `json:"is_downloaded"`
+}
+
+// MacOSFileVaultStatus represents FileVault status.
+type MacOSFileVaultStatus struct {
+	Enabled           bool      `json:"enabled"`
+	Status            string    `json:"status"` // On, Off, Encrypting, Decrypting
+	EncryptionPercent int       `json:"encryption_percent,omitempty"`
+	EncryptionType    string    `json:"encryption_type,omitempty"`
+	HasRecoveryKey    bool      `json:"has_recovery_key"`
+	HasInstitutionalKey bool    `json:"has_institutional_key"`
+	DeferredEnablement bool     `json:"deferred_enablement"`
+	Users             []string  `json:"users,omitempty"`
+	Error             string    `json:"error,omitempty"`
+	Timestamp         time.Time `json:"timestamp"`
+}
+
+// MacOSGatekeeperStatus represents Gatekeeper status.
+type MacOSGatekeeperStatus struct {
+	Enabled           bool      `json:"enabled"`
+	AssessmentEnabled bool      `json:"assessment_enabled"`
+	DevIDEnabled      bool      `json:"developer_id_enabled"`
+	NotarizationRequired bool   `json:"notarization_required"`
+	Status            string    `json:"status"` // App Store, App Store and identified developers, Anywhere
+	Error             string    `json:"error,omitempty"`
+	Timestamp         time.Time `json:"timestamp"`
+}
+
+// MacOSSIPStatus represents System Integrity Protection status.
+type MacOSSIPStatus struct {
+	Enabled           bool      `json:"enabled"`
+	Status            string    `json:"status"`
+	ConfigurationFlags []string `json:"configuration_flags,omitempty"`
+	Error             string    `json:"error,omitempty"`
+	Timestamp         time.Time `json:"timestamp"`
+}
+
+// MacOSXProtectStatus represents XProtect status.
+type MacOSXProtectStatus struct {
+	XProtectVersion    string    `json:"xprotect_version"`
+	XProtectBundleVersion string `json:"xprotect_bundle_version,omitempty"`
+	MRTVersion         string    `json:"mrt_version,omitempty"`
+	GatekeeperConfigData string  `json:"gatekeeper_config_data,omitempty"`
+	LastUpdate         time.Time `json:"last_update"`
+	Error              string    `json:"error,omitempty"`
+	Timestamp          time.Time `json:"timestamp"`
+}
+
+// MacOSPFRules represents Packet Filter rules.
+type MacOSPFRules struct {
+	Enabled     bool       `json:"enabled"`
+	Status      string     `json:"status"`
+	RuleCount   int        `json:"rule_count"`
+	Rules       []PFRule   `json:"rules,omitempty"`
+	Anchors     []string   `json:"anchors,omitempty"`
+	Error       string     `json:"error,omitempty"`
+	Timestamp   time.Time  `json:"timestamp"`
+}
+
+// PFRule represents a PF rule.
+type PFRule struct {
+	Number      int    `json:"number"`
+	Action      string `json:"action"`
+	Direction   string `json:"direction"`
+	Protocol    string `json:"protocol,omitempty"`
+	Source      string `json:"source,omitempty"`
+	Destination string `json:"destination,omitempty"`
+	Port        string `json:"port,omitempty"`
+	States      int    `json:"states,omitempty"`
+}
+
+// MacOSMDMProfiles represents MDM profiles.
+type MacOSMDMProfiles struct {
+	Profiles    []MDMProfile `json:"profiles"`
+	Count       int          `json:"count"`
+	MDMEnrolled bool         `json:"mdm_enrolled"`
+	Error       string       `json:"error,omitempty"`
+	Timestamp   time.Time    `json:"timestamp"`
+}
+
+// MDMProfile represents an MDM configuration profile.
+type MDMProfile struct {
+	Name             string   `json:"name"`
+	Identifier       string   `json:"identifier"`
+	Organization     string   `json:"organization,omitempty"`
+	InstallDate      string   `json:"install_date,omitempty"`
+	VerificationState string  `json:"verification_state,omitempty"`
+	ProfileType      string   `json:"profile_type"` // Configuration, Provisioning
+	PayloadTypes     []string `json:"payload_types,omitempty"`
+}
+
+// MacOSTCCPermissions represents TCC permissions.
+type MacOSTCCPermissions struct {
+	Permissions []TCCPermission `json:"permissions"`
+	Count       int             `json:"count"`
+	Error       string          `json:"error,omitempty"`
+	Timestamp   time.Time       `json:"timestamp"`
+}
+
+// TCCPermission represents a TCC permission entry.
+type TCCPermission struct {
+	Service     string `json:"service"`
+	Client      string `json:"client"`
+	ClientType  string `json:"client_type"` // bundle, path
+	Allowed     bool   `json:"allowed"`
+	Reason      string `json:"reason,omitempty"`
+	LastModified string `json:"last_modified,omitempty"`
+}
+
+// MacOSSecurityLogEvents represents security-related log events.
+type MacOSSecurityLogEvents struct {
+	Events    []SecurityLogEvent `json:"events"`
+	Count     int                `json:"count"`
+	Error     string             `json:"error,omitempty"`
+	Timestamp time.Time          `json:"timestamp"`
+}
+
+// SecurityLogEvent represents a security log event.
+type SecurityLogEvent struct {
+	Timestamp   time.Time `json:"timestamp"`
+	EventType   string    `json:"event_type"`
+	Process     string    `json:"process,omitempty"`
+	Message     string    `json:"message"`
+	Subsystem   string    `json:"subsystem,omitempty"`
+	Category    string    `json:"category,omitempty"`
+}
+
+// LinuxAuditdStatus represents auditd status.
+type LinuxAuditdStatus struct {
+	Running         bool           `json:"running"`
+	Enabled         bool           `json:"enabled"`
+	PID             int            `json:"pid,omitempty"`
+	RuleCount       int            `json:"rule_count"`
+	Rules           []AuditRule    `json:"rules,omitempty"`
+	BacklogLimit    int            `json:"backlog_limit"`
+	BacklogWaitTime int            `json:"backlog_wait_time"`
+	Failure         string         `json:"failure_mode"`
+	RateLimit       int            `json:"rate_limit"`
+	LostEvents      int            `json:"lost_events"`
+	Error           string         `json:"error,omitempty"`
+	Timestamp       time.Time      `json:"timestamp"`
+}
+
+// AuditRule represents an audit rule.
+type AuditRule struct {
+	Type        string   `json:"type"` // syscall, file, exclude
+	Key         string   `json:"key,omitempty"`
+	Rule        string   `json:"rule"`
+	Permissions string   `json:"permissions,omitempty"`
+}
+
+// LinuxKernelLockdown represents kernel lockdown mode.
+type LinuxKernelLockdown struct {
+	Mode        string    `json:"mode"` // none, integrity, confidentiality
+	Supported   bool      `json:"supported"`
+	SecureBoot  bool      `json:"secure_boot"`
+	Error       string    `json:"error,omitempty"`
+	Timestamp   time.Time `json:"timestamp"`
+}
+
+// LinuxSysctlSecurity represents security-related sysctl values.
+type LinuxSysctlSecurity struct {
+	Values    map[string]string `json:"values"`
+	Hardened  []SysctlCheck     `json:"hardened_checks"`
+	Score     int               `json:"score"` // Percentage of checks passed
+	Error     string            `json:"error,omitempty"`
+	Timestamp time.Time         `json:"timestamp"`
+}
+
+// SysctlCheck represents a sysctl security check.
+type SysctlCheck struct {
+	Key           string `json:"key"`
+	CurrentValue  string `json:"current_value"`
+	RecommendedValue string `json:"recommended_value"`
+	Passed        bool   `json:"passed"`
+	Description   string `json:"description"`
+}
+
+// LinuxFirewallBackend represents the active firewall backend.
+type LinuxFirewallBackend struct {
+	Backend       string   `json:"backend"` // nftables, iptables, firewalld, ufw, none
+	Active        bool     `json:"active"`
+	Version       string   `json:"version,omitempty"`
+	DefaultPolicy string   `json:"default_policy,omitempty"`
+	Zones         []string `json:"zones,omitempty"` // For firewalld
+	RuleCount     int      `json:"rule_count"`
+	Error         string   `json:"error,omitempty"`
+	Timestamp     time.Time `json:"timestamp"`
+}
+
+// LinuxMACDetailed represents detailed MAC status (SELinux/AppArmor).
+type LinuxMACDetailed struct {
+	Type          string              `json:"type"` // selinux, apparmor, none
+	Enabled       bool                `json:"enabled"`
+	Mode          string              `json:"mode"` // enforcing, permissive, disabled / enforce, complain
+	PolicyVersion string              `json:"policy_version,omitempty"`
+	PolicyType    string              `json:"policy_type,omitempty"` // SELinux: targeted, mls, etc
+	SELinuxStatus *SELinuxDetails     `json:"selinux_status,omitempty"`
+	AppArmorStatus *AppArmorDetails   `json:"apparmor_status,omitempty"`
+	Error         string              `json:"error,omitempty"`
+	Timestamp     time.Time           `json:"timestamp"`
+}
+
+// SELinuxDetails represents SELinux-specific details.
+type SELinuxDetails struct {
+	CurrentMode    string   `json:"current_mode"`
+	ConfigMode     string   `json:"config_mode"`
+	MLS            bool     `json:"mls_enabled"`
+	LoadedPolicyName string `json:"loaded_policy_name"`
+	Booleans       map[string]bool `json:"booleans,omitempty"`
+	DenialCount    int      `json:"denial_count"`
+}
+
+// AppArmorDetails represents AppArmor-specific details.
+type AppArmorDetails struct {
+	ProfilesLoaded   int      `json:"profiles_loaded"`
+	ProfilesEnforce  int      `json:"profiles_enforce"`
+	ProfilesComplain int      `json:"profiles_complain"`
+	ProcessesConfined int     `json:"processes_confined"`
+	ProcessesUnconfined int   `json:"processes_unconfined"`
+	Profiles         []AppArmorProfile `json:"profiles,omitempty"`
+}
+
+// AppArmorProfile represents an AppArmor profile.
+type AppArmorProfile struct {
+	Name   string `json:"name"`
+	Mode   string `json:"mode"` // enforce, complain, unconfined
+}
+
+// LinuxPackageRepos represents package repository summary.
+type LinuxPackageRepos struct {
+	PackageManager string         `json:"package_manager"` // apt, dnf, yum, zypper, pacman
+	Repos          []PackageRepo  `json:"repos"`
+	Count          int            `json:"count"`
+	Error          string         `json:"error,omitempty"`
+	Timestamp      time.Time      `json:"timestamp"`
+}
+
+// PackageRepo represents a package repository.
+type PackageRepo struct {
+	Name       string `json:"name"`
+	URL        string `json:"url,omitempty"`
+	Enabled    bool   `json:"enabled"`
+	GPGCheck   bool   `json:"gpg_check"`
+	Type       string `json:"type,omitempty"` // deb, rpm, etc
+	Components []string `json:"components,omitempty"` // For apt: main, universe, etc
+}
+
+// LinuxAutoUpdates represents automatic update configuration.
+type LinuxAutoUpdates struct {
+	Enabled          bool      `json:"enabled"`
+	Service          string    `json:"service"` // unattended-upgrades, dnf-automatic, etc
+	AutoReboot       bool      `json:"auto_reboot"`
+	RebootTime       string    `json:"reboot_time,omitempty"`
+	SecurityOnly     bool      `json:"security_only"`
+	MailOnError      bool      `json:"mail_on_error"`
+	MailTo           string    `json:"mail_to,omitempty"`
+	UpdateInterval   string    `json:"update_interval,omitempty"`
+	LastRun          time.Time `json:"last_run"`
+	Error            string    `json:"error,omitempty"`
+	Timestamp        time.Time `json:"timestamp"`
+}
+
+// VendorServicesResult represents OS vendor services inventory.
+type VendorServicesResult struct {
+	Services  []VendorService `json:"services"`
+	Count     int             `json:"count"`
+	Platform  string          `json:"platform"`
+	Error     string          `json:"error,omitempty"`
+	Timestamp time.Time       `json:"timestamp"`
+}
+
+// VendorService represents an OS vendor service.
+type VendorService struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name,omitempty"`
+	Description string `json:"description,omitempty"`
+	Status      string `json:"status"` // running, stopped, etc
+	StartType   string `json:"start_type,omitempty"`
+	Vendor      string `json:"vendor"` // Microsoft, Apple, Linux distro
+	Category    string `json:"category,omitempty"` // security, networking, system, etc
+}

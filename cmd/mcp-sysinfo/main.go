@@ -1106,6 +1106,119 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serv
 		c := storage.NewCollector()
 		result, err = c.GetFSEvents()
 
+	// Phase 1.9: Platform Security Controls
+	case "get_windows_defender_status":
+		c := security.NewCollector()
+		result, err = c.GetWindowsDefenderStatus()
+
+	case "get_windows_firewall_profiles":
+		c := security.NewCollector()
+		result, err = c.GetWindowsFirewallProfiles()
+
+	case "get_bitlocker_status":
+		c := security.NewCollector()
+		result, err = c.GetBitLockerStatus()
+
+	case "get_windows_smb_shares":
+		c := security.NewCollector()
+		result, err = c.GetWindowsSMBShares()
+
+	case "get_windows_rdp_config":
+		c := security.NewCollector()
+		result, err = c.GetWindowsRDPConfig()
+
+	case "get_windows_winrm_config":
+		c := security.NewCollector()
+		result, err = c.GetWindowsWinRMConfig()
+
+	case "get_windows_applocker_policy":
+		c := security.NewCollector()
+		result, err = c.GetWindowsAppLockerPolicy()
+
+	case "get_windows_wdac_status":
+		c := security.NewCollector()
+		result, err = c.GetWindowsWDACStatus()
+
+	case "get_windows_local_security_policy":
+		c := security.NewCollector()
+		result, err = c.GetWindowsLocalSecurityPolicy()
+
+	case "get_windows_gpo_applied":
+		c := security.NewCollector()
+		result, err = c.GetWindowsGPOApplied()
+
+	case "get_windows_credential_guard":
+		c := security.NewCollector()
+		result, err = c.GetWindowsCredentialGuard()
+
+	case "get_windows_update_health":
+		c := security.NewCollector()
+		result, err = c.GetWindowsUpdateHealth()
+
+	case "get_macos_filevault_status":
+		c := security.NewCollector()
+		result, err = c.GetMacOSFileVaultStatus()
+
+	case "get_macos_gatekeeper_status":
+		c := security.NewCollector()
+		result, err = c.GetMacOSGatekeeperStatus()
+
+	case "get_macos_sip_status":
+		c := security.NewCollector()
+		result, err = c.GetMacOSSIPStatus()
+
+	case "get_macos_xprotect_status":
+		c := security.NewCollector()
+		result, err = c.GetMacOSXProtectStatus()
+
+	case "get_macos_pf_rules":
+		c := security.NewCollector()
+		result, err = c.GetMacOSPFRules()
+
+	case "get_macos_mdm_profiles":
+		c := security.NewCollector()
+		result, err = c.GetMacOSMDMProfiles()
+
+	case "get_macos_tcc_permissions":
+		c := security.NewCollector()
+		result, err = c.GetMacOSTCCPermissions()
+
+	case "get_macos_security_log_events":
+		c := security.NewCollector()
+		result, err = c.GetMacOSSecurityLogEvents()
+
+	case "get_linux_auditd_status":
+		c := security.NewCollector()
+		result, err = c.GetLinuxAuditdStatus()
+
+	case "get_linux_kernel_lockdown":
+		c := security.NewCollector()
+		result, err = c.GetLinuxKernelLockdown()
+
+	case "get_linux_sysctl_security":
+		c := security.NewCollector()
+		result, err = c.GetLinuxSysctlSecurity()
+
+	case "get_linux_firewall_backend":
+		c := security.NewCollector()
+		result, err = c.GetLinuxFirewallBackend()
+
+	case "get_linux_mac_detailed":
+		c := security.NewCollector()
+		result, err = c.GetLinuxMACDetailed()
+
+	case "get_linux_package_repos":
+		c := security.NewCollector()
+		result, err = c.GetLinuxPackageRepos()
+
+	case "get_linux_auto_updates":
+		c := security.NewCollector()
+		result, err = c.GetLinuxAutoUpdates()
+
+	case "get_vendor_services":
+		c := security.NewCollector()
+		result, err = c.GetVendorServices()
+
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)
 		fmt.Fprintln(os.Stderr, "Use --help to see available queries.")

@@ -72,6 +72,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 3: Storage Deep Dive (scope: storage)
 	registerStorageTools(s)
+
+	// Phase 1.9: Platform Security Controls (scope: security)
+	registerPlatformSecurityTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -2533,6 +2536,385 @@ func registerStorageTools(s *Server) {
 	}, "storage", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := storage.NewCollector()
 		result, err := c.GetFSEvents()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+// registerPlatformSecurityTools registers Phase 1.9 Platform Security Controls tools.
+func registerPlatformSecurityTools(s *Server) {
+	// ==========================================================================
+	// Phase 1.9: Platform Security Controls
+	// ==========================================================================
+
+	// Windows Security Controls (12 queries)
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_defender_status",
+		Description: "Get Windows Defender status including real-time protection, signatures, tamper protection, and scan ages (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsDefenderStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_firewall_profiles",
+		Description: "Get Windows Firewall profile states for Domain, Private, and Public profiles (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsFirewallProfiles()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_bitlocker_status",
+		Description: "Get BitLocker encryption status per volume including protection status, encryption method, and key protectors (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetBitLockerStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_smb_shares",
+		Description: "Get SMB shares and permissions summary (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsSMBShares()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_rdp_config",
+		Description: "Get RDP configuration including enabled status, NLA, port, and security settings (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsRDPConfig()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_winrm_config",
+		Description: "Get WinRM listener and authentication configuration (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsWinRMConfig()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_applocker_policy",
+		Description: "Get AppLocker enforcement mode and rule collections (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsAppLockerPolicy()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_wdac_status",
+		Description: "Get WDAC/Code Integrity policy state including UMCI, KMCI, and HVCI status (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsWDACStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_local_security_policy",
+		Description: "Get local security policy summary including password policy, lockout policy, and audit settings (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsLocalSecurityPolicy()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_gpo_applied",
+		Description: "Get applied Group Policy Objects for computer scope (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsGPOApplied()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_credential_guard",
+		Description: "Get Credential Guard and LSA protection status (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsCredentialGuard()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_windows_update_health",
+		Description: "Get Windows Update health including pending updates, reboot required, and update source (Windows only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetWindowsUpdateHealth()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// macOS Security Controls (8 queries)
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_filevault_status",
+		Description: "Get FileVault disk encryption status (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSFileVaultStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_gatekeeper_status",
+		Description: "Get Gatekeeper and notarization status (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSGatekeeperStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_sip_status",
+		Description: "Get System Integrity Protection (SIP) status (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSSIPStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_xprotect_status",
+		Description: "Get XProtect/MRT version and status (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSXProtectStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_pf_rules",
+		Description: "Get Packet Filter (pf) status and rules summary (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSPFRules()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_mdm_profiles",
+		Description: "Get installed MDM configuration profiles (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSMDMProfiles()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_tcc_permissions",
+		Description: "Get TCC (Transparency, Consent, and Control) permissions summary (macOS only, sensitive)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSTCCPermissions()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_macos_security_log_events",
+		Description: "Get unified log security events (macOS only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMacOSSecurityLogEvents()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Linux Security Controls (7 queries)
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_auditd_status",
+		Description: "Get auditd status and rule summary (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxAuditdStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_kernel_lockdown",
+		Description: "Get kernel lockdown mode and Secure Boot status (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxKernelLockdown()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_sysctl_security",
+		Description: "Get key sysctl hardening values with security score (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxSysctlSecurity()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_firewall_backend",
+		Description: "Get active firewall backend (nftables/iptables/firewalld/ufw) (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxFirewallBackend()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_mac_detailed",
+		Description: "Get detailed SELinux or AppArmor status including profiles and enforcement mode (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxMACDetailed()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_package_repos",
+		Description: "Get package repository summary (apt/dnf/yum/zypper/pacman) (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxPackageRepos()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_linux_auto_updates",
+		Description: "Get unattended upgrades/automatic update status (Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetLinuxAutoUpdates()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Cross-Platform (1 query)
+
+	s.RegisterTool(Tool{
+		Name:        "get_vendor_services",
+		Description: "Get OS vendor services inventory (Microsoft/Apple/Linux distro services)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetVendorServices()
 		if err != nil {
 			return nil, err
 		}

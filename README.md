@@ -299,7 +299,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_iis_kernel_cache` | HTTP.sys kernel cache | - | - | 📋 |
 | *+ 15 more queries* | | - | - | 📋 |
 
-### Phase 1.9: Platform Security Controls 🔄 (0/28)
+### Phase 1.9: Platform Security Controls ✅ (28/28)
 
 Extended platform-specific security controls for endpoint security posture assessment.
 
@@ -307,49 +307,49 @@ Extended platform-specific security controls for endpoint security posture asses
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_windows_defender_status` | Defender RTP, signatures, tamper protection | - | - | 🔄 |
-| `get_windows_firewall_profiles` | Firewall profile states (Domain/Private/Public) | - | - | 🔄 |
-| `get_bitlocker_status` | BitLocker encryption status per volume | - | - | 🔄 |
-| `get_windows_smb_shares` | SMB shares and permissions summary | - | - | 🔄 |
-| `get_windows_rdp_config` | RDP enabled, NLA status, port config | - | - | 🔄 |
-| `get_windows_winrm_config` | WinRM listener and auth config | - | - | 🔄 |
-| `get_windows_applocker_policy` | AppLocker enforcement mode | - | - | 🔄 |
-| `get_windows_wdac_status` | WDAC/Code Integrity policy state | - | - | 🔄 |
-| `get_windows_local_security_policy` | Password, lockout, audit policy summary | - | - | 🔄 |
-| `get_windows_gpo_applied` | Applied GPOs for computer scope | - | - | 🔄 |
-| `get_windows_credential_guard` | Credential Guard/LSA protection status | - | - | 🔄 |
-| `get_windows_update_health` | Update health, pending updates, WSUS/WUfB | - | - | 🔄 |
+| `get_windows_defender_status` | Defender RTP, signatures, tamper protection | - | - | ✅ |
+| `get_windows_firewall_profiles` | Firewall profile states (Domain/Private/Public) | - | - | ✅ |
+| `get_bitlocker_status` | BitLocker encryption status per volume | - | - | ✅ |
+| `get_windows_smb_shares` | SMB shares and permissions summary | - | - | ✅ |
+| `get_windows_rdp_config` | RDP enabled, NLA status, port config | - | - | ✅ |
+| `get_windows_winrm_config` | WinRM listener and auth config | - | - | ✅ |
+| `get_windows_applocker_policy` | AppLocker enforcement mode | - | - | ✅ |
+| `get_windows_wdac_status` | WDAC/Code Integrity policy state | - | - | ✅ |
+| `get_windows_local_security_policy` | Password, lockout, audit policy summary | - | - | ✅ |
+| `get_windows_gpo_applied` | Applied GPOs for computer scope | - | - | ✅ |
+| `get_windows_credential_guard` | Credential Guard/LSA protection status | - | - | ✅ |
+| `get_windows_update_health` | Update health, pending updates, WSUS/WUfB | - | - | ✅ |
 
 #### macOS Security Controls (8 queries)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_macos_filevault_status` | FileVault disk encryption status | - | 🔄 | - |
-| `get_macos_gatekeeper_status` | Gatekeeper and notarization status | - | 🔄 | - |
-| `get_macos_sip_status` | System Integrity Protection status | - | 🔄 | - |
-| `get_macos_xprotect_status` | XProtect/MRT version and status | - | 🔄 | - |
-| `get_macos_pf_rules` | Packet Filter status and rules summary | - | 🔄 | - |
-| `get_macos_mdm_profiles` | Installed MDM configuration profiles | - | 🔄 | - |
-| `get_macos_tcc_permissions` | TCC permissions summary (sensitive) | - | 🔄 | - |
-| `get_macos_security_log_events` | Unified log security events | - | 🔄 | - |
+| `get_macos_filevault_status` | FileVault disk encryption status | - | ✅ | - |
+| `get_macos_gatekeeper_status` | Gatekeeper and notarization status | - | ✅ | - |
+| `get_macos_sip_status` | System Integrity Protection status | - | ✅ | - |
+| `get_macos_xprotect_status` | XProtect/MRT version and status | - | ✅ | - |
+| `get_macos_pf_rules` | Packet Filter status and rules summary | - | ✅ | - |
+| `get_macos_mdm_profiles` | Installed MDM configuration profiles | - | ✅ | - |
+| `get_macos_tcc_permissions` | TCC permissions summary (sensitive) | - | ✅ | - |
+| `get_macos_security_log_events` | Unified log security events | - | ✅ | - |
 
 #### Linux Security Controls (7 queries)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_linux_auditd_status` | auditd status and rule summary | 🔄 | - | - |
-| `get_linux_kernel_lockdown` | Kernel lockdown mode | 🔄 | - | - |
-| `get_linux_sysctl_security` | Key sysctl hardening values | 🔄 | - | - |
-| `get_linux_firewall_backend` | Active firewall (nftables/iptables/ufw) | 🔄 | - | - |
-| `get_linux_mac_detailed` | Detailed SELinux/AppArmor status | 🔄 | - | - |
-| `get_linux_package_repos` | Package repository summary | 🔄 | - | - |
-| `get_linux_auto_updates` | Unattended upgrades status | 🔄 | - | - |
+| `get_linux_auditd_status` | auditd status and rule summary | ✅ | - | - |
+| `get_linux_kernel_lockdown` | Kernel lockdown mode | ✅ | - | - |
+| `get_linux_sysctl_security` | Key sysctl hardening values | ✅ | - | - |
+| `get_linux_firewall_backend` | Active firewall (nftables/iptables/ufw) | ✅ | - | - |
+| `get_linux_mac_detailed` | Detailed SELinux/AppArmor status | ✅ | - | - |
+| `get_linux_package_repos` | Package repository summary | ✅ | - | - |
+| `get_linux_auto_updates` | Unattended upgrades status | ✅ | - | - |
 
 #### Cross-Platform (1 query)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_vendor_services` | OS vendor services inventory | 🔄 | 🔄 | 🔄 |
+| `get_vendor_services` | OS vendor services inventory | ✅ | ✅ | ✅ |
 
 ### Phase 1.10: Extended Language Ecosystems 📋 (0/21)
 
@@ -817,7 +817,7 @@ curl http://localhost:8080/metrics
 | **1.6** | Windows Enterprise | ✅ Complete | 15/15 |
 | **1.7** | Deep IIS Configuration | 📋 Planned | 0/36 |
 | **1.8** | Complete IIS Coverage | 📋 Planned | 0/48 |
-| **1.9** | Platform Security Controls | 🔄 In Progress | 0/28 |
+| **1.9** | Platform Security Controls | ✅ Complete | 28/28 |
 | **1.10** | Extended Language Ecosystems | 📋 Planned | 0/21 |
 | **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
 | **3** | Storage Deep Dive | ✅ Complete | 5/5 |
@@ -828,7 +828,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 134/293 queries (46%)**
+**Implemented: 162/293 queries (55%)**
 
 ### Cross-Platform Architecture
 
