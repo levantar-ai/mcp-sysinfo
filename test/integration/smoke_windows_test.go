@@ -4,13 +4,16 @@
 package integration
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
+	"github.com/levantar-ai/mcp-sysinfo/internal/gpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/hardware"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
@@ -19,8 +22,10 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/osinfo"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
+	"github.com/levantar-ai/mcp-sysinfo/internal/report"
 	"github.com/levantar-ai/mcp-sysinfo/internal/runtimes"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
+	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
@@ -357,7 +362,67 @@ func TestSmoke_Windows_GetPowerState(t *testing.T) {
 }
 
 // =============================================================================
-// Phase 1.7: Software Inventory (Windows specific + common)
+// Phase 1.2.5: Security Configuration (6 queries)
+// =============================================================================
+
+func TestSmoke_Windows_GetEnvVars(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetEnvVars()
+	if err != nil {
+		t.Fatalf("get_env_vars failed: %v", err)
+	}
+	mustJSON(t, "get_env_vars", result)
+}
+
+func TestSmoke_Windows_GetUserAccounts(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetUserAccounts()
+	if err != nil {
+		t.Fatalf("get_user_accounts failed: %v", err)
+	}
+	mustJSON(t, "get_user_accounts", result)
+}
+
+func TestSmoke_Windows_GetSudoConfig(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetSudoConfig()
+	if err != nil {
+		t.Logf("get_sudo_config returned error (expected on Windows): %v", err)
+		return
+	}
+	mustJSON(t, "get_sudo_config", result)
+}
+
+func TestSmoke_Windows_GetSSHConfig(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetSSHConfig()
+	if err != nil {
+		t.Logf("get_ssh_config returned error (SSH may not be installed): %v", err)
+		return
+	}
+	mustJSON(t, "get_ssh_config", result)
+}
+
+func TestSmoke_Windows_GetMACStatus(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetMACStatus()
+	if err != nil {
+		t.Fatalf("get_mac_status failed: %v", err)
+	}
+	mustJSON(t, "get_mac_status", result)
+}
+
+func TestSmoke_Windows_GetCertificates(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetCertificates()
+	if err != nil {
+		t.Fatalf("get_certificates failed: %v", err)
+	}
+	mustJSON(t, "get_certificates", result)
+}
+
+// =============================================================================
+// Phase 1.3: Software Inventory (Windows specific + common)
 // =============================================================================
 
 func TestSmoke_Windows_GetPathExecutables(t *testing.T) {
@@ -873,4 +938,58 @@ func TestSmoke_Windows_GetSecurityPostureSnapshot(t *testing.T) {
 		t.Fatalf("get_security_posture_snapshot failed: %v", err)
 	}
 	mustJSON(t, "get_security_posture_snapshot", result)
+}
+
+// =============================================================================
+// Phase 2.0: Enhanced Diagnostics (5 queries)
+// =============================================================================
+
+func TestSmoke_Windows_GetGPUInfo(t *testing.T) {
+	c := gpu.NewCollector()
+	result, err := c.GetGPUInfo()
+	if err != nil {
+		t.Logf("get_gpu_info returned error (GPU may not be available): %v", err)
+		return
+	}
+	mustJSON(t, "get_gpu_info", result)
+}
+
+func TestSmoke_Windows_GetContainerStats(t *testing.T) {
+	c := container.NewCollector()
+	result, err := c.GetContainerStats("")
+	if err != nil {
+		t.Logf("get_container_stats returned error (Docker may not be available): %v", err)
+		return
+	}
+	mustJSON(t, "get_container_stats", result)
+}
+
+func TestSmoke_Windows_GetContainerLogs(t *testing.T) {
+	c := container.NewCollector()
+	result, err := c.GetContainerLogs("", 10)
+	if err != nil {
+		t.Logf("get_container_logs returned error (Docker may not be available): %v", err)
+		return
+	}
+	mustJSON(t, "get_container_logs", result)
+}
+
+func TestSmoke_Windows_GenerateSystemReport(t *testing.T) {
+	c := report.NewCollector()
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	result, err := c.GenerateSystemReport(ctx)
+	if err != nil {
+		t.Fatalf("generate_system_report failed: %v", err)
+	}
+	mustJSON(t, "generate_system_report", result)
+}
+
+func TestSmoke_Windows_GetProcessesSampled(t *testing.T) {
+	c := process.NewCollector()
+	result, err := c.CollectSampled(100*time.Millisecond, 0)
+	if err != nil {
+		t.Fatalf("get_processes_sampled failed: %v", err)
+	}
+	mustJSON(t, "get_processes_sampled", result)
 }

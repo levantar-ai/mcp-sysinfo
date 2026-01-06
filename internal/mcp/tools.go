@@ -21,6 +21,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
 	"github.com/levantar-ai/mcp-sysinfo/internal/runtimes"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
+	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
@@ -32,34 +33,37 @@ import (
 
 // RegisterAllTools registers all system info tools with the MCP server.
 func RegisterAllTools(s *Server) {
-	// Phase 1: Core Metrics (scope: core)
+	// Phase 1.0: Core Metrics (scope: core)
 	registerCoreTools(s)
 
-	// Phase 1.5: Log Access (scope: logs)
+	// Phase 1.1: Log Access (scope: logs)
 	registerLogTools(s)
 
-	// Phase 1.6: System Hooks (scope: hooks)
+	// Phase 1.2: System Hooks (scope: hooks)
 	registerHookTools(s)
 
-	// Phase 1.6.6: Hardware Information (scope: hardware)
+	// Phase 1.2.5: Security Configuration (scope: sensitive)
+	registerSecurityTools(s)
+
+	// Phase 1.2.6: Hardware Information (scope: hardware)
 	registerHardwareTools(s)
 
-	// Phase 1.6.7: Process & Resources (scope: resources)
+	// Phase 1.2.7: Process & Resources (scope: resources)
 	registerResourceTools(s)
 
-	// Phase 1.6.8: System State (scope: state)
+	// Phase 1.2.8: System State (scope: state)
 	registerStateTools(s)
 
-	// Phase 1.7: SBOM & Software Inventory (scope: software)
+	// Phase 1.3: SBOM & Software Inventory (scope: software)
 	registerSoftwareTools(s)
 
-	// Phase 1.9: Triage & Summary Queries (scope: triage)
+	// Phase 1.5: Triage & Summary Queries (scope: triage)
 	registerTriageTools(s)
 
-	// Phase 1.10: Windows Enterprise Features (scope: windows)
+	// Phase 1.6: Windows Enterprise Features (scope: windows)
 	registerWindowsEnterpriseTools(s)
 
-	// Phase 2: Enhanced Diagnostics (scope: enhanced)
+	// Phase 2.0: Enhanced Diagnostics (scope: enhanced)
 	registerEnhancedDiagnosticsTools(s)
 
 	// Phase 2.3: System Reports (scope: report)
@@ -638,6 +642,92 @@ func registerHookTools(s *Server) {
 	}, "hooks", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := filesystem.NewCollector()
 		result, err := c.GetInodeUsage()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerSecurityTools(s *Server) {
+	// Environment Variables
+	s.RegisterTool(Tool{
+		Name:        "get_env_vars",
+		Description: "Get system environment variables (sensitive values redacted)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetEnvVars()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// User Accounts
+	s.RegisterTool(Tool{
+		Name:        "get_user_accounts",
+		Description: "Get local user accounts and groups",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetUserAccounts()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Sudo Configuration
+	s.RegisterTool(Tool{
+		Name:        "get_sudo_config",
+		Description: "Get sudo/privilege escalation configuration (Unix-like systems)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetSudoConfig()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// SSH Configuration
+	s.RegisterTool(Tool{
+		Name:        "get_ssh_config",
+		Description: "Get SSH server and client configuration",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetSSHConfig()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// MAC Status (SELinux/AppArmor)
+	s.RegisterTool(Tool{
+		Name:        "get_mac_status",
+		Description: "Get Mandatory Access Control status (SELinux/AppArmor on Linux)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetMACStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// SSL/TLS Certificates
+	s.RegisterTool(Tool{
+		Name:        "get_certificates",
+		Description: "Get SSL/TLS certificates from system trust store with expiry information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "sensitive", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := security.NewCollector()
+		result, err := c.GetCertificates()
 		if err != nil {
 			return nil, err
 		}

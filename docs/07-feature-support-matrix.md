@@ -13,24 +13,23 @@ A summary of feature support across Linux, macOS, and Windows.
 ║                                                                              ║
 ║  Phase              Description                              Queries  Status ║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  Phase 1.0 (MVP)    Core system metrics                           7   ✅ Done║
+║  Phase 1.0 (MVP)    Core system metrics                           8   ✅ Done║
 ║  Phase 1.1 (Logs)   System & app log access for diagnostics       6   ✅ Done║
-║  Phase 1.2 (Hooks)  Deep system introspection                    31   ✅ Done║
-║  Phase 1.3 (SBOM)   Software inventory & vulnerability           31   ✅ Done║
+║  Phase 1.2 (Hooks)  Deep system introspection + security         37   ✅ Done║
+║  Phase 1.3 (SBOM)   Software inventory & vulnerability           33   ✅ Done║
 ║  Phase 1.4 (Apps)   Application discovery & config                2   ✅ Done║
 ║  Phase 1.5 (Triage) Triage & summary queries                     25   ✅ Done║
 ║  Phase 1.6 (Win)    Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
 ║  Phase 1.7          Deep IIS Configuration                       35   📋 Plan║
 ║  Phase 1.8          Complete IIS Coverage                        47   📋 Plan║
-║  Phase 2.1-2.2      GPU & Container Metrics                       3   ✅ Done║
-║  Phase 2.3          Services & VM Detection                       3   📋 Plan║
+║  Phase 2.0          Enhanced diagnostics (GPU, containers)        5   ✅ Done║
 ║  Phase 3            Analytics (Historical, Trends, Anomaly)       4   📋 Plan║
 ║  Phase 4            Automation (Alerts, Remediation)              4   📋 Plan║
 ║  Phase 5            Security (Scan, Compliance, Forensics)        4   📋 Plan║
 ║  Phase 6            Integration (Cloud, Plugins, Multi-host)      4   📋 Plan║
 ║  Phase 7            LLM Features (NL Queries, Auto-diagnostics)   3   📋 Plan║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  IMPLEMENTED: 120 queries    PLANNED: 126 queries    TOTAL: 246             ║
+║  IMPLEMENTED: 131 queries    PLANNED: 97 queries     TOTAL: 228             ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -124,18 +123,18 @@ Zero-dependency deep system introspection. See [08-system-hooks.md](./08-system-
 | `get_inode_usage` | Inode exhaustion | ✅ statfs | ✅ statfs | N/A | 🟢 |
 | `get_mount_options` | Mount security flags | ✅ /proc/mounts | ✅ mount | ✅ API | 🟢 |
 
-### Security Configuration (6 queries)
+### Security Configuration (6 queries) ✅
 
 | Query | Description | Linux | macOS | Windows | Impact |
 |-------|-------------|-------|-------|---------|--------|
+| `get_env_vars` | Environment variables (redacted) | ✅ os.Environ | ✅ os.Environ | ✅ os.Environ | 🟢 |
 | `get_user_accounts` | Local users/groups | ✅ /etc/passwd | ✅ dscl | ✅ API | 🟢 |
 | `get_sudo_config` | Privilege escalation | ✅ /etc/sudoers | ✅ /etc/sudoers | ✅ Admins | 🟢 |
 | `get_ssh_config` | SSH server/client | ✅ sshd_config | ✅ sshd_config | ✅ sshd_config | 🟢 |
-| `get_ssl_certs` | Certificate expiry | ✅ /etc/ssl | ✅ Keychain | ✅ CertStore | 🟡 |
-| `get_selinux_status` | MAC status | ✅ /sys/fs/selinux | N/A | N/A | 🟢 |
-| `get_apparmor_status` | AppArmor profiles | ✅ /sys/kernel | N/A | N/A | 🟢 |
+| `get_mac_status` | SELinux/AppArmor status | ✅ /sys/fs/selinux | ✅ N/A | ✅ N/A | 🟢 |
+| `get_certificates` | Certificate expiry | ✅ /etc/ssl | ✅ Keychain | ✅ CertStore | 🟡 |
 
-### Hardware Information (4 queries)
+### Hardware Information (4 queries) ✅
 
 | Query | Description | Linux | macOS | Windows | Impact |
 |-------|-------------|-------|-------|---------|--------|
@@ -144,28 +143,28 @@ Zero-dependency deep system introspection. See [08-system-hooks.md](./08-system-
 | `get_pci_devices` | PCI devices | ✅ /sys/bus/pci | ✅ profiler | ✅ API | 🟢 |
 | `get_block_devices` | Disk topology | ✅ /sys/block | ✅ diskutil | ✅ API | 🟢 |
 
-### Process & Resources (5 queries)
+### Process & Resources (5 queries) ✅
 
 | Query | Description | Linux | macOS | Windows | Impact |
 |-------|-------------|-------|-------|---------|--------|
-| `get_env_vars` | Environment variables | ✅ /proc/environ | ✅ environ | ✅ API | 🟢 |
+| `get_process_environ` | Process environment vars | ✅ /proc/environ | ✅ environ | ✅ API | 🟢 |
 | `get_ipc_resources` | Semaphores, shm | ✅ /proc/sysvipc | ✅ ipcs | N/A | 🟢 |
 | `get_namespaces` | Container namespaces | ✅ /proc/ns | N/A | N/A | 🟢 |
-| `get_cgroup_limits` | Resource limits | ✅ /sys/fs/cgroup | N/A | ✅ Jobs | 🟢 |
+| `get_cgroups` | Resource limits | ✅ /sys/fs/cgroup | N/A | ✅ Jobs | 🟢 |
 | `get_capabilities` | Process capabilities | ✅ /proc/status | N/A | ✅ Token | 🟢 |
 
-### System State (6 queries)
+### System State (6 queries) ✅
 
 | Query | Description | Linux | macOS | Windows | Impact |
 |-------|-------------|-------|-------|---------|--------|
 | `get_vm_info` | Virtualization detect | ✅ /sys/class/dmi | ✅ sysctl | ✅ WMI | 🟢 |
-| `get_locale` | Locale/timezone | ✅ /etc/timezone | ✅ defaults | ✅ API | 🟢 |
+| `get_timezone` | Locale/timezone | ✅ /etc/timezone | ✅ defaults | ✅ API | 🟢 |
 | `get_ntp_status` | Time sync status | ✅ timedatectl | ✅ sntp | ✅ w32tm | 🟡 |
 | `get_core_dumps` | Crash dumps | ✅ /var/crash | ✅ DiagReports | ✅ CrashDumps | 🟡 |
 | `get_power_state` | Power/battery | ✅ /sys/class/power | ✅ pmset | ✅ API | 🟢 |
 | `get_numa_topology` | NUMA nodes | ✅ /sys/devices/node | N/A | ✅ API | 🟢 |
 
-**Status: 0/37 queries implemented**
+**Status: 37/37 queries implemented** ✅
 
 ---
 
@@ -220,22 +219,21 @@ Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.m
 | `check_osv_vulns` | OSV database (network) | ✅ | ✅ | ✅ | 🟠 |
 | `check_nvd_vulns` | NVD database (network) | ✅ | ✅ | ✅ | 🟠 |
 
-**Status: 0/31 queries implemented**
+**Status: 33/33 queries implemented** ✅
 
 ---
 
 ## Phase 2 - Enhanced Diagnostics
 
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|-------|-------|---------|
-| `get_gpu_info` | GPU utilization, memory, temp | ✅ | ⚠️ | ✅ |
-| `get_battery_info` | Battery status, health, cycles | ✅ | ✅ | ✅ |
-| `get_services` | Service status, control | ✅ systemd | ✅ launchd | ✅ services |
-| `get_containers` | Docker/Podman metrics | ✅ | ✅ | ✅ |
-| `get_users` | Logged-in users, sessions | ✅ | ✅ | ✅ |
-| `get_boot_events` | Boot history, failures | ✅ | ✅ | ✅ |
+| Query | Description | Linux | macOS | Windows | Status |
+|-------|-------------|-------|-------|---------|--------|
+| `get_gpu_info` | GPU utilization, memory, temp | ✅ | ⚠️ | ✅ | ✅ Done |
+| `get_container_stats` | Docker/Podman metrics | ✅ | ✅ | ✅ | ✅ Done |
+| `get_container_logs` | Container log access | ✅ | ✅ | ✅ | ✅ Done |
+| `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ | ✅ Done |
+| `generate_iis_report` | IIS diagnostic report | N/A | N/A | ✅ | ✅ Done |
 
-**Status: 0/6 queries implemented**
+**Status: 5/5 queries implemented** ✅
 
 ---
 

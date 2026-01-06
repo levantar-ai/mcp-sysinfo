@@ -4,14 +4,17 @@
 package integration
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/filesystem"
+	"github.com/levantar-ai/mcp-sysinfo/internal/gpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/hardware"
 	"github.com/levantar-ai/mcp-sysinfo/internal/kernel"
 	"github.com/levantar-ai/mcp-sysinfo/internal/logs"
@@ -20,8 +23,10 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/osinfo"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
+	"github.com/levantar-ai/mcp-sysinfo/internal/report"
 	"github.com/levantar-ai/mcp-sysinfo/internal/runtimes"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
+	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
@@ -405,7 +410,67 @@ func TestSmoke_Darwin_GetPowerState(t *testing.T) {
 }
 
 // =============================================================================
-// Phase 1.7: Software Inventory (31 queries)
+// Phase 1.2.5: Security Configuration (6 queries)
+// =============================================================================
+
+func TestSmoke_Darwin_GetEnvVars(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetEnvVars()
+	if err != nil {
+		t.Fatalf("get_env_vars failed: %v", err)
+	}
+	mustJSON(t, "get_env_vars", result)
+}
+
+func TestSmoke_Darwin_GetUserAccounts(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetUserAccounts()
+	if err != nil {
+		t.Fatalf("get_user_accounts failed: %v", err)
+	}
+	mustJSON(t, "get_user_accounts", result)
+}
+
+func TestSmoke_Darwin_GetSudoConfig(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetSudoConfig()
+	if err != nil {
+		t.Logf("get_sudo_config returned error (may require elevated permissions): %v", err)
+		return
+	}
+	mustJSON(t, "get_sudo_config", result)
+}
+
+func TestSmoke_Darwin_GetSSHConfig(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetSSHConfig()
+	if err != nil {
+		t.Logf("get_ssh_config returned error (SSH may not be configured): %v", err)
+		return
+	}
+	mustJSON(t, "get_ssh_config", result)
+}
+
+func TestSmoke_Darwin_GetMACStatus(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetMACStatus()
+	if err != nil {
+		t.Fatalf("get_mac_status failed: %v", err)
+	}
+	mustJSON(t, "get_mac_status", result)
+}
+
+func TestSmoke_Darwin_GetCertificates(t *testing.T) {
+	c := security.NewCollector()
+	result, err := c.GetCertificates()
+	if err != nil {
+		t.Fatalf("get_certificates failed: %v", err)
+	}
+	mustJSON(t, "get_certificates", result)
+}
+
+// =============================================================================
+// Phase 1.3: Software Inventory (31 queries)
 // =============================================================================
 
 func TestSmoke_Darwin_GetPathExecutables(t *testing.T) {
@@ -937,4 +1002,66 @@ func TestSmoke_Darwin_GetSecurityPostureSnapshot(t *testing.T) {
 		t.Fatalf("get_security_posture_snapshot failed: %v", err)
 	}
 	mustJSON(t, "get_security_posture_snapshot", result)
+}
+
+// =============================================================================
+// Phase 2.0: Enhanced Diagnostics (5 queries)
+// =============================================================================
+
+func TestSmoke_Darwin_GetGPUInfo(t *testing.T) {
+	c := gpu.NewCollector()
+	result, err := c.GetGPUInfo()
+	if err != nil {
+		t.Logf("get_gpu_info returned error (GPU info may be limited on macOS): %v", err)
+		return
+	}
+	mustJSON(t, "get_gpu_info", result)
+}
+
+func TestSmoke_Darwin_GetContainerStats(t *testing.T) {
+	c := container.NewCollector()
+	result, err := c.GetContainerStats("")
+	if err != nil {
+		t.Logf("get_container_stats returned error (Docker may not be available): %v", err)
+		return
+	}
+	mustJSON(t, "get_container_stats", result)
+}
+
+func TestSmoke_Darwin_GetContainerLogs(t *testing.T) {
+	// First get a container ID if any exist
+	c := container.NewCollector()
+	containers, err := c.GetDockerContainers()
+	if err != nil || containers.Count == 0 {
+		t.Log("get_container_logs: skipped (no containers available)")
+		return
+	}
+
+	// Get logs from the first container
+	result, err := c.GetContainerLogs(containers.Containers[0].ID, 10, "")
+	if err != nil {
+		t.Logf("get_container_logs returned error: %v", err)
+		return
+	}
+	mustJSON(t, "get_container_logs", result)
+}
+
+func TestSmoke_Darwin_GenerateSystemReport(t *testing.T) {
+	rg := report.NewReportGenerator(30 * time.Second)
+	ctx := context.Background()
+	result, err := rg.GenerateSystemReport(ctx, []string{"os", "cpu", "memory", "uptime"})
+	if err != nil {
+		t.Fatalf("generate_system_report failed: %v", err)
+	}
+	mustJSON(t, "generate_system_report", result)
+}
+
+func TestSmoke_Darwin_GetProcessesSampled(t *testing.T) {
+	c := process.NewCollector()
+	// Use a short sample duration for tests
+	result, err := c.CollectSampled(200)
+	if err != nil {
+		t.Fatalf("get_processes_sampled failed: %v", err)
+	}
+	mustJSON(t, "get_processes_sampled", result)
 }

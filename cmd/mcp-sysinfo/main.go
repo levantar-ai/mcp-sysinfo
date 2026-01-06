@@ -480,8 +480,7 @@ AVAILABLE TOOLS (104):
     get_systemd_services, get_kernel_modules, get_loaded_drivers,
     get_dns_servers, get_routes, get_firewall_rules, get_listening_ports,
     get_arp_table, get_network_stats, get_mounts, get_disk_io,
-    get_open_files, get_inode_usage, get_env_vars, get_user_accounts,
-    get_sudo_config, get_ssh_config, get_mac_status, get_certificates
+    get_open_files, get_inode_usage
 
   Hardware (scope: hardware):
     get_hardware_info, get_usb_devices, get_pci_devices, get_block_devices
@@ -520,7 +519,8 @@ AVAILABLE TOOLS (104):
     get_incident_triage_snapshot, get_security_posture_snapshot
 
   Sensitive (scope: sensitive):
-    get_auth_logs
+    get_auth_logs, get_env_vars, get_user_accounts, get_sudo_config,
+    get_ssh_config, get_mac_status, get_certificates
 
 SECURITY:
     stdio transport: No auth required (OS-level controls apply)

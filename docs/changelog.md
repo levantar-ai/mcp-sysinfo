@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Phase 1.2.5: Security Configuration tools (6 queries)
+  - `get_env_vars` - System environment variables with sensitive value redaction
+  - `get_user_accounts` - Local user accounts and groups
+  - `get_sudo_config` - Sudo/privilege escalation configuration
+  - `get_ssh_config` - SSH server and client configuration
+  - `get_mac_status` - SELinux/AppArmor Mandatory Access Control status
+  - `get_certificates` - SSL/TLS certificates from system trust store
+- Integration tests for security tools (Linux, macOS, Windows)
+- Updated feature support matrix with accurate query counts
 - Phase 1.5: Triage & Summary queries (5 queries)
   - `get_os_info` - OS identification and version
   - `get_system_profile` - Hardware/VM summary
