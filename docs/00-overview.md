@@ -63,12 +63,12 @@ Same API across Linux, macOS, and Windows.
 
 | Phase | Features | Effort |
 |-------|----------|--------|
-| **MVP** | Basic 7 tools (CPU, memory, disk, network, processes, uptime, temp) | Low |
-| **v1.0** | GPU, containers, SQLite history, trends | Medium |
-| **v1.5** | Alerts, process control, security basics | Medium |
-| **v2.0** | Anomaly detection, plugins, Prometheus | High |
-| **v2.5** | Full security suite (FIM, compliance) | High |
-| **v3.0** | Multi-host, fleet management, LLM workflows | High |
+| **1.0** | Basic 7 tools (CPU, memory, disk, network, processes, uptime, temp) | Low |
+| **1.1** | Log access (journal, syslog, auth, app logs) | Low |
+| **1.2** | System hooks (deep introspection) | Medium |
+| **1.3** | SBOM & software inventory | Medium |
+| **2.0** | GPU, containers, analytics | Medium |
+| **3.0** | Alerts, security, multi-host | High |
 
 ---
 

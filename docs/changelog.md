@@ -9,22 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Phase 1.9: Triage & Summary queries (5 queries)
+- Phase 1.5: Triage & Summary queries (5 queries)
   - `get_os_info` - OS identification and version
   - `get_system_profile` - Hardware/VM summary
   - `get_service_manager_info` - Init system details
   - `get_cloud_environment` - Cloud provider detection
   - `get_language_runtime_versions` - Installed language runtimes
-- Phase 1.7.5: Vulnerability lookup
+- Phase 1.3.5: Vulnerability lookup
   - `get_vulnerabilities_osv` - Query OSV API for known CVEs
-- Phase 1.7.4: SBOM export formats
+- Phase 1.3.4: SBOM export formats
   - `get_sbom_cyclonedx` - Generate CycloneDX 1.4 JSON SBOM
   - `get_sbom_spdx` - Generate SPDX 2.3 JSON SBOM
-- Phase 1.7.3: Container inventory
+- Phase 1.3.3: Container inventory
   - `get_docker_images` - List Docker/Podman images
   - `get_docker_containers` - List containers with state
   - `get_docker_image_history` - Image layer history
-- Phase 1.7.2: Language package manager scanners
+- Phase 1.3.2: Language package manager scanners
   - `get_python_packages` - Python pip packages
   - `get_node_packages` - Node.js npm packages
   - `get_go_modules` - Go module cache
@@ -50,11 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release with 51 queries
 - Phase 1.0: Core metrics (7 queries)
   - CPU, memory, disk, network, processes, uptime, temperature
-- Phase 1.5: Log access (6 queries)
+- Phase 1.1: Log access (6 queries)
   - Journal logs, syslog, kernel logs, auth logs, app logs, Windows Event Log
-- Phase 1.6: System hooks (31 queries)
+- Phase 1.2: System hooks (31 queries)
   - Scheduled tasks, kernel modules, network config, filesystem, security, hardware
-- Phase 1.7.1: Basic SBOM (2 queries)
+- Phase 1.3.1: Basic SBOM (2 queries)
   - System packages, PATH executables
 - Stdio transport for MCP clients
 - HTTP transport with bearer token auth
@@ -80,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 See [TODO.md](https://github.com/levantar-ai/mcp-sysinfo/blob/main/TODO.md) for planned features:
 
-- Phase 1.8: Container & Orchestration
-- Phase 1.9: Triage & Summary Queries
-- Phase 1.10: Windows Enterprise Features
+- Phase 1.4: Container & Orchestration
+- Phase 1.5: Triage & Summary Queries
+- Phase 1.6: Windows Enterprise Features
 - And more...

@@ -13,15 +13,15 @@ A summary of feature support across Linux, macOS, and Windows.
 ║                                                                              ║
 ║  Phase              Description                              Queries  Status ║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  Phase 1 (MVP)      Core system metrics                           7   ✅ Done║
-║  Phase 1.5 (Logs)   System & app log access for diagnostics       6   ✅ Done║
-║  Phase 1.6 (Hooks)  Deep system introspection                    31   ✅ Done║
-║  Phase 1.7 (SBOM)   Software inventory & vulnerability           31   ✅ Done║
-║  Phase 1.8 (Apps)   Application discovery & config                2   ✅ Done║
-║  Phase 1.9 (Triage) Triage & summary queries                     25   ✅ Done║
-║  Phase 1.10 (Win)   Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
-║  Phase 1.11         Deep IIS Configuration                       35   📋 Plan║
-║  Phase 1.12         Complete IIS Coverage                        47   📋 Plan║
+║  Phase 1.0 (MVP)    Core system metrics                           7   ✅ Done║
+║  Phase 1.1 (Logs)   System & app log access for diagnostics       6   ✅ Done║
+║  Phase 1.2 (Hooks)  Deep system introspection                    31   ✅ Done║
+║  Phase 1.3 (SBOM)   Software inventory & vulnerability           31   ✅ Done║
+║  Phase 1.4 (Apps)   Application discovery & config                2   ✅ Done║
+║  Phase 1.5 (Triage) Triage & summary queries                     25   ✅ Done║
+║  Phase 1.6 (Win)    Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
+║  Phase 1.7          Deep IIS Configuration                       35   📋 Plan║
+║  Phase 1.8          Complete IIS Coverage                        47   📋 Plan║
 ║  Phase 2.1-2.2      GPU & Container Metrics                       3   ✅ Done║
 ║  Phase 2.3          Services & VM Detection                       3   📋 Plan║
 ║  Phase 3            Analytics (Historical, Trends, Anomaly)       4   📋 Plan║
@@ -43,7 +43,7 @@ A summary of feature support across Linux, macOS, and Windows.
 
 ---
 
-## Phase 1 - MVP (Complete)
+## Phase 1.0 - MVP (Complete)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|-------|-------|---------|
@@ -59,7 +59,7 @@ A summary of feature support across Linux, macOS, and Windows.
 
 ---
 
-## Phase 1.5 - Log Access (Critical for Diagnostics)
+## Phase 1.1 - Log Access (Critical for Diagnostics)
 
 Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
 
@@ -84,7 +84,7 @@ Without logs, AI can only see symptoms. With logs, AI can diagnose root causes.
 
 ---
 
-## Phase 1.6 - System Hooks (Deep Introspection)
+## Phase 1.2 - System Hooks (Deep Introspection)
 
 Zero-dependency deep system introspection. See [08-system-hooks.md](./08-system-hooks.md) for full details.
 
@@ -169,7 +169,7 @@ Zero-dependency deep system introspection. See [08-system-hooks.md](./08-system-
 
 ---
 
-## Phase 1.7 - SBOM & Software Inventory
+## Phase 1.3 - SBOM & Software Inventory
 
 Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.md](./09-sbom-inventory.md) for full details.
 

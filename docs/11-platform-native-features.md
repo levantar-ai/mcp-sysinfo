@@ -127,9 +127,9 @@ Get-WinEvent -FilterHashtable @{
 
 ### IIS Web Server (Comprehensive)
 
-Complete IIS introspection for enterprise web server diagnostics. **Phase 1.10** (implemented) provides core queries, **Phase 1.11** (planned) adds deep configuration access.
+Complete IIS introspection for enterprise web server diagnostics. **Phase 1.6** (implemented) provides core queries, **Phase 1.7** (planned) adds deep configuration access.
 
-#### Phase 1.10 - Core IIS (Implemented ✅)
+#### Phase 1.6 - Core IIS (Implemented ✅)
 
 | Query | Description | Source | Impact |
 |-------|-------------|--------|:------:|
@@ -142,7 +142,7 @@ Complete IIS introspection for enterprise web server diagnostics. **Phase 1.10**
 | `get_iis_ssl_certs` | SSL certificate bindings | `netsh http show sslcert` | 🟢 |
 | `get_iis_auth_config` | Authentication settings per site | WebConfiguration | 🟢 |
 
-#### Phase 1.11 - Deep IIS Configuration (Planned 🚧)
+#### Phase 1.7 - Deep IIS Configuration (Planned 🚧)
 
 **Security & Request Filtering**
 
@@ -228,7 +228,7 @@ Complete IIS introspection for enterprise web server diagnostics. **Phase 1.10**
 | `get_iis_locked_sections` | Locked configuration sections | system.webServer/security/access | 🟢 |
 | `get_iis_delegation_rules` | Feature delegation settings | administration.config | 🟢 |
 
-#### Phase 1.12 - Complete IIS Coverage (Planned 🚧)
+#### Phase 1.8 - Complete IIS Coverage (Planned 🚧)
 
 **FTP Server**
 
@@ -322,7 +322,7 @@ Complete IIS introspection for enterprise web server diagnostics. **Phase 1.10**
 | `get_iis_perf_counters` | IIS performance counters | Win32_PerfRawData_W3SVC | 🟢 |
 | `get_iis_cache_stats` | Output cache hit/miss statistics | caching counters | 🟢 |
 
-**Total: 8 implemented + 35 (Phase 1.11) + 47 (Phase 1.12) = 90 IIS queries**
+**Total: 8 implemented + 35 (Phase 1.7) + 47 (Phase 1.8) = 90 IIS queries**
 
 ---
 
