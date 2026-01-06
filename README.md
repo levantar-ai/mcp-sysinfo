@@ -59,9 +59,9 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 2.3 Complete (123 queries implemented)**
+**Status: Phase 2.0 Complete (131 queries implemented)**
 
-### Phase 1: Core Metrics (7/7)
+### Phase 1.0: Core Metrics (7/7)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -73,7 +73,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_uptime` | Boot time, uptime duration | ✅ | ✅ | ✅ |
 | `get_temperature` | Hardware temperature sensors | ✅ | ⚠️ | ⚠️ |
 
-### Phase 1.5: Log Access (6/6)
+### Phase 1.1: Log Access (6/6)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -84,7 +84,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_app_logs` | Application-specific logs | ✅ | ✅ | ✅ |
 | `get_event_log` | Windows Event Log | - | - | ✅ |
 
-### Phase 1.6: System Hooks (31/31)
+### Phase 1.2: System Hooks (31/31)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -120,7 +120,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 | `get_power_state` | Power/battery state | ✅ | ✅ | ✅ |
 | `get_numa_topology` | NUMA topology | ✅ | - | - |
 
-### Phase 1.7: Software Inventory ✅ (31/31)
+### Phase 1.3: Software Inventory ✅ (33/33)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -163,7 +163,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 > ⚠️ **Note:** `get_path_executables` only scans PATH directories, not the entire filesystem. For complete software inventory, use `get_system_packages`.
 
-### Phase 1.8: Application Discovery ✅ (2/2)
+### Phase 1.4: Application Discovery ✅ (2/2)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -192,7 +192,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - AWS credentials, Azure keys
 - JWT tokens, PEM private keys
 
-### Phase 1.9: Triage & Summary ✅ (25/25)
+### Phase 1.5: Triage & Summary ✅ (25/25)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -234,7 +234,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - Services: failed units, pending timers, enabled services
 - System health: filesystem status, resource limits, package inventory
 
-### Phase 1.10: Windows Enterprise Features ✅ (15/15)
+### Phase 1.6: Windows Enterprise Features ✅ (15/15)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
@@ -270,13 +270,15 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - Handler mappings and module configuration
 - Authentication settings (Anonymous, Basic, Windows, Digest)
 
-### Phase 2.1-2.2: GPU & Container Metrics ✅ (3/3)
+### Phase 2.0: Enhanced Diagnostics ✅ (5/5)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
 | `get_gpu_info` | GPU details (memory, utilization, temp) | ✅ | ✅ | ✅ |
 | `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
 | `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
+| `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
+| `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
 
 **GPU support:**
 - NVIDIA GPUs via nvidia-smi (memory, utilization, temperature, power, clocks, processes)
@@ -288,6 +290,11 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 - Docker and Podman containers
 - Real-time CPU, memory, network, and block I/O statistics
 - Log streaming with timestamp parsing and stdout/stderr separation
+
+**System Reports:**
+- Parallel data collection for all system metrics (16+ collectors)
+- Structured JSON data bindable to HTML templates
+- IIS-specific report for Windows web servers
 
 ### What You Can Do Now
 
@@ -380,13 +387,13 @@ Every query respects strict budgets:
 
 ## Roadmap
 
-### Phase 1.6: System Hooks ✅ Complete (24 queries)
+### Phase 1.2: System Hooks ✅ Complete (31 queries)
 
 Deep introspection: scheduled tasks, kernel modules, network config, mounts, cgroups.
 
 See [docs/08-system-hooks.md](docs/08-system-hooks.md)
 
-### Phase 1.7: SBOM & Inventory ✅ Complete (31/31 queries)
+### Phase 1.3: SBOM & Inventory ✅ Complete (33/33 queries)
 
 Software Bill of Materials for vulnerability detection.
 
@@ -402,7 +409,7 @@ Software Bill of Materials for vulnerability detection.
 
 See [docs/09-sbom-inventory.md](docs/09-sbom-inventory.md)
 
-### Phase 1.9: Triage & Summary ✅ Complete (25/25 queries)
+### Phase 1.5: Triage & Summary ✅ Complete (25/25 queries)
 
 High-level queries for incident triage and security posture assessment.
 
@@ -413,12 +420,14 @@ High-level queries for incident triage and security posture assessment.
 - Services: failed units, pending timers, enabled services, pending updates
 - Meta queries: incident triage snapshot, security posture snapshot, full system snapshot
 
-### Phase 2.3: System Reports & Enhanced Metrics (3/3)
+### Phase 2.0: Enhanced Diagnostics ✅ Complete (5/5 queries)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `generate_system_report` | Generate JSON data for HTML report templates | ✅ | ✅ | ✅ |
-| `generate_iis_report` | IIS-specific web server report (Windows) | - | - | ✅ |
+| `get_gpu_info` | GPU details (memory, utilization, temp) | ✅ | ✅ | ✅ |
+| `get_container_stats` | Real-time container resource stats | ✅ | ✅ | ✅ |
+| `get_container_logs` | Container stdout/stderr logs | ✅ | ✅ | ✅ |
+| `generate_system_report` | Full system diagnostic report | ✅ | ✅ | ✅ |
 | `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
 
 **System Report Features:**
@@ -437,7 +446,8 @@ High-level queries for incident triage and security posture assessment.
 
 | Phase | Focus |
 |-------|-------|
-| 2.3 | System reports, IIS reports, process sampling |
+| 1.7 | Deep IIS Configuration (35 queries) |
+| 1.8 | Complete IIS Coverage (47 queries) |
 | 3 | Analytics, trends, anomaly detection |
 | 4 | Compliance scoring, forensics |
 | 5 | Prometheus export, plugins |
@@ -699,17 +709,16 @@ curl http://localhost:8080/metrics
 
 | Phase | Focus | Progress | Queries |
 |-------|-------|----------|---------|
-| **1.0** | Core Metrics | ✅ Complete | 7/7 |
-| **1.5** | Log Access | ✅ Complete | 6/6 |
-| **1.6** | System Hooks | ✅ Complete | 31/31 |
-| **1.7** | SBOM & Inventory | ✅ Complete | 31/31 |
-| **1.8** | App Discovery & Config | ✅ Complete | 2/2 |
-| **1.9** | Triage & Summary | ✅ Complete | 25/25 |
-| **1.10** | Windows Enterprise | ✅ Complete | 15/15 |
-| **1.11** | Deep IIS Configuration | 📋 Planned | 0/35 |
-| **1.12** | Complete IIS Coverage | 📋 Planned | 0/47 |
-| **2.1-2.2** | GPU & Container Metrics | ✅ Complete | 3/3 |
-| 2.3 | System Reports & Process Sampling | 📋 Planned | 0/3 |
+| **1.0** | Core Metrics | ✅ Complete | 8/8 |
+| **1.1** | Log Access | ✅ Complete | 6/6 |
+| **1.2** | System Hooks + Security | ✅ Complete | 37/37 |
+| **1.3** | SBOM & Inventory | ✅ Complete | 33/33 |
+| **1.4** | App Discovery & Config | ✅ Complete | 2/2 |
+| **1.5** | Triage & Summary | ✅ Complete | 25/25 |
+| **1.6** | Windows Enterprise | ✅ Complete | 15/15 |
+| **1.7** | Deep IIS Configuration | 📋 Planned | 0/35 |
+| **1.8** | Complete IIS Coverage | 📋 Planned | 0/47 |
+| **2.0** | Enhanced Diagnostics | ✅ Complete | 5/5 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
 | 5 | Analytics & Trends | 📋 Planned | 0/4 |
@@ -718,19 +727,21 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 120/246 queries (49%)**
+**Implemented: 131/244 queries (54%)**
 
-**Phase 2.1-2.2 GPU & Container Metrics (Complete):**
+**Phase 2.0 Enhanced Diagnostics (Complete):**
 - GPU information (NVIDIA/AMD/Intel detection, utilization, memory, temperature)
 - Container stats (real-time CPU/memory/network/I/O for Docker/Podman)
 - Container logs (stdout/stderr streaming with timestamps)
+- System reports with parallel data collection
+- Process CPU sampling with time-delta measurement
 
-**Phase 1.10 Windows Enterprise Features (Complete):**
+**Phase 1.6 Windows Enterprise Features (Complete):**
 - Registry queries (read keys, enumerate, security descriptors)
 - DCOM/COM security (applications, permissions, identities)
 - IIS web server (sites, app pools, bindings, SSL, handlers)
 
-**Phase 1.11-1.12 IIS Deep Dive (Planned - 82 queries):**
+**Phase 1.7-1.8 IIS Deep Dive (Planned - 82 queries):**
 - Request filtering, URL rewrite, compression, caching
 - App pool recycling, process model, CPU throttling
 - ASP.NET configuration, FTP server, HTTP.sys integration
