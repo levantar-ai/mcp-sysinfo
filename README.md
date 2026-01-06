@@ -1,5 +1,9 @@
 # MCP System Info
 
+<p align="center">
+  <img src="images/logo.png" alt="MCP System Info Logo" width="400">
+</p>
+
 [![CI](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml/badge.svg)](https://github.com/levantar-ai/mcp-sysinfo/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
