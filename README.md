@@ -55,7 +55,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## What Works Today
 
-**Status: Phase 2.2 Complete (120 queries implemented)**
+**Status: Phase 2.3 Complete (123 queries implemented)**
 
 ### Phase 1: Core Metrics (7/7)
 
@@ -409,11 +409,31 @@ High-level queries for incident triage and security posture assessment.
 - Services: failed units, pending timers, enabled services, pending updates
 - Meta queries: incident triage snapshot, security posture snapshot, full system snapshot
 
+### Phase 2.3: System Reports & Enhanced Metrics (3/3)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `generate_system_report` | Generate JSON data for HTML report templates | ✅ | ✅ | ✅ |
+| `generate_iis_report` | IIS-specific web server report (Windows) | - | - | ✅ |
+| `get_processes_sampled` | Accurate CPU% via time-delta sampling | ✅ | ✅ | ✅ |
+
+**System Report Features:**
+- Parallel data collection for all system metrics (16+ collectors)
+- Return structured JSON data bindable to HTML templates
+- Categories: os, hardware, uptime, cpu, memory, gpu, processes, disks, network, listening_ports, dns, routes, arp, startup_items, programs, runtimes
+- Templates provided in `reports/` directory for customization
+- IIS-specific report for Windows web servers with all IIS config data
+
+**Process CPU Percentage (Fixed):**
+- `CollectSampled()` method uses time-delta sampling for accurate CPU%
+- Takes two CPU time measurements with configurable delay (default: 1000ms)
+- Measures CPU time delta over sampling period for accurate percentages
+
 ### Future Phases
 
 | Phase | Focus |
 |-------|-------|
-| 2 | GPU, containers, services |
+| 2.3 | System reports, IIS reports, process sampling |
 | 3 | Analytics, trends, anomaly detection |
 | 4 | Compliance scoring, forensics |
 | 5 | Prometheus export, plugins |
@@ -685,7 +705,7 @@ curl http://localhost:8080/metrics
 | **1.11** | Deep IIS Configuration | 📋 Planned | 0/35 |
 | **1.12** | Complete IIS Coverage | 📋 Planned | 0/47 |
 | **2.1-2.2** | GPU & Container Metrics | ✅ Complete | 3/3 |
-| 2.3 | Services & VM Detection | 📋 Planned | 0/3 |
+| 2.3 | System Reports & Process Sampling | 📋 Planned | 0/3 |
 | 3 | Storage Deep Dive | 📋 Planned | 0/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
 | 5 | Analytics & Trends | 📋 Planned | 0/4 |

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-red-500 to-rose-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-red-500/30">
+                <i class="fas fa-shield-alt text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Security</h1>
+                <p class="text-slate-400">Firewall, Defender, and Access Controls</p>
+            </div>
+        </div>
+
+        <!-- Security Status Overview -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800/50 backdrop-blur border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Firewall</div>
+                        <div class="text-green-400 font-bold text-lg">Enabled</div>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-fire text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Windows Defender</div>
+                        <div class="text-green-400 font-bold text-lg">Active</div>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-virus text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Real-time Protection</div>
+                        <div class="text-green-400 font-bold text-lg">On</div>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-amber-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Pending Updates</div>
+                        <div class="text-amber-400 font-bold text-lg">1</div>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-download text-amber-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6 mb-6">
+            <!-- Windows Defender -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-shield-virus text-green-400 mr-3"></i>
+                    Windows Defender
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Status</span>
+                        <span class="text-green-400 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>Enabled
+                        </span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Real-time Protection</span>
+                        <span class="text-green-400 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>Active
+                        </span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Last Scan</span>
+                        <span class="text-white font-medium">2026-01-05 11:38</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-400">Definition Version</span>
+                        <span class="text-white font-mono text-sm">4.18.25110.6</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Firewall -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-fire text-orange-400 mr-3"></i>
+                    Windows Firewall
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Status</span>
+                        <span class="text-green-400 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>Enabled
+                        </span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Type</span>
+                        <span class="text-white font-medium">Windows Firewall</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-400">Active Rules</span>
+                        <span class="text-cyan-400 font-medium">3+ profiles</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-slate-900/50 rounded-xl">
+                    <div class="text-slate-400 text-sm mb-2">Protection Status</div>
+                    <div class="flex space-x-2">
+                        <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Domain</span>
+                        <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Private</span>
+                        <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Public</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Accounts -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-user-shield text-purple-400 mr-3"></i>
+                Administrator Accounts
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-slate-400 text-sm border-b border-slate-700">
+                            <th class="text-left py-3 px-4">Account</th>
+                            <th class="text-left py-3 px-4">Groups</th>
+                            <th class="text-left py-3 px-4">Type</th>
+                            <th class="text-left py-3 px-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-slate-500/20 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-user-cog text-slate-400"></i>
+                                    </div>
+                                    <span class="text-white">Administrator</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">Administrators</span></td>
+                            <td class="py-3 px-4 text-slate-300">Built-in</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Active</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-blue-400"></i>
+                                    </div>
+                                    <span class="text-white">andrewrea</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">Administrators</span></td>
+                            <td class="py-3 px-4 text-slate-300">User Account</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Active</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-robot text-amber-400"></i>
+                                    </div>
+                                    <span class="text-white">svc_excel</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">Administrators</span></td>
+                            <td class="py-3 px-4 text-slate-300">Service Account</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                <div class="flex items-start">
+                    <i class="fas fa-exclamation-triangle text-amber-400 mt-0.5 mr-2"></i>
+                    <div class="text-sm">
+                        <div class="text-amber-400 font-medium">Security Note</div>
+                        <div class="text-slate-400">3 accounts have administrator privileges. Review if all are necessary.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Startup Items -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-power-off text-cyan-400 mr-3"></i>
+                Startup Items
+            </h2>
+            <div class="space-y-4">
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-toolbox text-purple-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">JetBrains Toolbox</div>
+                                <div class="text-slate-400 text-sm">User startup (HKCU)</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Enabled</span>
+                    </div>
+                    <div class="mt-2 text-slate-500 text-xs font-mono truncate">
+                        C:\Users\andrewrea\AppData\Local\JetBrains\Toolbox\bin\jetbrains-toolbox.exe --minimize
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-shield-alt text-green-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">SecurityHealth</div>
+                                <div class="text-slate-400 text-sm">System startup (HKLM)</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Enabled</span>
+                    </div>
+                    <div class="mt-2 text-slate-500 text-xs font-mono truncate">
+                        %windir%\system32\SecurityHealthSystray.exe
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: January 5, 2026 at 23:29 UTC</p>
+        </div>
+    </div>
+</body>
+</html>

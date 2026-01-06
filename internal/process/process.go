@@ -27,3 +27,10 @@ func (c *Collector) GetProcess(pid int32) (*types.ProcessInfo, error) {
 func (c *Collector) GetTopProcesses(n int, sortBy string) ([]types.ProcessInfo, error) {
 	return c.getTopProcesses(n, sortBy)
 }
+
+// CollectSampled gathers processes with accurate CPU percentage using time-delta sampling.
+// sampleDurationMs is the sampling period in milliseconds (100-5000ms, default 1000ms).
+// This method takes longer but provides accurate CPU usage percentages.
+func (c *Collector) CollectSampled(sampleDurationMs int) (*types.ProcessList, error) {
+	return c.collectSampled(sampleDurationMs)
+}

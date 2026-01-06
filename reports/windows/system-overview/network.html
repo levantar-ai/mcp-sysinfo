@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-cyan-500/30">
+                <i class="fas fa-network-wired text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Network</h1>
+                <p class="text-slate-400">Interfaces, Ports, and Routing</p>
+            </div>
+        </div>
+
+        <!-- Network Overview -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-cyan-400">2</div>
+                <div class="text-slate-400 text-sm">Interfaces</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-green-400">33</div>
+                <div class="text-slate-400 text-sm">Listening Ports</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-purple-400">16</div>
+                <div class="text-slate-400 text-sm">Routes</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-amber-400">8</div>
+                <div class="text-slate-400 text-sm">ARP Entries</div>
+            </div>
+        </div>
+
+        <!-- Network Interfaces -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-ethernet text-cyan-400 mr-3"></i>
+                Network Interfaces
+            </h2>
+            <div class="grid gap-4">
+                <!-- Ethernet -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-plug text-green-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">Ethernet</div>
+                                <div class="text-slate-400 text-sm font-mono">00:1c:42:a4:73:46</div>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>UP
+                        </span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-slate-400 text-sm mb-1">IPv4 Address</div>
+                            <div class="text-cyan-400 font-mono">10.211.55.26/24</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-sm mb-1">MTU</div>
+                            <div class="text-white">1500</div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <div class="text-slate-400 text-sm mb-1">IPv6 Addresses</div>
+                            <div class="text-slate-300 font-mono text-sm space-y-1">
+                                <div>fdb2:2c26:f4e4:0:d223:5924:ae00:ee22/64</div>
+                                <div>fe80::66b2:54d6:3191:4487/64</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loopback -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-slate-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-redo text-slate-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">Loopback Pseudo-Interface 1</div>
+                                <div class="text-slate-400 text-sm">Virtual Interface</div>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>UP
+                        </span>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-slate-400 text-sm mb-1">IPv4 Address</div>
+                            <div class="text-slate-300 font-mono">127.0.0.1/8</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-sm mb-1">IPv6 Address</div>
+                            <div class="text-slate-300 font-mono">::1/128</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listening Ports -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-door-open text-green-400 mr-3"></i>
+                Listening Ports (Notable)
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-slate-400 text-sm border-b border-slate-700">
+                            <th class="text-left py-3 px-4">Port</th>
+                            <th class="text-left py-3 px-4">Protocol</th>
+                            <th class="text-left py-3 px-4">Address</th>
+                            <th class="text-left py-3 px-4">Service</th>
+                            <th class="text-right py-3 px-4">PID</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono font-bold">80</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">0.0.0.0</td>
+                            <td class="py-3 px-4 text-white">HTTP (IIS)</td>
+                            <td class="py-3 px-4 text-right text-slate-400">4</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono font-bold">135</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">0.0.0.0</td>
+                            <td class="py-3 px-4 text-white">RPC Endpoint Mapper</td>
+                            <td class="py-3 px-4 text-right text-slate-400">1120</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono font-bold">445</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">0.0.0.0</td>
+                            <td class="py-3 px-4 text-white">SMB</td>
+                            <td class="py-3 px-4 text-right text-slate-400">4</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-amber-400 font-mono font-bold">1433</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">0.0.0.0</td>
+                            <td class="py-3 px-4 text-white">SQL Server</td>
+                            <td class="py-3 px-4 text-right text-slate-400">3960</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono font-bold">8000</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">0.0.0.0</td>
+                            <td class="py-3 px-4 text-white">HTTP Alt</td>
+                            <td class="py-3 px-4 text-right text-slate-400">4</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-green-400 font-mono font-bold">8443</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">0.0.0.0</td>
+                            <td class="py-3 px-4 text-white">HTTPS Alt</td>
+                            <td class="py-3 px-4 text-right text-slate-400">4252</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono font-bold">139</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">TCP</span></td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">10.211.55.26</td>
+                            <td class="py-3 px-4 text-white">NetBIOS Session</td>
+                            <td class="py-3 px-4 text-right text-slate-400">4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-slate-500 text-sm">
+                <i class="fas fa-info-circle mr-1"></i> Showing 7 of 33 listening ports (notable services)
+            </div>
+        </div>
+
+        <!-- DNS & Gateway -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <!-- DNS Servers -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-globe text-blue-400 mr-3"></i>
+                    DNS Servers
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-server text-blue-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-mono">10.211.55.1</div>
+                                <div class="text-slate-400 text-sm">Primary DNS</div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Default Gateway -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-route text-purple-400 mr-3"></i>
+                    Default Gateway
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-slate-900/50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-door-open text-purple-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-mono">10.211.55.1</div>
+                                <div class="text-slate-400 text-sm">via 10.211.55.26</div>
+                            </div>
+                        </div>
+                        <span class="text-slate-400 text-sm">Metric: 15</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARP Table -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-table text-amber-400 mr-3"></i>
+                ARP Table
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-slate-400 text-sm border-b border-slate-700">
+                            <th class="text-left py-3 px-4">IP Address</th>
+                            <th class="text-left py-3 px-4">MAC Address</th>
+                            <th class="text-left py-3 px-4">Interface</th>
+                            <th class="text-left py-3 px-4">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono">10.211.55.1</td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">00-1c-42-00-00-18</td>
+                            <td class="py-3 px-4 text-white">10.211.55.26</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">dynamic</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-cyan-400 font-mono">10.211.55.25</td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">00-1c-42-e6-7a-cd</td>
+                            <td class="py-3 px-4 text-white">10.211.55.26</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">dynamic</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-400 font-mono">10.211.55.255</td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">ff-ff-ff-ff-ff-ff</td>
+                            <td class="py-3 px-4 text-white">10.211.55.26</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded text-xs">static</span></td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-400 font-mono">224.0.0.22</td>
+                            <td class="py-3 px-4 text-slate-300 font-mono">01-00-5e-00-00-16</td>
+                            <td class="py-3 px-4 text-white">10.211.55.26</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-slate-500/20 text-slate-400 rounded text-xs">static</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: January 5, 2026 at 23:29 UTC</p>
+        </div>
+    </div>
+</body>
+</html>

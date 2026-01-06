@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-levantar-500 to-violet-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-levantar-500/30">
+                <i class="fas fa-hdd text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Storage</h1>
+                <p class="text-slate-400">Disk Partitions and Mount Points</p>
+            </div>
+        </div>
+
+        <!-- Storage Overview -->
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <!-- Total Storage -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-white font-semibold text-lg">Total Storage</h3>
+                    <span class="text-purple-400 font-bold text-3xl">254.6 GB</span>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-slate-400">Used Space</span>
+                            <span class="text-white">87.9 GB (34.5%)</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-4">
+                            <div class="bg-gradient-to-r from-purple-500 to-violet-400 h-4 rounded-full" style="width: 34.5%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-4">
+                        <div class="bg-slate-900/50 rounded-xl p-4 text-center">
+                            <div class="text-2xl font-bold text-purple-400">87.9 GB</div>
+                            <div class="text-slate-500 text-sm">Used</div>
+                        </div>
+                        <div class="bg-slate-900/50 rounded-xl p-4 text-center">
+                            <div class="text-2xl font-bold text-green-400">166.7 GB</div>
+                            <div class="text-slate-500 text-sm">Free</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h3 class="text-white font-semibold text-lg mb-6">Quick Stats</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-database text-blue-400"></i>
+                            </div>
+                            <span class="text-white">Partitions</span>
+                        </div>
+                        <span class="text-2xl font-bold text-blue-400">1</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-folder-open text-green-400"></i>
+                            </div>
+                            <span class="text-white">Mount Points</span>
+                        </div>
+                        <span class="text-2xl font-bold text-green-400">1</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-file-alt text-amber-400"></i>
+                            </div>
+                            <span class="text-white">Filesystem</span>
+                        </div>
+                        <span class="text-xl font-bold text-amber-400">NTFS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Partitions Table -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-th-list text-purple-400 mr-3"></i>
+                Disk Partitions
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-slate-400 text-sm border-b border-slate-700">
+                            <th class="text-left py-3 px-4">Device</th>
+                            <th class="text-left py-3 px-4">Mount Point</th>
+                            <th class="text-left py-3 px-4">Filesystem</th>
+                            <th class="text-right py-3 px-4">Total</th>
+                            <th class="text-right py-3 px-4">Used</th>
+                            <th class="text-right py-3 px-4">Free</th>
+                            <th class="text-right py-3 px-4">Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-4 px-4">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-hdd text-purple-400 text-sm"></i>
+                                    </div>
+                                    <span class="text-white font-mono">C:\</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4 text-slate-300 font-mono">C:\</td>
+                            <td class="py-4 px-4">
+                                <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">NTFS</span>
+                            </td>
+                            <td class="py-4 px-4 text-right text-white">254.57 GB</td>
+                            <td class="py-4 px-4 text-right text-amber-400">87.95 GB</td>
+                            <td class="py-4 px-4 text-right text-green-400">166.62 GB</td>
+                            <td class="py-4 px-4 text-right">
+                                <div class="flex items-center justify-end">
+                                    <div class="w-16 bg-slate-700 rounded-full h-2 mr-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 34.5%"></div>
+                                    </div>
+                                    <span class="text-white">34.5%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mount Points -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-folder-tree text-green-400 mr-3"></i>
+                Mount Points
+            </h2>
+            <div class="grid gap-4">
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-500/20 to-violet-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fab fa-windows text-purple-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">C:\ (System Drive)</div>
+                                <div class="text-slate-400 text-sm">NTFS Filesystem</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-white font-medium">254.57 GB</div>
+                            <div class="text-slate-400 text-sm">Total Capacity</div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-3">
+                        <div class="bg-gradient-to-r from-purple-500 to-violet-400 h-3 rounded-full" style="width: 34.5%"></div>
+                    </div>
+                    <div class="flex justify-between mt-2 text-sm">
+                        <span class="text-slate-400">87.95 GB used</span>
+                        <span class="text-green-400">166.62 GB free</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: January 5, 2026 at 23:29 UTC</p>
+        </div>
+    </div>
+</body>
+</html>

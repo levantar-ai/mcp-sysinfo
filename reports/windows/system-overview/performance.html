@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-green-500/30">
+                <i class="fas fa-tachometer-alt text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Performance</h1>
+                <p class="text-slate-400">CPU, Memory, and Process Information</p>
+            </div>
+        </div>
+
+        <!-- Resource Gauges -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <!-- CPU -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-white font-semibold">CPU Usage</h3>
+                    <span class="text-green-400 font-bold text-2xl">0%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-3 mb-4">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-400 h-3 rounded-full" style="width: 1%"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-slate-400">Model</span>
+                        <div class="text-white text-xs mt-1">Intel Core i9-8950HK</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Frequency</span>
+                        <div class="text-white mt-1">2904 MHz</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Physical Cores</span>
+                        <div class="text-white mt-1">4</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Logical Cores</span>
+                        <div class="text-white mt-1">4</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memory -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-white font-semibold">Memory Usage</h3>
+                    <span class="text-amber-400 font-bold text-2xl">44%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-3 mb-4">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-400 h-3 rounded-full" style="width: 44%"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-slate-400">Total</span>
+                        <div class="text-white mt-1">7.98 GB</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Used</span>
+                        <div class="text-white mt-1">3.51 GB</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Available</span>
+                        <div class="text-green-400 mt-1">4.47 GB</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Swap Used</span>
+                        <div class="text-white mt-1">9.72 GB</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPU -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-white font-semibold">GPU Usage</h3>
+                    <span class="text-cyan-400 font-bold text-2xl">0%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-3 mb-4">
+                    <div class="bg-gradient-to-r from-cyan-500 to-blue-400 h-3 rounded-full" style="width: 1%"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-slate-400">Name</span>
+                        <div class="text-white text-xs mt-1">Parallels Display</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">VRAM</span>
+                        <div class="text-white mt-1">2 GB</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Driver</span>
+                        <div class="text-white text-xs mt-1">20.18.2611</div>
+                    </div>
+                    <div>
+                        <span class="text-slate-400">Memory Use</span>
+                        <div class="text-white mt-1">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processes -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-list-ul text-green-400 mr-3"></i>
+                Top Processes
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-slate-400 text-sm border-b border-slate-700">
+                            <th class="text-left py-3 px-4">PID</th>
+                            <th class="text-left py-3 px-4">Name</th>
+                            <th class="text-left py-3 px-4">Status</th>
+                            <th class="text-right py-3 px-4">CPU %</th>
+                            <th class="text-right py-3 px-4">Memory %</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">0</td>
+                            <td class="py-3 px-4 text-white">[System Process]</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">4</td>
+                            <td class="py-3 px-4 text-white">System</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">124</td>
+                            <td class="py-3 px-4 text-white">Registry</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">516</td>
+                            <td class="py-3 px-4 text-white">smss.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">696</td>
+                            <td class="py-3 px-4 text-white">csrss.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">784</td>
+                            <td class="py-3 px-4 text-white">wininit.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">856</td>
+                            <td class="py-3 px-4 text-white">winlogon.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">936</td>
+                            <td class="py-3 px-4 text-white">services.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">956</td>
+                            <td class="py-3 px-4 text-white">lsass.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4 text-slate-300 font-mono">1264</td>
+                            <td class="py-3 px-4 text-white">dwm.exe</td>
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">running</span></td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                            <td class="py-3 px-4 text-right text-slate-300">0%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: January 5, 2026 at 23:29 UTC</p>
+        </div>
+    </div>
+</body>
+</html>

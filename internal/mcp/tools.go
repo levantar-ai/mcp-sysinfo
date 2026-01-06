@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"context"
+	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
@@ -16,6 +17,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/network"
 	"github.com/levantar-ai/mcp-sysinfo/internal/osinfo"
 	"github.com/levantar-ai/mcp-sysinfo/internal/process"
+	"github.com/levantar-ai/mcp-sysinfo/internal/report"
 	"github.com/levantar-ai/mcp-sysinfo/internal/resources"
 	"github.com/levantar-ai/mcp-sysinfo/internal/runtimes"
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
@@ -59,6 +61,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 2: Enhanced Diagnostics (scope: enhanced)
 	registerEnhancedDiagnosticsTools(s)
+
+	// Phase 2.3: System Reports (scope: report)
+	registerReportTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -159,6 +164,33 @@ func registerCoreTools(s *Server) {
 		}
 		c := process.NewCollector()
 		result, err := c.GetTopProcesses(limit, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Processes with accurate CPU% via time-delta sampling
+	s.RegisterTool(Tool{
+		Name:        "get_processes_sampled",
+		Description: "Get running processes with accurate CPU% via time-delta sampling. Takes two CPU time measurements with a delay to calculate accurate CPU usage.",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"sample_duration_ms": {
+					Type:        "integer",
+					Description: "Duration between CPU time measurements in milliseconds (default: 1000)",
+					Default:     1000,
+				},
+			},
+		},
+	}, "core", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		sampleDuration := 1000
+		if d, ok := args["sample_duration_ms"].(float64); ok && d > 0 {
+			sampleDuration = int(d)
+		}
+		c := process.NewCollector()
+		result, err := c.CollectSampled(sampleDuration)
 		if err != nil {
 			return nil, err
 		}
@@ -2241,6 +2273,95 @@ func registerEnhancedDiagnosticsTools(s *Server) {
 
 		c := container.NewCollector()
 		result, err := c.GetContainerLogs(containerID, lines, since)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+// registerReportTools registers Phase 2.3 System Report tools.
+func registerReportTools(s *Server) {
+	// ==========================================================================
+	// Phase 2.3: System Reports with Parallel Collection
+	// ==========================================================================
+
+	// Generate System Report
+	s.RegisterTool(Tool{
+		Name:        "generate_system_report",
+		Description: "Generate a comprehensive system report with all data collected in parallel. Returns JSON suitable for binding to HTML templates.",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"sections": {
+					Type:        "array",
+					Description: "Specific sections to include (default: all). Options: os, hardware, uptime, cpu, memory, gpu, processes, disks, network, listening_ports, dns, routes, arp, startup_items, programs, runtimes",
+				},
+				"timeout_seconds": {
+					Type:        "integer",
+					Description: "Maximum time to wait for all collectors (default: 30)",
+					Default:     30,
+				},
+			},
+		},
+	}, "report", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		timeout := 30 * time.Second
+		if t, ok := args["timeout_seconds"].(float64); ok && t > 0 {
+			timeout = time.Duration(t) * time.Second
+		}
+
+		var sections []string
+		if s, ok := args["sections"].([]interface{}); ok {
+			for _, v := range s {
+				if str, ok := v.(string); ok {
+					sections = append(sections, str)
+				}
+			}
+		}
+
+		rg := report.NewReportGenerator(timeout)
+		result, err := rg.GenerateSystemReport(ctx, sections)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Generate IIS Report (Windows only)
+	s.RegisterTool(Tool{
+		Name:        "generate_iis_report",
+		Description: "Generate a comprehensive IIS web server report with all data collected in parallel. Returns JSON suitable for binding to HTML templates. Windows only.",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"sections": {
+					Type:        "array",
+					Description: "Specific sections to include (default: all). Options: sites, app_pools, bindings, virtual_dirs, handlers, modules, ssl_certs, auth_config",
+				},
+				"timeout_seconds": {
+					Type:        "integer",
+					Description: "Maximum time to wait for all collectors (default: 30)",
+					Default:     30,
+				},
+			},
+		},
+	}, "report", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		timeout := 30 * time.Second
+		if t, ok := args["timeout_seconds"].(float64); ok && t > 0 {
+			timeout = time.Duration(t) * time.Second
+		}
+
+		var sections []string
+		if s, ok := args["sections"].([]interface{}); ok {
+			for _, v := range s {
+				if str, ok := v.(string); ok {
+					sections = append(sections, str)
+				}
+			}
+		}
+
+		rg := report.NewIISReportGenerator(timeout)
+		result, err := rg.GenerateIISReport(ctx, sections)
 		if err != nil {
 			return nil, err
 		}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Investigation Reports - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-white font-semibold">MCP SysInfo</span>
+                    <span class="text-levantar-400 text-sm ml-2">by levantar.ai</span>
+                </div>
+            </div>
+            <div class="text-slate-500 text-sm">
+                <i class="fas fa-clock mr-1"></i> January 5, 2026 at 23:29 UTC
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-2xl mb-6 shadow-lg shadow-levantar-500/30">
+                <i class="fas fa-server text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-white mb-2">System Investigation Reports</h1>
+            <p class="text-slate-400 text-lg">ANDREWREAE33F - Windows 11 Home</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-cyan-400">4</div>
+                <div class="text-slate-400 text-sm">CPU Cores</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-green-400">8 GB</div>
+                <div class="text-slate-400 text-sm">RAM</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-purple-400">255 GB</div>
+                <div class="text-slate-400 text-sm">Disk</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-amber-400">3h 10m</div>
+                <div class="text-slate-400 text-sm">Uptime</div>
+            </div>
+        </div>
+
+        <!-- Report Cards -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- System Overview -->
+            <a href="system-overview.html" class="group">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-500/30 transition-colors">
+                            <i class="fas fa-desktop text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold text-lg">System Overview</h3>
+                            <p class="text-slate-400 text-sm">OS, Hardware, BIOS</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-500 text-sm">Complete system profile including OS version, hardware specs, virtualization details, and boot configuration.</p>
+                    <div class="mt-4 text-blue-400 text-sm font-medium group-hover:text-blue-300">
+                        View Report <i class="fas fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Performance -->
+            <a href="performance.html" class="group">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-green-500/50 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-green-500/30 transition-colors">
+                            <i class="fas fa-tachometer-alt text-green-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold text-lg">Performance</h3>
+                            <p class="text-slate-400 text-sm">CPU, Memory, Processes</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-500 text-sm">Real-time CPU and memory utilization, running processes, and GPU information.</p>
+                    <div class="mt-4 text-green-400 text-sm font-medium group-hover:text-green-300">
+                        View Report <i class="fas fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Storage -->
+            <a href="storage.html" class="group">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-purple-500/30 transition-colors">
+                            <i class="fas fa-hdd text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold text-lg">Storage</h3>
+                            <p class="text-slate-400 text-sm">Disks, Partitions, Mounts</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-500 text-sm">Disk partitions, filesystem types, usage statistics, and mount points.</p>
+                    <div class="mt-4 text-purple-400 text-sm font-medium group-hover:text-purple-300">
+                        View Report <i class="fas fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Network -->
+            <a href="network.html" class="group">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-cyan-500/30 transition-colors">
+                            <i class="fas fa-network-wired text-cyan-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold text-lg">Network</h3>
+                            <p class="text-slate-400 text-sm">Interfaces, Ports, Routes</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-500 text-sm">Network interfaces, listening ports, routing table, DNS servers, and ARP entries.</p>
+                    <div class="mt-4 text-cyan-400 text-sm font-medium group-hover:text-cyan-300">
+                        View Report <i class="fas fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Security -->
+            <a href="security.html" class="group">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-red-500/50 hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-red-500/30 transition-colors">
+                            <i class="fas fa-shield-alt text-red-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold text-lg">Security</h3>
+                            <p class="text-slate-400 text-sm">Firewall, Defender, Accounts</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-500 text-sm">Security posture including firewall status, Windows Defender, admin accounts, and startup items.</p>
+                    <div class="mt-4 text-red-400 text-sm font-medium group-hover:text-red-300">
+                        View Report <i class="fas fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Software -->
+            <a href="software.html" class="group">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-amber-500/30 transition-colors">
+                            <i class="fas fa-cube text-amber-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold text-lg">Software Inventory</h3>
+                            <p class="text-slate-400 text-sm">Programs, Features, Runtimes</p>
+                        </div>
+                    </div>
+                    <p class="text-slate-500 text-sm">Installed programs, Windows features, and language runtime versions.</p>
+                    <div class="mt-4 text-amber-400 text-sm font-medium group-hover:text-amber-300">
+                        View Report <i class="fas fa-arrow-right ml-1"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 pt-8 border-t border-slate-800">
+            <div class="flex flex-col md:flex-row items-center justify-between text-slate-500 text-sm">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <div class="w-6 h-6 bg-gradient-to-r from-levantar-500 to-violet-500 rounded flex items-center justify-center">
+                        <i class="fas fa-microchip text-white text-xs"></i>
+                    </div>
+                    <span>Powered by <a href="https://levantar.ai" class="text-levantar-400 hover:text-levantar-300">levantar.ai</a></span>
+                </div>
+                <div class="text-center md:text-right">
+                    <p>MCP System Info - Read-only AI Diagnostics</p>
+                    <p class="text-slate-600 text-xs mt-1">Secure, structured system state for AI-assisted investigation</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

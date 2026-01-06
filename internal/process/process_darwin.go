@@ -140,3 +140,12 @@ func stateToString(state string) string {
 	}
 	return state
 }
+
+// collectSampled gathers processes with CPU percentage.
+// On macOS, the ps command already provides CPU percentage based on its internal sampling,
+// so we simply call the regular collect() method.
+// The sampleDurationMs parameter is ignored on macOS.
+func (c *Collector) collectSampled(sampleDurationMs int) (*types.ProcessList, error) {
+	// macOS ps already calculates CPU percentage
+	return c.collect()
+}

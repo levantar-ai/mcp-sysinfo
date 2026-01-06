@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Overview - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-levantar-500 to-violet-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-levantar-500/30">
+                <i class="fas fa-desktop text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">System Overview</h1>
+                <p class="text-slate-400">Hardware, OS, and Virtualization Details</p>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+            <!-- Operating System -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fab fa-windows text-blue-400 mr-3"></i>
+                    Operating System
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Name</span>
+                        <span class="text-white font-medium">Microsoft Windows 11 Home</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Version</span>
+                        <span class="text-white font-medium">10.0</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Build</span>
+                        <span class="text-white font-medium">26100</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Kernel Version</span>
+                        <span class="text-white font-medium">10.0.26100</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Architecture</span>
+                        <span class="text-white font-medium">x86_64</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Hostname</span>
+                        <span class="text-cyan-400 font-mono">ANDREWREAE33F</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-400">Boot Mode</span>
+                        <span class="text-green-400 font-medium">UEFI</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hardware -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-microchip text-purple-400 mr-3"></i>
+                    Hardware
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Manufacturer</span>
+                        <span class="text-white font-medium">Parallels International GmbH.</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Product</span>
+                        <span class="text-white font-medium">Parallels Virtual Platform</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Family</span>
+                        <span class="text-amber-400 font-medium">Parallels VM</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Serial Number</span>
+                        <span class="text-slate-300 font-mono text-xs">Parallels-DC EE 62 26...</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-400">UUID</span>
+                        <span class="text-slate-300 font-mono text-xs">2662EEDC-5BBE-7D43...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BIOS -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-cog text-green-400 mr-3"></i>
+                    BIOS Information
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Vendor</span>
+                        <span class="text-white font-medium">Parallels International GmbH.</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Version</span>
+                        <span class="text-white font-medium">26.1.1 (57288)</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                        <span class="text-slate-400">Date</span>
+                        <span class="text-white font-medium">2025-09-28</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Uptime -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-clock text-cyan-400 mr-3"></i>
+                    Uptime
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Boot Time</span>
+                        <span class="text-white font-medium">2026-01-05 20:17:08 UTC</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-400">Uptime</span>
+                        <span class="text-green-400 font-medium">3 hours, 10 minutes, 48 seconds</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-slate-900/50 rounded-xl">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-cyan-400 mb-1">3h 10m</div>
+                        <div class="text-slate-500 text-sm">System Uptime</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPU -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 lg:col-span-2">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-tv text-rose-400 mr-3"></i>
+                    Graphics
+                </h2>
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-rose-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-display text-rose-400 text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">Parallels Display Adapter (WDDM)</div>
+                                <div class="text-slate-400 text-sm">Driver: 20.18.2611.57288</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-white font-medium">2 GB VRAM</div>
+                            <div class="text-slate-400 text-sm">Virtual GPU</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: January 5, 2026 at 23:29 UTC</p>
+        </div>
+    </div>
+</body>
+</html>

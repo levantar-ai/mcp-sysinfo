@@ -157,6 +157,51 @@ func TestCollector_Collect_MultipleRuns(t *testing.T) {
 	}
 }
 
+func TestCollector_CollectSampled(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping sampled collection test in short mode")
+	}
+
+	c := NewCollector()
+
+	// Use a short 500ms sample duration for testing
+	list, err := c.CollectSampled(500)
+	if err != nil {
+		t.Fatalf("CollectSampled failed: %v", err)
+	}
+
+	if list == nil {
+		t.Fatal("CollectSampled returned nil")
+	}
+
+	if list.Total == 0 {
+		t.Error("No processes found")
+	}
+
+	t.Logf("Found %d processes with sampled CPU", list.Total)
+
+	// Count processes with non-zero CPU
+	nonZeroCPU := 0
+	for _, proc := range list.Processes {
+		if proc.CPUPercent > 0 {
+			nonZeroCPU++
+		}
+	}
+
+	t.Logf("Processes with non-zero CPU: %d", nonZeroCPU)
+
+	// Log top 5 CPU consumers
+	t.Logf("Sample of processes with CPU usage:")
+	count := 0
+	for _, proc := range list.Processes {
+		if proc.CPUPercent > 0 && count < 5 {
+			t.Logf("  PID=%d Name=%s CPU=%.2f%% Mem=%.1f%%",
+				proc.PID, proc.Name, proc.CPUPercent, proc.MemPercent)
+			count++
+		}
+	}
+}
+
 // Benchmark tests
 func BenchmarkCollector_Collect(b *testing.B) {
 	c := NewCollector()

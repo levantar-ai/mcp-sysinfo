@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Inventory - ANDREWREAE33F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-amber-500/30">
+                <i class="fas fa-cube text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Software Inventory</h1>
+                <p class="text-slate-400">Installed Programs and Runtimes</p>
+            </div>
+        </div>
+
+        <!-- Overview Stats -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-amber-400">194</div>
+                <div class="text-slate-400 text-sm">Total Programs</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-blue-400">97</div>
+                <div class="text-slate-400 text-sm">Windows Features</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-green-400">2</div>
+                <div class="text-slate-400 text-sm">Runtimes</div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4 text-center">
+                <div class="text-3xl font-bold text-purple-400">15</div>
+                <div class="text-slate-400 text-sm">Dev Tools</div>
+            </div>
+        </div>
+
+        <!-- Language Runtimes -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-code text-green-400 mr-3"></i>
+                Language Runtimes
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fab fa-python text-blue-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">Python</div>
+                                <div class="text-slate-400 text-sm">Windows Store</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-slate-400 text-sm">Path</div>
+                            <div class="text-slate-300 text-xs font-mono">WindowsApps\python3.exe</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-hashtag text-purple-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">.NET SDK</div>
+                                <div class="text-slate-400 text-sm">Microsoft</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-cyan-400 font-bold">9.0.101</div>
+                            <div class="text-slate-400 text-xs">via NuGet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Applications -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-star text-amber-400 mr-3"></i>
+                Key Applications
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Visual Studio -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-laptop-code text-purple-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">Visual Studio 2022</div>
+                            <div class="text-slate-400 text-xs">Community Edition</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v17.12.3</div>
+                </div>
+
+                <!-- VS Code -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-code text-blue-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">VS Code</div>
+                            <div class="text-slate-400 text-xs">Microsoft</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v1.96.2</div>
+                </div>
+
+                <!-- SQL Server -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-database text-red-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">SQL Server 2022</div>
+                            <div class="text-slate-400 text-xs">Microsoft</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">64-bit</div>
+                </div>
+
+                <!-- SSMS -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-table text-orange-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">SQL Server Mgmt Studio</div>
+                            <div class="text-slate-400 text-xs">Microsoft</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v20.2</div>
+                </div>
+
+                <!-- Git -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fab fa-git-alt text-orange-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">Git</div>
+                            <div class="text-slate-400 text-xs">Git Development Community</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v2.47.1</div>
+                </div>
+
+                <!-- JetBrains Toolbox -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-pink-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-toolbox text-pink-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">JetBrains Toolbox</div>
+                            <div class="text-slate-400 text-xs">JetBrains</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v2.5.4</div>
+                </div>
+
+                <!-- ReSharper -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-bolt text-yellow-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">ReSharper</div>
+                            <div class="text-slate-400 text-xs">JetBrains</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v2024.3.3</div>
+                </div>
+
+                <!-- Chrome -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fab fa-chrome text-green-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">Google Chrome</div>
+                            <div class="text-slate-400 text-xs">Google LLC</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v143.0.7499</div>
+                </div>
+
+                <!-- Edge -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fab fa-edge text-blue-400"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">Microsoft Edge</div>
+                            <div class="text-slate-400 text-xs">Microsoft</div>
+                        </div>
+                    </div>
+                    <div class="text-cyan-400 text-sm font-mono">v143.0.3650</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Windows Features -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fab fa-windows text-blue-400 mr-3"></i>
+                Windows Features (Enabled)
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">IIS Web Server</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">IIS FTP Server</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">Virtual Machine Platform</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">.NET Framework 4.x</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">WCF Services</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">Work Folders Client</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">IIS HTTP Logging</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">IIS Management Console</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-900/50 rounded-lg">
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                    <span class="text-white text-sm">Remote Desktop</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Microsoft Office -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-file-word text-blue-400 mr-3"></i>
+                Microsoft 365
+            </h2>
+            <div class="bg-slate-900/50 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-file-alt text-orange-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="text-white font-medium">Microsoft 365 - en-us</div>
+                            <div class="text-slate-400 text-sm">Click-to-Run Installation</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-cyan-400 font-bold">16.0.19530.20074</div>
+                        <div class="text-slate-400 text-xs">Home Premium</div>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs">Word</span>
+                    <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Excel</span>
+                    <span class="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs">PowerPoint</span>
+                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs">Outlook</span>
+                    <span class="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-xs">OneDrive</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: January 5, 2026 at 23:29 UTC</p>
+        </div>
+    </div>
+</body>
+</html>

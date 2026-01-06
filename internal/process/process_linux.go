@@ -294,3 +294,156 @@ func getTotalMemory() uint64 {
 
 	return 1
 }
+
+// collectSampled gathers processes with accurate CPU percentage via time-delta sampling.
+// sampleDurationMs is the time to wait between measurements (default 1000ms recommended).
+func (c *Collector) collectSampled(sampleDurationMs int) (*types.ProcessList, error) {
+	if sampleDurationMs < 100 {
+		sampleDurationMs = 100
+	}
+	if sampleDurationMs > 5000 {
+		sampleDurationMs = 5000
+	}
+
+	// First snapshot: get CPU times for all processes
+	entries, err := os.ReadDir("/proc")
+	if err != nil {
+		return nil, fmt.Errorf("reading /proc: %w", err)
+	}
+
+	type cpuSnapshot struct {
+		utime     uint64
+		stime     uint64
+		timestamp time.Time
+	}
+
+	type procData struct {
+		pid      int32
+		name     string
+		cpu1     cpuSnapshot
+		memRSS   uint64
+		memPct   float32
+		status   string
+		username string
+		cmdline  string
+	}
+
+	procMap := make(map[int32]*procData)
+	totalMemPages := getTotalMemory()
+
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		pid, err := strconv.ParseInt(entry.Name(), 10, 32)
+		if err != nil {
+			continue
+		}
+
+		procPath := fmt.Sprintf("/proc/%d", pid)
+
+		// Read stat for CPU times
+		// #nosec G304 -- reading from procfs
+		statData, err := os.ReadFile(filepath.Join(procPath, "stat"))
+		if err != nil {
+			continue
+		}
+		stat, err := parseStat(string(statData))
+		if err != nil {
+			continue
+		}
+
+		// Read status for memory
+		// #nosec G304 -- reading from procfs
+		statusData, _ := os.ReadFile(filepath.Join(procPath, "status"))
+		status := parseStatus(string(statusData))
+
+		// Read cmdline
+		// #nosec G304 -- reading from procfs
+		cmdlineData, _ := os.ReadFile(filepath.Join(procPath, "cmdline"))
+		cmdline := strings.ReplaceAll(string(cmdlineData), "\x00", " ")
+		cmdline = strings.TrimSpace(cmdline)
+
+		// Get username
+		username := status["Uid"]
+		if uid, ok := status["Uid"]; ok {
+			username = lookupUser(uid)
+		}
+
+		// Calculate memory
+		var memRSS uint64
+		var memPct float32
+		if stat.rss > 0 {
+			memRSS = uint64(stat.rss) * uint64(os.Getpagesize()) // #nosec G115 - rss is always positive
+			if totalMemPages > 0 {
+				memPct = float32(stat.rss) * 100.0 / float32(totalMemPages)
+			}
+		}
+
+		procMap[int32(pid)] = &procData{
+			pid:  int32(pid),
+			name: stat.name,
+			cpu1: cpuSnapshot{
+				utime:     stat.utime,
+				stime:     stat.stime,
+				timestamp: time.Now(),
+			},
+			memRSS:   memRSS,
+			memPct:   memPct,
+			status:   stat.state,
+			username: username,
+			cmdline:  cmdline,
+		}
+	}
+
+	// Wait for sample duration
+	time.Sleep(time.Duration(sampleDurationMs) * time.Millisecond)
+
+	// Second snapshot: calculate CPU delta
+	var processes []types.ProcessInfo
+	sampleDuration := float64(sampleDurationMs) / 1000.0
+
+	for pid, data := range procMap {
+		procPath := fmt.Sprintf("/proc/%d", pid)
+
+		// #nosec G304 -- reading from procfs
+		statData, err := os.ReadFile(filepath.Join(procPath, "stat"))
+		if err != nil {
+			continue // Process exited
+		}
+		stat, err := parseStat(string(statData))
+		if err != nil {
+			continue
+		}
+
+		// Calculate CPU percentage
+		utimeDelta := stat.utime - data.cpu1.utime
+		stimeDelta := stat.stime - data.cpu1.stime
+		totalTicks := float64(utimeDelta + stimeDelta)
+
+		// Convert ticks to seconds, then to percentage
+		cpuTimeSec := totalTicks / clkTck
+		cpuPercent := (cpuTimeSec / sampleDuration) * 100.0
+
+		if cpuPercent < 0 {
+			cpuPercent = 0
+		}
+
+		processes = append(processes, types.ProcessInfo{
+			PID:        pid,
+			Name:       data.name,
+			Username:   data.username,
+			CPUPercent: cpuPercent,
+			MemPercent: data.memPct,
+			MemRSS:     data.memRSS,
+			Status:     data.status,
+			Cmdline:    data.cmdline,
+		})
+	}
+
+	return &types.ProcessList{
+		Processes: processes,
+		Total:     len(processes),
+		Timestamp: time.Now(),
+	}, nil
+}
