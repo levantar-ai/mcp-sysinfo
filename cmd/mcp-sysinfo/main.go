@@ -866,6 +866,92 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serv
 		c := software.NewCollector()
 		result, err = c.GetGemfileLock(lockPath)
 
+	// Phase 1.10: Extended Language Ecosystems - Package Managers
+	case "get_perl_packages":
+		c := software.NewCollector()
+		result, err = c.GetPerlPackages()
+
+	case "get_lua_packages":
+		c := software.NewCollector()
+		result, err = c.GetLuaPackages()
+
+	case "get_haskell_packages":
+		c := software.NewCollector()
+		result, err = c.GetHaskellPackages()
+
+	case "get_swift_packages":
+		c := software.NewCollector()
+		result, err = c.GetSwiftPackages()
+
+	case "get_elixir_packages":
+		c := software.NewCollector()
+		result, err = c.GetElixirPackages()
+
+	case "get_r_packages":
+		c := software.NewCollector()
+		result, err = c.GetRPackages()
+
+	case "get_julia_packages":
+		c := software.NewCollector()
+		result, err = c.GetJuliaPackages()
+
+	case "get_dart_packages":
+		c := software.NewCollector()
+		result, err = c.GetDartPackages()
+
+	case "get_ocaml_packages":
+		c := software.NewCollector()
+		result, err = c.GetOCamlPackages()
+
+	case "get_conda_packages":
+		c := software.NewCollector()
+		result, err = c.GetCondaPackages()
+
+	case "get_gradle_packages":
+		c := software.NewCollector()
+		result, err = c.GetGradlePackages()
+
+	// Phase 1.10: Extended Lock File Parsers
+	case "get_yarn_lock":
+		c := software.NewCollector()
+		result, err = c.GetYarnLock(lockPath)
+
+	case "get_pnpm_lock":
+		c := software.NewCollector()
+		result, err = c.GetPnpmLock(lockPath)
+
+	case "get_poetry_lock":
+		c := software.NewCollector()
+		result, err = c.GetPoetryLock(lockPath)
+
+	case "get_composer_lock":
+		c := software.NewCollector()
+		result, err = c.GetComposerLockExtended(lockPath)
+
+	case "get_mix_lock":
+		c := software.NewCollector()
+		result, err = c.GetMixLock(lockPath)
+
+	case "get_pubspec_lock":
+		c := software.NewCollector()
+		result, err = c.GetPubspecLock(lockPath)
+
+	case "get_swift_resolved":
+		c := software.NewCollector()
+		result, err = c.GetSwiftResolved(lockPath)
+
+	case "get_podfile_lock":
+		c := software.NewCollector()
+		result, err = c.GetPodfileLock(lockPath)
+
+	case "get_gradle_lock":
+		c := software.NewCollector()
+		result, err = c.GetGradleLock(lockPath)
+
+	case "get_conda_lock":
+		c := software.NewCollector()
+		result, err = c.GetCondaLock(lockPath)
+
 	// Triage queries (Phase 1.9)
 	case "get_os_info":
 		c := osinfo.NewCollector()

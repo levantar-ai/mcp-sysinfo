@@ -1490,6 +1490,368 @@ func registerSoftwareTools(s *Server) {
 		}
 		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
 	})
+
+	// ========================================================================
+	// Phase 1.10: Extended Language Ecosystems
+	// ========================================================================
+
+	// Perl Packages
+	s.RegisterTool(Tool{
+		Name:        "get_perl_packages",
+		Description: "Get installed Perl modules from CPAN/cpanm",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetPerlPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Lua Packages
+	s.RegisterTool(Tool{
+		Name:        "get_lua_packages",
+		Description: "Get installed LuaRocks packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetLuaPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Haskell Packages
+	s.RegisterTool(Tool{
+		Name:        "get_haskell_packages",
+		Description: "Get installed Haskell packages from Cabal/Stack",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetHaskellPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Swift Packages
+	s.RegisterTool(Tool{
+		Name:        "get_swift_packages",
+		Description: "Get Swift Package Manager packages (macOS/Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetSwiftPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Elixir/Hex Packages
+	s.RegisterTool(Tool{
+		Name:        "get_elixir_packages",
+		Description: "Get installed Hex packages for Elixir",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetElixirPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// R Packages
+	s.RegisterTool(Tool{
+		Name:        "get_r_packages",
+		Description: "Get installed R packages from CRAN",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetRPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Julia Packages
+	s.RegisterTool(Tool{
+		Name:        "get_julia_packages",
+		Description: "Get installed Julia packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetJuliaPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Dart/Flutter Packages
+	s.RegisterTool(Tool{
+		Name:        "get_dart_packages",
+		Description: "Get Dart/Flutter pub cache packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetDartPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// OCaml Packages
+	s.RegisterTool(Tool{
+		Name:        "get_ocaml_packages",
+		Description: "Get installed OPAM packages (macOS/Linux only)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetOCamlPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Conda Packages
+	s.RegisterTool(Tool{
+		Name:        "get_conda_packages",
+		Description: "Get Conda environments and packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetCondaPackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Gradle Packages
+	s.RegisterTool(Tool{
+		Name:        "get_gradle_packages",
+		Description: "Get Java/Gradle dependency cache packages",
+		InputSchema: InputSchema{Type: "object"},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := software.NewCollector()
+		result, err := c.GetGradlePackages()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// ========================================================================
+	// Phase 1.10: Extended Lock File Parsers
+	// ========================================================================
+
+	// Yarn Lock
+	s.RegisterTool(Tool{
+		Name:        "get_yarn_lock",
+		Description: "Parse yarn.lock for Yarn dependency versions (supports v1 and v2+ formats)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to yarn.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetYarnLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Pnpm Lock
+	s.RegisterTool(Tool{
+		Name:        "get_pnpm_lock",
+		Description: "Parse pnpm-lock.yaml for pnpm dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to pnpm-lock.yaml (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetPnpmLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Poetry Lock
+	s.RegisterTool(Tool{
+		Name:        "get_poetry_lock",
+		Description: "Parse poetry.lock for Python Poetry dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to poetry.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetPoetryLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Composer Lock (Extended)
+	s.RegisterTool(Tool{
+		Name:        "get_composer_lock",
+		Description: "Parse composer.lock for PHP Composer dependency versions with integrity hashes",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to composer.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetComposerLockExtended(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Mix Lock (Elixir)
+	s.RegisterTool(Tool{
+		Name:        "get_mix_lock",
+		Description: "Parse mix.lock for Elixir Hex dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to mix.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetMixLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Pubspec Lock (Dart/Flutter)
+	s.RegisterTool(Tool{
+		Name:        "get_pubspec_lock",
+		Description: "Parse pubspec.lock for Dart/Flutter dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to pubspec.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetPubspecLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Swift Package.resolved
+	s.RegisterTool(Tool{
+		Name:        "get_swift_resolved",
+		Description: "Parse Package.resolved for Swift Package Manager dependencies (macOS/Linux only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to Package.resolved (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetSwiftResolved(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Podfile Lock (CocoaPods)
+	s.RegisterTool(Tool{
+		Name:        "get_podfile_lock",
+		Description: "Parse Podfile.lock for CocoaPods dependencies (macOS only)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to Podfile.lock (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetPodfileLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Gradle Lockfile
+	s.RegisterTool(Tool{
+		Name:        "get_gradle_lock",
+		Description: "Parse gradle.lockfile for Gradle dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to gradle.lockfile (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetGradleLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Conda Lock
+	s.RegisterTool(Tool{
+		Name:        "get_conda_lock",
+		Description: "Parse conda-lock.yml for Conda dependency versions",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {Type: "string", Description: "Path to conda-lock.yml (defaults to current directory)"},
+			},
+		},
+	}, "software", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		lockPath, _ := args["path"].(string)
+		c := software.NewCollector()
+		result, err := c.GetCondaLock(lockPath)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
 }
 
 func registerTriageTools(s *Server) {

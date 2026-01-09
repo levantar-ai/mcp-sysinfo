@@ -59,7 +59,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## Query Reference
 
-**Implemented: 134 queries | Planned: 159 queries | Total: 293 queries**
+**Implemented: 183 queries | Planned: 110 queries | Total: 293 queries**
 
 ### Phase 1.0: Core Metrics (7/7)
 
@@ -351,7 +351,7 @@ Extended platform-specific security controls for endpoint security posture asses
 |-------|-------------|:-----:|:-----:|:-------:|
 | `get_vendor_services` | OS vendor services inventory | ✅ | ✅ | ✅ |
 
-### Phase 1.10: Extended Language Ecosystems 📋 (0/21)
+### Phase 1.10: Extended Language Ecosystems ✅ (21/21)
 
 Additional language runtimes and package manager support.
 
@@ -359,32 +359,32 @@ Additional language runtimes and package manager support.
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_perl_packages` | CPAN/cpanm modules | 📋 | 📋 | 📋 |
-| `get_lua_packages` | LuaRocks packages | 📋 | 📋 | 📋 |
-| `get_haskell_packages` | Cabal/Stack packages | 📋 | 📋 | 📋 |
-| `get_swift_packages` | Swift Package Manager cache | 📋 | 📋 | - |
-| `get_elixir_packages` | Hex/Mix packages | 📋 | 📋 | 📋 |
-| `get_r_packages` | CRAN packages | 📋 | 📋 | 📋 |
-| `get_julia_packages` | Julia Pkg packages | 📋 | 📋 | 📋 |
-| `get_dart_packages` | Dart/Flutter pub cache | 📋 | 📋 | 📋 |
-| `get_ocaml_packages` | OPAM packages | 📋 | 📋 | - |
-| `get_conda_packages` | Conda environments and packages | 📋 | 📋 | 📋 |
-| `get_gradle_packages` | Gradle dependency cache | 📋 | 📋 | 📋 |
+| `get_perl_packages` | CPAN/cpanm modules | ✅ | ✅ | ✅ |
+| `get_lua_packages` | LuaRocks packages | ✅ | ✅ | ✅ |
+| `get_haskell_packages` | Cabal/Stack packages | ✅ | ✅ | ✅ |
+| `get_swift_packages` | Swift Package Manager cache | ✅ | ✅ | - |
+| `get_elixir_packages` | Hex/Mix packages | ✅ | ✅ | ✅ |
+| `get_r_packages` | CRAN packages | ✅ | ✅ | ✅ |
+| `get_julia_packages` | Julia Pkg packages | ✅ | ✅ | ✅ |
+| `get_dart_packages` | Dart/Flutter pub cache | ✅ | ✅ | ✅ |
+| `get_ocaml_packages` | OPAM packages | ✅ | ✅ | - |
+| `get_conda_packages` | Conda environments and packages | ✅ | ✅ | ✅ |
+| `get_gradle_packages` | Gradle dependency cache | ✅ | ✅ | ✅ |
 
 #### Lock File Parsers (10 queries)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_yarn_lock` | Parse yarn.lock (Node.js Yarn) | 📋 | 📋 | 📋 |
-| `get_pnpm_lock` | Parse pnpm-lock.yaml (Node.js pnpm) | 📋 | 📋 | 📋 |
-| `get_poetry_lock` | Parse poetry.lock (Python Poetry) | 📋 | 📋 | 📋 |
-| `get_composer_lock` | Parse composer.lock (PHP) | 📋 | 📋 | 📋 |
-| `get_mix_lock` | Parse mix.lock (Elixir) | 📋 | 📋 | 📋 |
-| `get_pubspec_lock` | Parse pubspec.lock (Dart/Flutter) | 📋 | 📋 | 📋 |
-| `get_swift_resolved` | Parse Package.resolved (Swift) | 📋 | 📋 | - |
-| `get_podfile_lock` | Parse Podfile.lock (CocoaPods) | - | 📋 | - |
-| `get_gradle_lock` | Parse gradle.lockfile | 📋 | 📋 | 📋 |
-| `get_conda_lock` | Parse conda-lock.yml | 📋 | 📋 | 📋 |
+| `get_yarn_lock` | Parse yarn.lock (Node.js Yarn) | ✅ | ✅ | ✅ |
+| `get_pnpm_lock` | Parse pnpm-lock.yaml (Node.js pnpm) | ✅ | ✅ | ✅ |
+| `get_poetry_lock` | Parse poetry.lock (Python Poetry) | ✅ | ✅ | ✅ |
+| `get_composer_lock` | Parse composer.lock (PHP) | ✅ | ✅ | ✅ |
+| `get_mix_lock` | Parse mix.lock (Elixir) | ✅ | ✅ | ✅ |
+| `get_pubspec_lock` | Parse pubspec.lock (Dart/Flutter) | ✅ | ✅ | ✅ |
+| `get_swift_resolved` | Parse Package.resolved (Swift) | ✅ | ✅ | - |
+| `get_podfile_lock` | Parse Podfile.lock (CocoaPods) | - | ✅ | - |
+| `get_gradle_lock` | Parse gradle.lockfile | ✅ | ✅ | ✅ |
+| `get_conda_lock` | Parse conda-lock.yml | ✅ | ✅ | ✅ |
 
 ### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
 
@@ -818,7 +818,7 @@ curl http://localhost:8080/metrics
 | **1.7** | Deep IIS Configuration | 📋 Planned | 0/36 |
 | **1.8** | Complete IIS Coverage | 📋 Planned | 0/48 |
 | **1.9** | Platform Security Controls | ✅ Complete | 28/28 |
-| **1.10** | Extended Language Ecosystems | 📋 Planned | 0/21 |
+| **1.10** | Extended Language Ecosystems | ✅ Complete | 21/21 |
 | **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
 | **3** | Storage Deep Dive | ✅ Complete | 5/5 |
 | 4 | Network Intelligence | 📋 Planned | 0/5 |
@@ -828,7 +828,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 162/293 queries (55%)**
+**Implemented: 183/293 queries (62%)**
 
 ### Cross-Platform Architecture
 

@@ -935,11 +935,79 @@ All ⚠️ queries follow the existing pattern used for CPU/memory/disk/network 
 
 ---
 
-## Phase 1.10: Windows Enterprise Features (15 Queries) 📋 PLANNED
+## Phase 1.10: Extended Language Ecosystems (21 Queries) ✅ COMPLETE
+
+Additional language runtimes and package manager support for comprehensive software inventory.
+
+**Progress: 21/21 queries implemented**
+
+### 1.10.1 Global Package Managers (11 queries) ✅ COMPLETE
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_perl_packages` | CPAN/cpanm modules | ✅ | ✅ | ✅ |
+| `get_lua_packages` | LuaRocks packages | ✅ | ✅ | ✅ |
+| `get_haskell_packages` | Cabal/Stack packages | ✅ | ✅ | ✅ |
+| `get_swift_packages` | Swift Package Manager cache | ✅ | ✅ | - |
+| `get_elixir_packages` | Hex/Mix packages | ✅ | ✅ | ✅ |
+| `get_r_packages` | CRAN packages | ✅ | ✅ | ✅ |
+| `get_julia_packages` | Julia Pkg packages | ✅ | ✅ | ✅ |
+| `get_dart_packages` | Dart/Flutter pub cache | ✅ | ✅ | ✅ |
+| `get_ocaml_packages` | OPAM packages | ✅ | ✅ | - |
+| `get_conda_packages` | Conda environments and packages | ✅ | ✅ | ✅ |
+| `get_gradle_packages` | Gradle dependency cache | ✅ | ✅ | ✅ |
+
+#### Implementation
+- [x] All: Scan standard package cache locations for each ecosystem
+- [x] All: Parse package metadata files (DESCRIPTION, .cabal, pubspec.yaml, etc.)
+- [x] All: Support multiple versions and environments where applicable
+- [x] All: Return structured package info (name, version, ecosystem)
+
+#### Unit Tests
+- [x] 🧪 Test package directory scanning
+- [x] 🧪 Test metadata file parsing for each ecosystem
+- [x] 🧪 Test version extraction
+- [x] 🧪 Test handling of missing/invalid packages
+
+---
+
+### 1.10.2 Lock File Parsers (10 queries) ✅ COMPLETE
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_yarn_lock` | Parse yarn.lock (Node.js Yarn) | ✅ | ✅ | ✅ |
+| `get_pnpm_lock` | Parse pnpm-lock.yaml (Node.js pnpm) | ✅ | ✅ | ✅ |
+| `get_poetry_lock` | Parse poetry.lock (Python Poetry) | ✅ | ✅ | ✅ |
+| `get_composer_lock` | Parse composer.lock (PHP) | ✅ | ✅ | ✅ |
+| `get_mix_lock` | Parse mix.lock (Elixir) | ✅ | ✅ | ✅ |
+| `get_pubspec_lock` | Parse pubspec.lock (Dart/Flutter) | ✅ | ✅ | ✅ |
+| `get_swift_resolved` | Parse Package.resolved (Swift) | ✅ | ✅ | - |
+| `get_podfile_lock` | Parse Podfile.lock (CocoaPods) | - | ✅ | - |
+| `get_gradle_lock` | Parse gradle.lockfile | ✅ | ✅ | ✅ |
+| `get_conda_lock` | Parse conda-lock.yml | ✅ | ✅ | ✅ |
+
+#### Implementation
+- [x] All: Parse each lock file format with proper error handling
+- [x] All: Extract package name, version, and optional integrity hash
+- [x] All: Support nested/transitive dependency information where available
+- [x] All: Handle multiple lock file format versions
+
+#### Unit Tests
+- [x] 🧪 Test yarn.lock v1 and v2 format parsing
+- [x] 🧪 Test YAML-based lock file parsing (pnpm, poetry, pubspec, conda)
+- [x] 🧪 Test TOML-based lock file parsing (poetry)
+- [x] 🧪 Test JSON-based lock file parsing (composer, swift)
+- [x] 🧪 Test Elixir/Erlang term parsing (mix.lock)
+- [x] 🧪 Test CocoaPods format parsing (Podfile.lock)
+- [x] 🧪 Test Gradle lockfile format
+
+---
+
+## Phase 1.11: Windows Enterprise Features (15 Queries) 📋 PLANNED
 
 Windows-specific queries for enterprise environments. These queries are Windows-only but follow the same zero-dependency architecture using native APIs (WMI, Registry, COM).
 
-### 1.10.1 Registry Queries (3 queries)
+### 1.11.1 Registry Queries (3 queries)
 
 | Query | Description | API |
 |-------|-------------|-----|
@@ -962,7 +1030,7 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 
 ---
 
-### 1.10.2 DCOM/COM Security (4 queries)
+### 1.11.2 DCOM/COM Security (4 queries)
 
 | Query | Description | API |
 |-------|-------------|-----|
@@ -986,7 +1054,7 @@ Windows-specific queries for enterprise environments. These queries are Windows-
 
 ---
 
-### 1.10.3 IIS Web Server (8 queries)
+### 1.11.3 IIS Web Server (8 queries)
 
 | Query | Description | API |
 |-------|-------------|-----|
@@ -1764,7 +1832,8 @@ Extended platform-specific security controls for endpoint security posture asses
 | **Phase 1.7 (SBOM)** | 31 | ✅ Complete |
 | **Phase 1.8 (App Config)** | 2 | ✅ Complete |
 | **Phase 1.9 (Triage)** | 25 | 🚧 5/25 |
-| **Phase 1.10 (Windows)** | 15 | 📋 Planned |
+| **Phase 1.10 (Lang Ecosystems)** | 21 | ✅ Complete |
+| **Phase 1.11 (Windows)** | 15 | 📋 Planned |
 | Phase 2 (Enhanced) | 6 | 📋 Planned |
 | Phase 3 (Storage) | 5 | 📋 Planned |
 | Phase 4 (Network) | 5 | 📋 Planned |
@@ -1774,7 +1843,7 @@ Extended platform-specific security controls for endpoint security posture asses
 | Phase 8 (Integration) | 4 | 📋 Planned |
 | Phase 9 (LLM) | 3 | 📋 Planned |
 
-**Current Status: 84/149 queries implemented (56%)**
+**Current Status: 105/170 queries implemented (62%)**
 
 - Phase 1 (MVP): ✅ Complete (7/7 queries)
 - Phase 1.5 (Logs): ✅ Complete (6/6 queries)
@@ -1782,5 +1851,6 @@ Extended platform-specific security controls for endpoint security posture asses
 - Phase 1.7 (SBOM): ✅ Complete (31/31 queries)
 - Phase 1.8 (App Config): ✅ Complete (2/2 queries)
 - Phase 1.9 (Triage): 🚧 In Progress (5/25 queries)
-- Phase 1.10: 📋 Planned (15 queries) - Windows Enterprise
+- Phase 1.10 (Lang Ecosystems): ✅ Complete (21/21 queries)
+- Phase 1.11: 📋 Planned (15 queries) - Windows Enterprise
 - Phase 2-9: 📋 Planned (37 queries)
