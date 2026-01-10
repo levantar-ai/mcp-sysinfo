@@ -2798,3 +2798,572 @@ type VendorService struct {
 	Vendor      string `json:"vendor"` // Microsoft, Apple, Linux distro
 	Category    string `json:"category,omitempty"` // security, networking, system, etc
 }
+
+// ============================================================================
+// Phase 4: Network Intelligence Types
+// ============================================================================
+
+// ConnectionTrackingResult represents detailed connection tracking.
+type ConnectionTrackingResult struct {
+	Connections []TrackedConnection `json:"connections"`
+	Summary     ConnectionSummary   `json:"summary"`
+	Count       int                 `json:"count"`
+	Timestamp   time.Time           `json:"timestamp"`
+}
+
+// TrackedConnection represents a tracked network connection with process info.
+type TrackedConnection struct {
+	Protocol    string    `json:"protocol"` // tcp, udp, tcp6, udp6
+	LocalAddr   string    `json:"local_addr"`
+	LocalPort   uint16    `json:"local_port"`
+	RemoteAddr  string    `json:"remote_addr"`
+	RemotePort  uint16    `json:"remote_port"`
+	State       string    `json:"state"`
+	PID         int32     `json:"pid,omitempty"`
+	ProcessName string    `json:"process_name,omitempty"`
+	Username    string    `json:"username,omitempty"`
+	BytesSent   uint64    `json:"bytes_sent,omitempty"`
+	BytesRecv   uint64    `json:"bytes_recv,omitempty"`
+	Duration    float64   `json:"duration_seconds,omitempty"`
+	StartTime   time.Time `json:"start_time,omitempty"`
+}
+
+// ConnectionSummary provides aggregated connection statistics.
+type ConnectionSummary struct {
+	TotalConnections int            `json:"total_connections"`
+	ByState          map[string]int `json:"by_state"`
+	ByProtocol       map[string]int `json:"by_protocol"`
+	ByProcess        map[string]int `json:"by_process,omitempty"`
+	UniqueRemoteIPs  int            `json:"unique_remote_ips"`
+}
+
+// DNSStatsResult represents DNS resolution statistics.
+type DNSStatsResult struct {
+	Servers       []DNSServerStats `json:"servers"`
+	Cache         *DNSCache        `json:"cache,omitempty"`
+	QueryStats    DNSQueryStats    `json:"query_stats"`
+	ResolvConf    string           `json:"resolv_conf,omitempty"`
+	SearchDomains []string         `json:"search_domains,omitempty"`
+	Timestamp     time.Time        `json:"timestamp"`
+}
+
+// DNSServerStats represents statistics for a DNS server.
+type DNSServerStats struct {
+	Address      string  `json:"address"`
+	Interface    string  `json:"interface,omitempty"`
+	Type         string  `json:"type"` // system, resolved, dhcp
+	Priority     int     `json:"priority,omitempty"`
+	Reachable    bool    `json:"reachable"`
+	LatencyMs    float64 `json:"latency_ms,omitempty"`
+	QueriesSent  uint64  `json:"queries_sent,omitempty"`
+	QuerySuccess uint64  `json:"query_success,omitempty"`
+	QueryFailed  uint64  `json:"query_failed,omitempty"`
+}
+
+// DNSCache represents DNS cache information.
+type DNSCache struct {
+	Entries    int     `json:"entries"`
+	HitRate    float64 `json:"hit_rate,omitempty"`
+	MissRate   float64 `json:"miss_rate,omitempty"`
+	Size       uint64  `json:"size_bytes,omitempty"`
+	MaxSize    uint64  `json:"max_size_bytes,omitempty"`
+	TTLSeconds int     `json:"ttl_seconds,omitempty"`
+}
+
+// DNSQueryStats represents DNS query statistics.
+type DNSQueryStats struct {
+	TotalQueries   uint64 `json:"total_queries"`
+	SuccessQueries uint64 `json:"success_queries"`
+	FailedQueries  uint64 `json:"failed_queries"`
+	CacheHits      uint64 `json:"cache_hits"`
+	CacheMisses    uint64 `json:"cache_misses"`
+}
+
+// FirewallDeepResult represents comprehensive firewall analysis.
+type FirewallDeepResult struct {
+	Backend      string              `json:"backend"` // iptables, nftables, pf, netfilter
+	Enabled      bool                `json:"enabled"`
+	DefaultInput string              `json:"default_input,omitempty"`  // accept, drop, reject
+	DefaultOutput string             `json:"default_output,omitempty"`
+	DefaultForward string            `json:"default_forward,omitempty"`
+	Tables       []FirewallTable     `json:"tables,omitempty"`
+	Zones        []FirewallZone      `json:"zones,omitempty"`
+	Statistics   FirewallStatistics  `json:"statistics"`
+	Warnings     []string            `json:"warnings,omitempty"`
+	Timestamp    time.Time           `json:"timestamp"`
+}
+
+// FirewallTable represents a firewall table (iptables/nftables).
+type FirewallTable struct {
+	Name   string          `json:"name"`
+	Family string          `json:"family,omitempty"` // inet, ip, ip6
+	Chains []FirewallChain `json:"chains"`
+}
+
+// FirewallChain represents a firewall chain.
+type FirewallChain struct {
+	Name    string             `json:"name"`
+	Policy  string             `json:"policy,omitempty"`
+	Type    string             `json:"type,omitempty"` // filter, nat, mangle
+	Rules   []FirewallRuleDeep `json:"rules"`
+	Packets uint64             `json:"packets,omitempty"`
+	Bytes   uint64             `json:"bytes,omitempty"`
+}
+
+// FirewallRuleDeep represents a detailed firewall rule.
+type FirewallRuleDeep struct {
+	Number      int      `json:"number"`
+	Action      string   `json:"action"`
+	Protocol    string   `json:"protocol,omitempty"`
+	Source      string   `json:"source,omitempty"`
+	Destination string   `json:"destination,omitempty"`
+	SrcPort     string   `json:"src_port,omitempty"`
+	DstPort     string   `json:"dst_port,omitempty"`
+	Interface   string   `json:"interface,omitempty"`
+	Direction   string   `json:"direction,omitempty"` // in, out
+	State       string   `json:"state,omitempty"`     // new, established, related
+	Comment     string   `json:"comment,omitempty"`
+	Packets     uint64   `json:"packets,omitempty"`
+	Bytes       uint64   `json:"bytes,omitempty"`
+	Enabled     bool     `json:"enabled"`
+}
+
+// FirewallZone represents a firewall zone (firewalld/ufw).
+type FirewallZone struct {
+	Name       string   `json:"name"`
+	Active     bool     `json:"active"`
+	Interfaces []string `json:"interfaces"`
+	Services   []string `json:"services"`
+	Ports      []string `json:"ports"`
+	Target     string   `json:"target,omitempty"`
+}
+
+// FirewallStatistics provides firewall statistics.
+type FirewallStatistics struct {
+	TotalRules      int    `json:"total_rules"`
+	AcceptRules     int    `json:"accept_rules"`
+	DropRules       int    `json:"drop_rules"`
+	RejectRules     int    `json:"reject_rules"`
+	LogRules        int    `json:"log_rules"`
+	TotalPackets    uint64 `json:"total_packets,omitempty"`
+	TotalBytes      uint64 `json:"total_bytes,omitempty"`
+	DroppedPackets  uint64 `json:"dropped_packets,omitempty"`
+	RejectedPackets uint64 `json:"rejected_packets,omitempty"`
+}
+
+// WiFiMetricsResult represents WiFi signal and quality metrics.
+type WiFiMetricsResult struct {
+	Interfaces []WiFiInterface `json:"interfaces"`
+	Available  bool            `json:"available"`
+	Timestamp  time.Time       `json:"timestamp"`
+}
+
+// WiFiInterface represents a WiFi network interface.
+type WiFiInterface struct {
+	Name         string  `json:"name"`
+	SSID         string  `json:"ssid,omitempty"`
+	BSSID        string  `json:"bssid,omitempty"`
+	Frequency    float64 `json:"frequency_mhz,omitempty"`
+	Channel      int     `json:"channel,omitempty"`
+	SignalLevel  int     `json:"signal_level_dbm,omitempty"`
+	SignalQuality int    `json:"signal_quality_percent,omitempty"`
+	NoiseLevel   int     `json:"noise_level_dbm,omitempty"`
+	BitRate      float64 `json:"bit_rate_mbps,omitempty"`
+	TxPower      int     `json:"tx_power_dbm,omitempty"`
+	LinkQuality  string  `json:"link_quality,omitempty"`
+	Mode         string  `json:"mode,omitempty"` // managed, ad-hoc, monitor
+	Security     string  `json:"security,omitempty"` // WPA2, WPA3, etc
+	Connected    bool    `json:"connected"`
+}
+
+// NetworkLatencyResult represents network latency probe results.
+type NetworkLatencyResult struct {
+	Probes    []LatencyProbe `json:"probes"`
+	Summary   LatencySummary `json:"summary"`
+	Timestamp time.Time      `json:"timestamp"`
+}
+
+// LatencyProbe represents a single latency probe result.
+type LatencyProbe struct {
+	Target      string  `json:"target"`
+	Type        string  `json:"type"` // icmp, tcp, http
+	Port        int     `json:"port,omitempty"`
+	Success     bool    `json:"success"`
+	LatencyMs   float64 `json:"latency_ms,omitempty"`
+	MinMs       float64 `json:"min_ms,omitempty"`
+	MaxMs       float64 `json:"max_ms,omitempty"`
+	AvgMs       float64 `json:"avg_ms,omitempty"`
+	StdDevMs    float64 `json:"stddev_ms,omitempty"`
+	PacketsSent int     `json:"packets_sent"`
+	PacketsRecv int     `json:"packets_recv"`
+	PacketLoss  float64 `json:"packet_loss_percent"`
+	Error       string  `json:"error,omitempty"`
+}
+
+// LatencySummary provides overall latency statistics.
+type LatencySummary struct {
+	TotalProbes    int     `json:"total_probes"`
+	SuccessProbes  int     `json:"success_probes"`
+	FailedProbes   int     `json:"failed_probes"`
+	AvgLatencyMs   float64 `json:"avg_latency_ms"`
+	MinLatencyMs   float64 `json:"min_latency_ms"`
+	MaxLatencyMs   float64 `json:"max_latency_ms"`
+}
+
+// ============================================================================
+// Phase 5: Analytics & Trends Types
+// ============================================================================
+
+// HistoricalMetricsResult represents historical system metrics.
+type HistoricalMetricsResult struct {
+	TimeRange  TimeRange           `json:"time_range"`
+	CPU        []MetricDataPoint   `json:"cpu,omitempty"`
+	Memory     []MetricDataPoint   `json:"memory,omitempty"`
+	Disk       []MetricDataPoint   `json:"disk,omitempty"`
+	Network    []MetricDataPoint   `json:"network,omitempty"`
+	DataSource string              `json:"data_source"` // sar, journal, wtmp, etc
+	Timestamp  time.Time           `json:"timestamp"`
+}
+
+// TimeRange represents a time range for historical data.
+type TimeRange struct {
+	Start    time.Time `json:"start"`
+	End      time.Time `json:"end"`
+	Duration string    `json:"duration"`
+}
+
+// MetricDataPoint represents a single metric data point.
+type MetricDataPoint struct {
+	Timestamp time.Time `json:"timestamp"`
+	Value     float64   `json:"value"`
+	Label     string    `json:"label,omitempty"`
+}
+
+// AnomalyDetectionResult represents detected anomalies.
+type AnomalyDetectionResult struct {
+	Anomalies  []Anomaly `json:"anomalies"`
+	Count      int       `json:"count"`
+	TimeRange  TimeRange `json:"time_range"`
+	Thresholds map[string]float64 `json:"thresholds"`
+	Timestamp  time.Time `json:"timestamp"`
+}
+
+// Anomaly represents a detected anomaly.
+type Anomaly struct {
+	Metric      string    `json:"metric"`
+	Value       float64   `json:"value"`
+	Expected    float64   `json:"expected"`
+	Deviation   float64   `json:"deviation_percent"`
+	Severity    string    `json:"severity"` // low, medium, high, critical
+	Timestamp   time.Time `json:"timestamp"`
+	Description string    `json:"description"`
+}
+
+// CapacityForecastResult represents capacity planning forecasts.
+type CapacityForecastResult struct {
+	Forecasts []CapacityForecast `json:"forecasts"`
+	Timestamp time.Time          `json:"timestamp"`
+}
+
+// CapacityForecast represents a capacity forecast for a resource.
+type CapacityForecast struct {
+	Resource       string    `json:"resource"` // disk, memory, inodes
+	CurrentUsage   float64   `json:"current_usage_percent"`
+	GrowthRate     float64   `json:"growth_rate_per_day"`
+	DaysToFull     int       `json:"days_to_full,omitempty"`
+	EstimatedFull  time.Time `json:"estimated_full,omitempty"`
+	Recommendation string    `json:"recommendation,omitempty"`
+	Confidence     float64   `json:"confidence_percent"`
+}
+
+// TrendAnalysisResult represents performance trend analysis.
+type TrendAnalysisResult struct {
+	Trends    []Trend   `json:"trends"`
+	Period    string    `json:"period"` // 1h, 24h, 7d, 30d
+	Timestamp time.Time `json:"timestamp"`
+}
+
+// Trend represents a performance trend.
+type Trend struct {
+	Metric     string  `json:"metric"`
+	Direction  string  `json:"direction"` // up, down, stable
+	ChangeRate float64 `json:"change_rate_percent"`
+	StartValue float64 `json:"start_value"`
+	EndValue   float64 `json:"end_value"`
+	Slope      float64 `json:"slope"`
+	Analysis   string  `json:"analysis,omitempty"`
+}
+
+// ============================================================================
+// Phase 6: Automation & Alerting Types (Read-only)
+// ============================================================================
+
+// AlertStatusResult represents current system alert status.
+type AlertStatusResult struct {
+	Alerts    []SystemAlert `json:"alerts"`
+	Count     int           `json:"count"`
+	Critical  int           `json:"critical_count"`
+	Warning   int           `json:"warning_count"`
+	Info      int           `json:"info_count"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// SystemAlert represents a system alert.
+type SystemAlert struct {
+	ID          string    `json:"id"`
+	Severity    string    `json:"severity"` // critical, warning, info
+	Category    string    `json:"category"` // cpu, memory, disk, network, security
+	Message     string    `json:"message"`
+	Source      string    `json:"source"`
+	Value       float64   `json:"value,omitempty"`
+	Threshold   float64   `json:"threshold,omitempty"`
+	FirstSeen   time.Time `json:"first_seen"`
+	LastSeen    time.Time `json:"last_seen"`
+	Count       int       `json:"count"`
+	Acknowledged bool     `json:"acknowledged"`
+}
+
+// RemediationSuggestionsResult represents suggested remediation actions.
+type RemediationSuggestionsResult struct {
+	Suggestions []RemediationSuggestion `json:"suggestions"`
+	Count       int                     `json:"count"`
+	Timestamp   time.Time               `json:"timestamp"`
+}
+
+// RemediationSuggestion represents a remediation suggestion.
+type RemediationSuggestion struct {
+	Issue       string   `json:"issue"`
+	Severity    string   `json:"severity"`
+	Category    string   `json:"category"`
+	Suggestion  string   `json:"suggestion"`
+	Commands    []string `json:"commands,omitempty"`
+	Risk        string   `json:"risk"` // low, medium, high
+	Automated   bool     `json:"automated_available"`
+	References  []string `json:"references,omitempty"`
+}
+
+// RunbookRecommendationsResult represents runbook recommendations.
+type RunbookRecommendationsResult struct {
+	Recommendations []RunbookRecommendation `json:"recommendations"`
+	Count           int                     `json:"count"`
+	Timestamp       time.Time               `json:"timestamp"`
+}
+
+// RunbookRecommendation represents a runbook recommendation.
+type RunbookRecommendation struct {
+	Title       string   `json:"title"`
+	Category    string   `json:"category"`
+	Priority    string   `json:"priority"` // high, medium, low
+	Reason      string   `json:"reason"`
+	Steps       []string `json:"steps"`
+	References  []string `json:"references,omitempty"`
+}
+
+// ============================================================================
+// Phase 7: Security & Compliance Types
+// ============================================================================
+
+// SecurityScanResult represents a security vulnerability scan.
+type SecurityScanResult struct {
+	Findings  []SecurityFinding  `json:"findings"`
+	Summary   SecuritySummary    `json:"summary"`
+	Score     int                `json:"score"` // 0-100
+	Grade     string             `json:"grade"` // A, B, C, D, F
+	Timestamp time.Time          `json:"timestamp"`
+}
+
+// SecurityFinding represents a security finding.
+type SecurityFinding struct {
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Severity    string   `json:"severity"` // critical, high, medium, low, info
+	Category    string   `json:"category"` // authentication, encryption, permissions, network
+	Resource    string   `json:"resource,omitempty"`
+	Evidence    string   `json:"evidence,omitempty"`
+	Remediation string   `json:"remediation,omitempty"`
+	References  []string `json:"references,omitempty"`
+	CWE         string   `json:"cwe,omitempty"`
+	CVE         string   `json:"cve,omitempty"`
+}
+
+// SecuritySummary provides security scan summary.
+type SecuritySummary struct {
+	TotalFindings    int `json:"total_findings"`
+	CriticalFindings int `json:"critical_findings"`
+	HighFindings     int `json:"high_findings"`
+	MediumFindings   int `json:"medium_findings"`
+	LowFindings      int `json:"low_findings"`
+	InfoFindings     int `json:"info_findings"`
+	PassedChecks     int `json:"passed_checks"`
+	FailedChecks     int `json:"failed_checks"`
+}
+
+// ComplianceCheckResult represents compliance check results.
+type ComplianceCheckResult struct {
+	Framework   string            `json:"framework"` // CIS, STIG, PCI-DSS
+	Version     string            `json:"version"`
+	Profile     string            `json:"profile,omitempty"` // Level 1, Level 2
+	Checks      []ComplianceCheck `json:"checks"`
+	Summary     ComplianceSummary `json:"summary"`
+	Score       float64           `json:"score_percent"`
+	Timestamp   time.Time         `json:"timestamp"`
+}
+
+// ComplianceCheck represents a single compliance check.
+type ComplianceCheck struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Section     string `json:"section,omitempty"`
+	Status      string `json:"status"` // pass, fail, skip, manual
+	Severity    string `json:"severity"`
+	Actual      string `json:"actual,omitempty"`
+	Expected    string `json:"expected,omitempty"`
+	Remediation string `json:"remediation,omitempty"`
+}
+
+// ComplianceSummary provides compliance summary.
+type ComplianceSummary struct {
+	TotalChecks  int `json:"total_checks"`
+	Passed       int `json:"passed"`
+	Failed       int `json:"failed"`
+	Skipped      int `json:"skipped"`
+	Manual       int `json:"manual"`
+}
+
+// ForensicSnapshotResult represents a forensic data snapshot.
+type ForensicSnapshotResult struct {
+	SnapshotID     string                 `json:"snapshot_id"`
+	CollectedAt    time.Time              `json:"collected_at"`
+	System         ForensicSystem         `json:"system"`
+	Users          []ForensicUser         `json:"users"`
+	Processes      []ForensicProcess      `json:"processes"`
+	NetworkConns   []ForensicConnection   `json:"network_connections"`
+	OpenFiles      []ForensicOpenFile     `json:"open_files"`
+	RecentLogins   []ForensicLogin        `json:"recent_logins"`
+	ModifiedFiles  []ForensicModifiedFile `json:"recently_modified_files,omitempty"`
+	Timestamp      time.Time              `json:"timestamp"`
+}
+
+// ForensicSystem represents system forensic data.
+type ForensicSystem struct {
+	Hostname    string    `json:"hostname"`
+	OS          string    `json:"os"`
+	Kernel      string    `json:"kernel"`
+	BootTime    time.Time `json:"boot_time"`
+	Uptime      string    `json:"uptime"`
+	Timezone    string    `json:"timezone"`
+	LastUpdated string    `json:"last_package_update,omitempty"`
+}
+
+// ForensicUser represents user forensic data.
+type ForensicUser struct {
+	Username     string    `json:"username"`
+	UID          int       `json:"uid"`
+	Groups       []string  `json:"groups"`
+	Shell        string    `json:"shell"`
+	HomeDir      string    `json:"home_dir"`
+	LastLogin    time.Time `json:"last_login,omitempty"`
+	IsAdmin      bool      `json:"is_admin"`
+	IsLocked     bool      `json:"is_locked"`
+}
+
+// ForensicProcess represents process forensic data.
+type ForensicProcess struct {
+	PID         int32     `json:"pid"`
+	PPID        int32     `json:"ppid"`
+	Name        string    `json:"name"`
+	Cmdline     string    `json:"cmdline"`
+	User        string    `json:"user"`
+	StartTime   time.Time `json:"start_time"`
+	CPUPercent  float64   `json:"cpu_percent"`
+	MemPercent  float32   `json:"mem_percent"`
+	OpenFiles   int       `json:"open_files"`
+	Connections int       `json:"connections"`
+}
+
+// ForensicConnection represents network connection forensic data.
+type ForensicConnection struct {
+	Protocol   string `json:"protocol"`
+	LocalAddr  string `json:"local_addr"`
+	LocalPort  int    `json:"local_port"`
+	RemoteAddr string `json:"remote_addr"`
+	RemotePort int    `json:"remote_port"`
+	State      string `json:"state"`
+	PID        int32  `json:"pid"`
+	Process    string `json:"process"`
+}
+
+// ForensicOpenFile represents open file forensic data.
+type ForensicOpenFile struct {
+	Path    string `json:"path"`
+	PID     int32  `json:"pid"`
+	Process string `json:"process"`
+	Type    string `json:"type"` // file, socket, pipe
+	Mode    string `json:"mode,omitempty"`
+}
+
+// ForensicLogin represents login forensic data.
+type ForensicLogin struct {
+	Username  string    `json:"username"`
+	Terminal  string    `json:"terminal"`
+	Host      string    `json:"host"`
+	LoginTime time.Time `json:"login_time"`
+	Type      string    `json:"type"` // login, logout, failed
+}
+
+// ForensicModifiedFile represents recently modified file data.
+type ForensicModifiedFile struct {
+	Path     string    `json:"path"`
+	Size     int64     `json:"size"`
+	Mode     string    `json:"mode"`
+	Owner    string    `json:"owner"`
+	Modified time.Time `json:"modified"`
+	Type     string    `json:"type"` // config, binary, script
+}
+
+// AuditTrailResult represents security audit trail.
+type AuditTrailResult struct {
+	Events     []AuditEvent `json:"events"`
+	Count      int          `json:"count"`
+	TimeRange  TimeRange    `json:"time_range"`
+	Sources    []string     `json:"sources"`
+	Timestamp  time.Time    `json:"timestamp"`
+}
+
+// AuditEvent represents a security audit event.
+type AuditEvent struct {
+	Timestamp   time.Time `json:"timestamp"`
+	Type        string    `json:"type"` // auth, exec, file, network, privilege
+	Action      string    `json:"action"`
+	Subject     string    `json:"subject"` // user or process
+	Object      string    `json:"object"`  // file, service, etc
+	Result      string    `json:"result"`  // success, failure
+	Source      string    `json:"source"`  // auth.log, audit.log, syslog
+	Details     string    `json:"details,omitempty"`
+	Severity    string    `json:"severity,omitempty"`
+}
+
+// HardeningRecommendationsResult represents security hardening recommendations.
+type HardeningRecommendationsResult struct {
+	Recommendations []HardeningRecommendation `json:"recommendations"`
+	Categories      map[string]int            `json:"by_category"`
+	PriorityCount   map[string]int            `json:"by_priority"`
+	Timestamp       time.Time                 `json:"timestamp"`
+}
+
+// HardeningRecommendation represents a security hardening recommendation.
+type HardeningRecommendation struct {
+	ID          string   `json:"id"`
+	Category    string   `json:"category"` // authentication, network, filesystem, kernel
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Priority    string   `json:"priority"` // critical, high, medium, low
+	CurrentState string  `json:"current_state"`
+	TargetState string   `json:"target_state"`
+	Remediation string   `json:"remediation"`
+	Commands    []string `json:"commands,omitempty"`
+	References  []string `json:"references,omitempty"`
+	Impact      string   `json:"impact,omitempty"`
+}

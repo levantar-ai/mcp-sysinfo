@@ -13,7 +13,10 @@ import (
 	"time"
 
 	"github.com/levantar-ai/mcp-sysinfo/internal/agent"
+	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
+	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
 	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
+	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -64,6 +67,8 @@ func main() {
 	hours := flag.Int("hours", 0, "Hours for time-based queries")
 	days := flag.Int("days", 0, "Days for time-based queries")
 	lines := flag.Int("lines", 0, "Lines for log queries")
+	period := flag.String("period", "", "Period for analytics queries (1h, 24h, 7d)")
+	framework := flag.String("framework", "", "Compliance framework (cis, pci-dss, hipaa, stig)")
 
 	// Windows Enterprise flags
 	regHive := flag.String("hive", "HKLM", "Registry hive (HKLM, HKCU, HKCR, HKU, HKCC)")
@@ -174,7 +179,7 @@ func main() {
 		if *pid > 0 {
 			pidVal = int32(*pid) // #nosec G115 -- checked for positive
 		}
-		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath, *serviceName, *limit, *hours, *days, *lines, *regHive, *regPath, *maxDepth, *appID)
+		runQuery(*query, *jsonOutput, pidVal, *imageID, *lockPath, *serviceName, *limit, *hours, *days, *lines, *regHive, *regPath, *maxDepth, *appID, *period, *framework)
 		os.Exit(0)
 	}
 
@@ -533,7 +538,7 @@ For more information: https://github.com/levantar-ai/mcp-sysinfo
 `)
 }
 
-func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serviceName string, limitVal, hoursVal, daysVal, linesVal int, regHive, regPath string, maxDepth int, appID string) {
+func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serviceName string, limitVal, hoursVal, daysVal, linesVal int, regHive, regPath string, maxDepth int, appID string, period, framework string) {
 	var result interface{}
 	var err error
 
@@ -1304,6 +1309,96 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serv
 	case "get_vendor_services":
 		c := security.NewCollector()
 		result, err = c.GetVendorServices()
+
+	// Phase 4: Network Intelligence
+	case "get_connection_tracking":
+		c := netconfig.NewCollector()
+		result, err = c.GetConnectionTracking()
+
+	case "get_dns_stats":
+		c := netconfig.NewCollector()
+		result, err = c.GetDNSStats()
+
+	case "get_firewall_deep":
+		c := netconfig.NewCollector()
+		result, err = c.GetFirewallDeep()
+
+	case "get_wifi_metrics":
+		c := netconfig.NewCollector()
+		result, err = c.GetWiFiMetrics()
+
+	case "get_network_latency":
+		c := netconfig.NewCollector()
+		// Default targets for latency testing
+		targets := []string{"8.8.8.8", "1.1.1.1", "google.com"}
+		result, err = c.GetNetworkLatency(targets)
+
+	// Phase 5: Analytics & Trends
+	case "get_historical_metrics":
+		c := analytics.NewCollector()
+		p := "1h"
+		if period != "" {
+			p = period
+		}
+		result, err = c.GetHistoricalMetrics(p)
+
+	case "get_anomaly_detection":
+		c := analytics.NewCollector()
+		result, err = c.GetAnomalyDetection()
+
+	case "get_capacity_forecast":
+		c := analytics.NewCollector()
+		result, err = c.GetCapacityForecast()
+
+	case "get_trend_analysis":
+		c := analytics.NewCollector()
+		p := "1h"
+		if period != "" {
+			p = period
+		}
+		result, err = c.GetTrendAnalysis(p)
+
+	// Phase 6: Automation & Alerting
+	case "get_alert_status":
+		c := alerts.NewCollector()
+		result, err = c.GetAlertStatus()
+
+	case "get_remediation_suggestions":
+		c := alerts.NewCollector()
+		result, err = c.GetRemediationSuggestions()
+
+	case "get_runbook_recommendations":
+		c := alerts.NewCollector()
+		result, err = c.GetRunbookRecommendations()
+
+	// Phase 7: Security & Compliance
+	case "get_security_scan":
+		c := compliance.NewCollector()
+		result, err = c.GetSecurityScan()
+
+	case "get_compliance_check":
+		c := compliance.NewCollector()
+		f := "cis"
+		if framework != "" {
+			f = framework
+		}
+		result, err = c.GetComplianceCheck(f)
+
+	case "get_forensic_snapshot":
+		c := compliance.NewCollector()
+		result, err = c.GetForensicSnapshot()
+
+	case "get_audit_trail":
+		c := compliance.NewCollector()
+		h := 24
+		if hoursVal > 0 {
+			h = hoursVal
+		}
+		result, err = c.GetAuditTrail(h)
+
+	case "get_hardening_recommendations":
+		c := compliance.NewCollector()
+		result, err = c.GetHardeningRecommendations()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

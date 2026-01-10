@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
+	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
+	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -23,8 +26,8 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/scheduled"
 	"github.com/levantar-ai/mcp-sysinfo/internal/security"
 	"github.com/levantar-ai/mcp-sysinfo/internal/software"
-	"github.com/levantar-ai/mcp-sysinfo/internal/storage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/state"
+	"github.com/levantar-ai/mcp-sysinfo/internal/storage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/temperature"
 	"github.com/levantar-ai/mcp-sysinfo/internal/triage"
 	"github.com/levantar-ai/mcp-sysinfo/internal/uptime"
@@ -75,6 +78,18 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 1.9: Platform Security Controls (scope: security)
 	registerPlatformSecurityTools(s)
+
+	// Phase 4: Network Intelligence (scope: network)
+	registerNetworkIntelligenceTools(s)
+
+	// Phase 5: Analytics & Trends (scope: analytics)
+	registerAnalyticsTools(s)
+
+	// Phase 6: Automation & Alerting (scope: alerts)
+	registerAlertingTools(s)
+
+	// Phase 7: Security & Compliance (scope: compliance)
+	registerComplianceTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -3277,6 +3292,319 @@ func registerPlatformSecurityTools(s *Server) {
 	}, "security", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := security.NewCollector()
 		result, err := c.GetVendorServices()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerNetworkIntelligenceTools(s *Server) {
+	// ==========================================================================
+	// Phase 4: Network Intelligence (5 queries)
+	// ==========================================================================
+
+	s.RegisterTool(Tool{
+		Name:        "get_connection_tracking",
+		Description: "Get network connection tracking information including established, listening, and time-wait connections",
+		InputSchema: InputSchema{Type: "object"},
+	}, "network", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := netconfig.NewCollector()
+		result, err := c.GetConnectionTracking()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_dns_stats",
+		Description: "Get DNS resolver statistics including configured servers, cache status, and resolution status",
+		InputSchema: InputSchema{Type: "object"},
+	}, "network", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := netconfig.NewCollector()
+		result, err := c.GetDNSStats()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_firewall_deep",
+		Description: "Get detailed firewall configuration including rules, chains, and policy information",
+		InputSchema: InputSchema{Type: "object"},
+	}, "network", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := netconfig.NewCollector()
+		result, err := c.GetFirewallDeep()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_wifi_metrics",
+		Description: "Get WiFi interface metrics including signal strength, noise, link quality, and connection details",
+		InputSchema: InputSchema{Type: "object"},
+	}, "network", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := netconfig.NewCollector()
+		result, err := c.GetWiFiMetrics()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_network_latency",
+		Description: "Measure network latency to specified targets using ICMP ping",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"targets": {
+					Type:        "array",
+					Description: "List of target hosts/IPs to ping (default: 8.8.8.8, 1.1.1.1)",
+				},
+			},
+		},
+	}, "network", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		var targets []string
+		if t, ok := args["targets"].([]interface{}); ok {
+			for _, v := range t {
+				if s, ok := v.(string); ok {
+					targets = append(targets, s)
+				}
+			}
+		}
+		c := netconfig.NewCollector()
+		result, err := c.GetNetworkLatency(targets)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerAnalyticsTools(s *Server) {
+	// ==========================================================================
+	// Phase 5: Analytics & Trends (4 queries)
+	// ==========================================================================
+
+	s.RegisterTool(Tool{
+		Name:        "get_historical_metrics",
+		Description: "Get historical system metrics for CPU, memory, and disk usage over a specified period",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"period": {
+					Type:        "string",
+					Description: "Time period for historical data: 1h, 24h, or 7d (default: 1h)",
+					Default:     "1h",
+				},
+			},
+		},
+	}, "analytics", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		period, _ := args["period"].(string)
+		if period == "" {
+			period = "1h"
+		}
+		c := analytics.NewCollector()
+		result, err := c.GetHistoricalMetrics(period)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_anomaly_detection",
+		Description: "Detect anomalies in current system metrics by comparing against thresholds",
+		InputSchema: InputSchema{Type: "object"},
+	}, "analytics", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := analytics.NewCollector()
+		result, err := c.GetAnomalyDetection()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_capacity_forecast",
+		Description: "Get capacity forecasts for disk and memory resources with estimated time to exhaustion",
+		InputSchema: InputSchema{Type: "object"},
+	}, "analytics", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := analytics.NewCollector()
+		result, err := c.GetCapacityForecast()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_trend_analysis",
+		Description: "Analyze performance trends for CPU, memory, and disk I/O",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"period": {
+					Type:        "string",
+					Description: "Time period for trend analysis: 1h, 24h, or 7d (default: 1h)",
+					Default:     "1h",
+				},
+			},
+		},
+	}, "analytics", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		period, _ := args["period"].(string)
+		if period == "" {
+			period = "1h"
+		}
+		c := analytics.NewCollector()
+		result, err := c.GetTrendAnalysis(period)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerAlertingTools(s *Server) {
+	// ==========================================================================
+	// Phase 6: Automation & Alerting (3 read-only queries)
+	// ==========================================================================
+
+	s.RegisterTool(Tool{
+		Name:        "get_alert_status",
+		Description: "Get current system alert status including CPU, memory, disk, and network alerts",
+		InputSchema: InputSchema{Type: "object"},
+	}, "alerts", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := alerts.NewCollector()
+		result, err := c.GetAlertStatus()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_remediation_suggestions",
+		Description: "Get remediation suggestions based on current system issues and alerts",
+		InputSchema: InputSchema{Type: "object"},
+	}, "alerts", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := alerts.NewCollector()
+		result, err := c.GetRemediationSuggestions()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_runbook_recommendations",
+		Description: "Get runbook recommendations based on current system state and active issues",
+		InputSchema: InputSchema{Type: "object"},
+	}, "alerts", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := alerts.NewCollector()
+		result, err := c.GetRunbookRecommendations()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+func registerComplianceTools(s *Server) {
+	// ==========================================================================
+	// Phase 7: Security & Compliance (5 queries)
+	// ==========================================================================
+
+	s.RegisterTool(Tool{
+		Name:        "get_security_scan",
+		Description: "Perform a security vulnerability scan checking for common misconfigurations and vulnerabilities",
+		InputSchema: InputSchema{Type: "object"},
+	}, "compliance", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := compliance.NewCollector()
+		result, err := c.GetSecurityScan()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_compliance_check",
+		Description: "Perform compliance checks against security frameworks (CIS, PCI-DSS, HIPAA, STIG)",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"framework": {
+					Type:        "string",
+					Description: "Compliance framework to check against: cis, pci, hipaa, stig (default: basic)",
+					Default:     "basic",
+				},
+			},
+		},
+	}, "compliance", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		framework, _ := args["framework"].(string)
+		if framework == "" {
+			framework = "basic"
+		}
+		c := compliance.NewCollector()
+		result, err := c.GetComplianceCheck(framework)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_forensic_snapshot",
+		Description: "Collect a forensic snapshot including running processes, network connections, loaded modules, and user sessions",
+		InputSchema: InputSchema{Type: "object"},
+	}, "compliance", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := compliance.NewCollector()
+		result, err := c.GetForensicSnapshot()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_audit_trail",
+		Description: "Retrieve security audit events including authentication, privilege escalation, and service events",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"hours": {
+					Type:        "integer",
+					Description: "Number of hours of audit history to retrieve (default: 24)",
+					Default:     24,
+				},
+			},
+		},
+	}, "compliance", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		hours := 24
+		if h, ok := args["hours"].(float64); ok {
+			hours = int(h)
+		}
+		c := compliance.NewCollector()
+		result, err := c.GetAuditTrail(hours)
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	s.RegisterTool(Tool{
+		Name:        "get_hardening_recommendations",
+		Description: "Get security hardening recommendations based on current system configuration",
+		InputSchema: InputSchema{Type: "object"},
+	}, "compliance", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := compliance.NewCollector()
+		result, err := c.GetHardeningRecommendations()
 		if err != nil {
 			return nil, err
 		}
