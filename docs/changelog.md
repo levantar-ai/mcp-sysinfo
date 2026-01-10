@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Phase 7: Security & Compliance (5 queries)
+  - `get_security_scan` - Security vulnerability scanning (SSH, permissions, firewall)
+  - `get_compliance_check` - CIS/PCI-DSS/HIPAA compliance checking
+  - `get_forensic_snapshot` - Forensic data collection (processes, connections, users)
+  - `get_audit_trail` - Security audit event retrieval
+  - `get_hardening_recommendations` - Kernel/network/filesystem hardening recommendations
+- Phase 6: Automation & Alerting (3 read-only queries)
+  - `get_alert_status` - Real-time system alert aggregation
+  - `get_remediation_suggestions` - Issue-based remediation recommendations
+  - `get_runbook_recommendations` - Runbook suggestions based on system state
+- Phase 5: Analytics & Trends (4 queries)
+  - `get_historical_metrics` - Resource metrics over time periods
+  - `get_anomaly_detection` - Threshold-based anomaly detection
+  - `get_capacity_forecast` - Storage and memory capacity forecasting
+  - `get_trend_analysis` - Performance trend analysis
+- Phase 4: Network Intelligence (5 queries)
+  - `get_connection_tracking` - Detailed connection tracking with process mapping
+  - `get_dns_stats` - DNS resolver statistics and cache status
+  - `get_firewall_deep` - Comprehensive firewall rules and chains analysis
+  - `get_wifi_metrics` - WiFi signal strength and quality metrics
+  - `get_network_latency` - Network latency probing with TCP/HTTP support
 - Phase 1.2.5: Security Configuration tools (6 queries)
   - `get_env_vars` - System environment variables with sensitive value redaction
   - `get_user_accounts` - Local user accounts and groups

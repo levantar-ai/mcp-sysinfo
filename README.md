@@ -59,7 +59,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## Query Reference
 
-**Implemented: 183 queries | Planned: 110 queries | Total: 293 queries**
+**Implemented: 200 queries | Planned: 93 queries | Total: 293 queries**
 
 ### Phase 1.0: Core Metrics (7/7)
 
@@ -407,44 +407,44 @@ Additional language runtimes and package manager support.
 | `get_mount_changes` | Mount point change detection | ✅ | ✅ | ✅ |
 | `get_volume_status` | ZFS/LVM/RAID/Storage Spaces status | ✅ | ✅ | ✅ |
 
-### Phase 4: Network Intelligence 📋 (0/5)
+### Phase 4: Network Intelligence ✅ (5/5)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_connection_tracking` | Per-connection stats with process mapping | 📋 | 📋 | 📋 |
-| `get_dns_stats` | DNS resolution statistics | 📋 | 📋 | 📋 |
-| `get_firewall_deep` | Deep firewall rule inspection | 📋 | 📋 | 📋 |
-| `get_wifi_metrics` | WiFi signal strength and quality | 📋 | 📋 | 📋 |
-| `get_network_latency` | Network latency probes (ICMP/TCP/HTTP) | 📋 | 📋 | 📋 |
+| `get_connection_tracking` | Per-connection stats with process mapping | ✅ | ✅ | ✅ |
+| `get_dns_stats` | DNS resolution statistics | ✅ | ✅ | ✅ |
+| `get_firewall_deep` | Deep firewall rule inspection | ✅ | ✅ | ✅ |
+| `get_wifi_metrics` | WiFi signal strength and quality | ✅ | ✅ | ✅ |
+| `get_network_latency` | Network latency probes (TCP/HTTP) | ✅ | ✅ | ✅ |
 
-### Phase 5: Analytics & Trends 📋 (0/4)
-
-| Query | Description | Linux | macOS | Windows |
-|-------|-------------|:-----:|:-----:|:-------:|
-| `get_historical_metrics` | Historical CPU/memory/disk trends | 📋 | 📋 | 📋 |
-| `get_anomaly_detection` | Detect anomalous patterns | 📋 | 📋 | 📋 |
-| `get_capacity_forecast` | Capacity planning forecasts | 📋 | 📋 | 📋 |
-| `get_trend_analysis` | Performance trend analysis | 📋 | 📋 | 📋 |
-
-### Phase 6: Automation & Alerting 📋 (0/5)
+### Phase 5: Analytics & Trends ✅ (4/4)
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `set_alert_threshold` | Configure alert thresholds | 📋 | 📋 | 📋 |
-| `get_alert_status` | Current alert status | 📋 | 📋 | 📋 |
-| `get_remediation_suggestions` | AI-generated fix suggestions | 📋 | 📋 | 📋 |
-| `execute_safe_remediation` | Execute pre-approved fixes | 📋 | 📋 | 📋 |
-| `get_runbook_recommendations` | Runbook recommendations | 📋 | 📋 | 📋 |
+| `get_historical_metrics` | Historical CPU/memory/disk trends | ✅ | ✅ | ✅ |
+| `get_anomaly_detection` | Detect anomalous patterns | ✅ | ✅ | ✅ |
+| `get_capacity_forecast` | Capacity planning forecasts | ✅ | ✅ | ✅ |
+| `get_trend_analysis` | Performance trend analysis | ✅ | ✅ | ✅ |
 
-### Phase 7: Security & Compliance 📋 (0/5)
+### Phase 6: Automation & Alerting ✅ (3/3)
+
+Read-only alerting and diagnostics (write operations deferred to future phase).
 
 | Query | Description | Linux | macOS | Windows |
 |-------|-------------|:-----:|:-----:|:-------:|
-| `get_security_scan` | Deep security vulnerability scan | 📋 | 📋 | 📋 |
-| `get_compliance_check` | CIS/STIG compliance checking | 📋 | 📋 | 📋 |
-| `get_forensic_snapshot` | Forensic data collection | 📋 | 📋 | 📋 |
-| `get_audit_trail` | Security audit trail | 📋 | 📋 | 📋 |
-| `get_hardening_recommendations` | Security hardening tips | 📋 | 📋 | 📋 |
+| `get_alert_status` | Current system alert status | ✅ | ✅ | ✅ |
+| `get_remediation_suggestions` | Issue-based fix suggestions | ✅ | ✅ | ✅ |
+| `get_runbook_recommendations` | Runbook recommendations based on state | ✅ | ✅ | ✅ |
+
+### Phase 7: Security & Compliance ✅ (5/5)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_security_scan` | Security vulnerability scan (SSH, permissions, firewall) | ✅ | ✅ | ✅ |
+| `get_compliance_check` | CIS/PCI-DSS/HIPAA compliance checking | ✅ | ✅ | ✅ |
+| `get_forensic_snapshot` | Forensic data collection (processes, connections, users) | ✅ | ✅ | ✅ |
+| `get_audit_trail` | Security audit trail retrieval | ✅ | ✅ | ✅ |
+| `get_hardening_recommendations` | Kernel/network/filesystem hardening tips | ✅ | ✅ | ✅ |
 
 ### Phase 8: Integration & Plugins 📋 (0/4)
 
