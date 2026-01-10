@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts & Health - System Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-amber-500/30">
+                <i class="fas fa-bell text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Alerts & Health</h1>
+                <p class="text-slate-400">System Alerts, Anomalies, and Capacity Forecasts</p>
+            </div>
+        </div>
+
+        <!-- Alert Summary -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800/50 backdrop-blur border border-red-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Critical</div>
+                        <div class="text-red-400 font-bold text-2xl">2</div>
+                    </div>
+                    <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-amber-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Warnings</div>
+                        <div class="text-amber-400 font-bold text-2xl">3</div>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-amber-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-blue-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Anomalies</div>
+                        <div class="text-blue-400 font-bold text-2xl">1</div>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-blue-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Health Score</div>
+                        <div class="text-green-400 font-bold text-2xl">78%</div>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-heartbeat text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Alerts -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-bell text-amber-400 mr-3"></i>
+                Active Alerts
+            </h2>
+            <div class="space-y-3">
+                <!-- Critical Alert -->
+                <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start">
+                            <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center mr-3 mt-0.5">
+                                <i class="fas fa-hdd text-red-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-red-400 font-medium">Disk Space Critical</div>
+                                <div class="text-slate-400 text-sm mt-1">Root partition (/) is 95% full - only 12GB remaining</div>
+                                <div class="text-slate-500 text-xs mt-2">
+                                    <i class="fas fa-clock mr-1"></i>First seen: 2 hours ago
+                                </div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-medium">CRITICAL</span>
+                    </div>
+                </div>
+                <!-- Warning Alert -->
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start">
+                            <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center mr-3 mt-0.5">
+                                <i class="fas fa-memory text-amber-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-amber-400 font-medium">High Memory Usage</div>
+                                <div class="text-slate-400 text-sm mt-1">Memory usage at 87% - swap utilization increasing</div>
+                                <div class="text-slate-500 text-xs mt-2">
+                                    <i class="fas fa-clock mr-1"></i>First seen: 45 minutes ago
+                                </div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs font-medium">WARNING</span>
+                    </div>
+                </div>
+                <!-- Info Alert -->
+                <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3 mt-0.5">
+                                <i class="fas fa-microchip text-blue-400"></i>
+                            </div>
+                            <div>
+                                <div class="text-blue-400 font-medium">CPU Load Elevated</div>
+                                <div class="text-slate-400 text-sm mt-1">Load average 2.5 per CPU - above normal baseline</div>
+                                <div class="text-slate-500 text-xs mt-2">
+                                    <i class="fas fa-clock mr-1"></i>First seen: 15 minutes ago
+                                </div>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-medium">INFO</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6 mb-6">
+            <!-- Capacity Forecasts -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-chart-area text-purple-400 mr-3"></i>
+                    Capacity Forecasts
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-slate-900/50 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-white font-medium">Root Disk (/)</span>
+                            <span class="text-red-400 text-sm font-medium">12 days to full</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2 mb-2">
+                            <div class="bg-gradient-to-r from-amber-500 to-red-500 h-2 rounded-full" style="width: 87%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>87% used</span>
+                            <span>Growth: 1.2GB/day</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/50 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-white font-medium">Memory</span>
+                            <span class="text-amber-400 text-sm font-medium">Monitor usage</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2 mb-2">
+                            <div class="bg-gradient-to-r from-green-500 to-amber-500 h-2 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500">
+                            <span>75% used</span>
+                            <span>6GB of 8GB available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Analysis -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-cyan-400 mr-3"></i>
+                    Trend Analysis
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                        <div class="flex items-center">
+                            <i class="fas fa-microchip text-blue-400 w-6"></i>
+                            <span class="text-slate-300 ml-3">CPU Usage</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-arrow-up text-amber-400 mr-2"></i>
+                            <span class="text-amber-400 font-medium">Increasing</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-3 border-b border-slate-700">
+                        <div class="flex items-center">
+                            <i class="fas fa-memory text-green-400 w-6"></i>
+                            <span class="text-slate-300 ml-3">Memory Usage</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-minus text-slate-400 mr-2"></i>
+                            <span class="text-slate-400 font-medium">Stable</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-hdd text-purple-400 w-6"></i>
+                            <span class="text-slate-300 ml-3">Disk I/O</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-arrow-up text-red-400 mr-2"></i>
+                            <span class="text-red-400 font-medium">High</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remediation Suggestions -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-wrench text-green-400 mr-3"></i>
+                Remediation Suggestions
+            </h2>
+            <div class="space-y-4">
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center mr-3 mt-0.5">
+                            <i class="fas fa-hdd text-red-400 text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-white font-medium">Free up disk space on root partition</div>
+                            <div class="text-slate-400 text-sm mt-1">Review large files and old logs for cleanup.</div>
+                            <div class="mt-3 space-y-2">
+                                <div class="bg-slate-800 rounded-lg p-2 font-mono text-xs text-cyan-400">
+                                    du -sh /* 2>/dev/null | sort -rh | head -10
+                                </div>
+                                <div class="bg-slate-800 rounded-lg p-2 font-mono text-xs text-cyan-400">
+                                    journalctl --vacuum-size=100M
+                                </div>
+                            </div>
+                            <div class="flex items-center mt-3 text-xs">
+                                <span class="px-2 py-1 bg-red-500/20 text-red-400 rounded mr-2">High Priority</span>
+                                <span class="text-slate-500">Risk: Medium</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center mr-3 mt-0.5">
+                            <i class="fas fa-memory text-amber-400 text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-white font-medium">Identify memory-intensive processes</div>
+                            <div class="text-slate-400 text-sm mt-1">Review processes consuming most memory.</div>
+                            <div class="mt-3 space-y-2">
+                                <div class="bg-slate-800 rounded-lg p-2 font-mono text-xs text-cyan-400">
+                                    ps aux --sort=-%mem | head -20
+                                </div>
+                            </div>
+                            <div class="flex items-center mt-3 text-xs">
+                                <span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded mr-2">Medium Priority</span>
+                                <span class="text-slate-500">Risk: Low</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Runbook Recommendations -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-book text-indigo-400 mr-3"></i>
+                Runbook Recommendations
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-slate-900/50 rounded-xl p-4 border-l-4 border-red-500">
+                    <div class="text-white font-medium mb-2">Disk Space Emergency Cleanup</div>
+                    <div class="text-slate-400 text-sm mb-3">Active disk space alerts detected</div>
+                    <ol class="text-slate-500 text-sm space-y-1 list-decimal list-inside">
+                        <li>Find largest directories</li>
+                        <li>Clean package cache</li>
+                        <li>Rotate and compress logs</li>
+                        <li>Remove old temp files</li>
+                    </ol>
+                    <span class="inline-block mt-3 px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">Critical</span>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-4 border-l-4 border-amber-500">
+                    <div class="text-white font-medium mb-2">Memory Pressure Investigation</div>
+                    <div class="text-slate-400 text-sm mb-3">Active memory alerts detected</div>
+                    <ol class="text-slate-500 text-sm space-y-1 list-decimal list-inside">
+                        <li>Check memory usage with 'free -h'</li>
+                        <li>Identify memory-heavy processes</li>
+                        <li>Check for memory leaks</li>
+                        <li>Review OOM killer logs</li>
+                    </ol>
+                    <span class="inline-block mt-3 px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">High</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: <span id="timestamp"></span></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toUTCString();
+    </script>
+</body>
+</html>

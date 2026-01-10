@@ -5,7 +5,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
+	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
 	"github.com/levantar-ai/mcp-sysinfo/internal/collector"
+	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
 	"github.com/levantar-ai/mcp-sysinfo/internal/gpu"
@@ -54,6 +57,28 @@ type SystemReport struct {
 	// Software
 	Programs interface{} `json:"programs,omitempty"`
 	Runtimes interface{} `json:"runtimes,omitempty"`
+
+	// Phase 4: Network Intelligence
+	ConnectionTracking interface{} `json:"connection_tracking,omitempty"`
+	DNSStats           interface{} `json:"dns_stats,omitempty"`
+	FirewallDeep       interface{} `json:"firewall_deep,omitempty"`
+	WiFiMetrics        interface{} `json:"wifi_metrics,omitempty"`
+	NetworkLatency     interface{} `json:"network_latency,omitempty"`
+
+	// Phase 5: Analytics & Trends
+	AnomalyDetection interface{} `json:"anomaly_detection,omitempty"`
+	CapacityForecast interface{} `json:"capacity_forecast,omitempty"`
+	TrendAnalysis    interface{} `json:"trend_analysis,omitempty"`
+
+	// Phase 6: Alerts & Remediation
+	AlertStatus              interface{} `json:"alert_status,omitempty"`
+	RemediationSuggestions   interface{} `json:"remediation_suggestions,omitempty"`
+	RunbookRecommendations   interface{} `json:"runbook_recommendations,omitempty"`
+
+	// Phase 7: Security & Compliance
+	SecurityScan              interface{} `json:"security_scan,omitempty"`
+	ComplianceCheck           interface{} `json:"compliance_check,omitempty"`
+	HardeningRecommendations  interface{} `json:"hardening_recommendations,omitempty"`
 
 	// Errors encountered during collection
 	Errors map[string]string `json:"errors,omitempty"`
@@ -126,6 +151,52 @@ func (rg *ReportGenerator) GenerateSystemReport(ctx context.Context, sections []
 		"runtimes": func(ctx context.Context) (interface{}, error) {
 			return runtimes.NewCollector().GetLanguageRuntimes()
 		},
+		// Phase 4: Network Intelligence
+		"connection_tracking": func(ctx context.Context) (interface{}, error) {
+			return netconfig.NewCollector().GetConnectionTracking()
+		},
+		"dns_stats": func(ctx context.Context) (interface{}, error) {
+			return netconfig.NewCollector().GetDNSStats()
+		},
+		"firewall_deep": func(ctx context.Context) (interface{}, error) {
+			return netconfig.NewCollector().GetFirewallDeep()
+		},
+		"wifi_metrics": func(ctx context.Context) (interface{}, error) {
+			return netconfig.NewCollector().GetWiFiMetrics()
+		},
+		"network_latency": func(ctx context.Context) (interface{}, error) {
+			return netconfig.NewCollector().GetNetworkLatency([]string{"8.8.8.8", "1.1.1.1"})
+		},
+		// Phase 5: Analytics & Trends
+		"anomaly_detection": func(ctx context.Context) (interface{}, error) {
+			return analytics.NewCollector().GetAnomalyDetection()
+		},
+		"capacity_forecast": func(ctx context.Context) (interface{}, error) {
+			return analytics.NewCollector().GetCapacityForecast()
+		},
+		"trend_analysis": func(ctx context.Context) (interface{}, error) {
+			return analytics.NewCollector().GetTrendAnalysis("1h")
+		},
+		// Phase 6: Alerts & Remediation
+		"alert_status": func(ctx context.Context) (interface{}, error) {
+			return alerts.NewCollector().GetAlertStatus()
+		},
+		"remediation_suggestions": func(ctx context.Context) (interface{}, error) {
+			return alerts.NewCollector().GetRemediationSuggestions()
+		},
+		"runbook_recommendations": func(ctx context.Context) (interface{}, error) {
+			return alerts.NewCollector().GetRunbookRecommendations()
+		},
+		// Phase 7: Security & Compliance
+		"security_scan": func(ctx context.Context) (interface{}, error) {
+			return compliance.NewCollector().GetSecurityScan()
+		},
+		"compliance_check": func(ctx context.Context) (interface{}, error) {
+			return compliance.NewCollector().GetComplianceCheck("basic")
+		},
+		"hardening_recommendations": func(ctx context.Context) (interface{}, error) {
+			return compliance.NewCollector().GetHardeningRecommendations()
+		},
 	}
 
 	// Filter collectors if sections specified
@@ -191,6 +262,38 @@ func (rg *ReportGenerator) GenerateSystemReport(ctx context.Context, sections []
 			report.Programs = result.Data
 		case "runtimes":
 			report.Runtimes = result.Data
+		// Phase 4: Network Intelligence
+		case "connection_tracking":
+			report.ConnectionTracking = result.Data
+		case "dns_stats":
+			report.DNSStats = result.Data
+		case "firewall_deep":
+			report.FirewallDeep = result.Data
+		case "wifi_metrics":
+			report.WiFiMetrics = result.Data
+		case "network_latency":
+			report.NetworkLatency = result.Data
+		// Phase 5: Analytics & Trends
+		case "anomaly_detection":
+			report.AnomalyDetection = result.Data
+		case "capacity_forecast":
+			report.CapacityForecast = result.Data
+		case "trend_analysis":
+			report.TrendAnalysis = result.Data
+		// Phase 6: Alerts & Remediation
+		case "alert_status":
+			report.AlertStatus = result.Data
+		case "remediation_suggestions":
+			report.RemediationSuggestions = result.Data
+		case "runbook_recommendations":
+			report.RunbookRecommendations = result.Data
+		// Phase 7: Security & Compliance
+		case "security_scan":
+			report.SecurityScan = result.Data
+		case "compliance_check":
+			report.ComplianceCheck = result.Data
+		case "hardening_recommendations":
+			report.HardeningRecommendations = result.Data
 		}
 	}
 

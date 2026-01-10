@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Compliance - System Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        levantar: {
+                            50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd',
+                            400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-levantar-950 to-slate-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-levantar-500 to-violet-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-microchip text-white text-sm"></i>
+                </div>
+                <span class="text-levantar-400 text-sm font-medium">MCP SysInfo</span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="mb-8">
+            <a href="index.html" class="text-slate-400 hover:text-levantar-400 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-emerald-500/30">
+                <i class="fas fa-clipboard-check text-white text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-white">Security & Compliance</h1>
+                <p class="text-slate-400">Security Scan, Compliance Checks, and Hardening</p>
+            </div>
+        </div>
+
+        <!-- Compliance Summary -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-800/50 backdrop-blur border border-green-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Compliance Score</div>
+                        <div class="text-green-400 font-bold text-2xl">72%</div>
+                    </div>
+                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-red-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Critical Findings</div>
+                        <div class="text-red-400 font-bold text-2xl">2</div>
+                    </div>
+                    <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-amber-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">High Severity</div>
+                        <div class="text-amber-400 font-bold text-2xl">5</div>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-amber-400"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-800/50 backdrop-blur border border-blue-500/30 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm">Controls Passed</div>
+                        <div class="text-blue-400 font-bold text-2xl">28/39</div>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-blue-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Scan Findings -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-search text-red-400 mr-3"></i>
+                Security Scan Findings
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-slate-400 text-sm border-b border-slate-700">
+                            <th class="text-left py-3 px-4">Severity</th>
+                            <th class="text-left py-3 px-4">Finding</th>
+                            <th class="text-left py-3 px-4">Category</th>
+                            <th class="text-left py-3 px-4">Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">CRITICAL</span></td>
+                            <td class="py-3 px-4 text-white">SSH root login enabled</td>
+                            <td class="py-3 px-4 text-slate-300">Access Control</td>
+                            <td class="py-3 px-4 text-cyan-400 text-xs">CIS 5.2.10</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">CRITICAL</span></td>
+                            <td class="py-3 px-4 text-white">Password authentication enabled for SSH</td>
+                            <td class="py-3 px-4 text-slate-300">Authentication</td>
+                            <td class="py-3 px-4 text-cyan-400 text-xs">CIS 5.2.12</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">HIGH</span></td>
+                            <td class="py-3 px-4 text-white">Firewall not active</td>
+                            <td class="py-3 px-4 text-slate-300">Network</td>
+                            <td class="py-3 px-4 text-cyan-400 text-xs">CIS 3.5</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-amber-500/20 text-amber-400 rounded text-xs">HIGH</span></td>
+                            <td class="py-3 px-4 text-white">26 SUID/SGID binaries detected</td>
+                            <td class="py-3 px-4 text-slate-300">Filesystem</td>
+                            <td class="py-3 px-4 text-cyan-400 text-xs">CIS 6.1.13</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50 hover:bg-slate-700/30">
+                            <td class="py-3 px-4"><span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">MEDIUM</span></td>
+                            <td class="py-3 px-4 text-white">Password expiration not configured</td>
+                            <td class="py-3 px-4 text-slate-300">Password Policy</td>
+                            <td class="py-3 px-4 text-cyan-400 text-xs">CIS 5.5.1.1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6 mb-6">
+            <!-- Compliance Check Results -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-tasks text-emerald-400 mr-3"></i>
+                    CIS Benchmark Compliance
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-300">1. Initial Setup</span>
+                        <div class="flex items-center">
+                            <span class="text-green-400 font-medium mr-2">8/10</span>
+                            <div class="w-20 bg-slate-700 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-300">2. Services</span>
+                        <div class="flex items-center">
+                            <span class="text-green-400 font-medium mr-2">6/7</span>
+                            <div class="w-20 bg-slate-700 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 86%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-300">3. Network Config</span>
+                        <div class="flex items-center">
+                            <span class="text-amber-400 font-medium mr-2">4/8</span>
+                            <div class="w-20 bg-slate-700 rounded-full h-2">
+                                <div class="bg-amber-500 h-2 rounded-full" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2 border-b border-slate-700">
+                        <span class="text-slate-300">4. Logging & Auditing</span>
+                        <div class="flex items-center">
+                            <span class="text-green-400 font-medium mr-2">5/6</span>
+                            <div class="w-20 bg-slate-700 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 83%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-2">
+                        <span class="text-slate-300">5. Access/Auth</span>
+                        <div class="flex items-center">
+                            <span class="text-red-400 font-medium mr-2">5/8</span>
+                            <div class="w-20 bg-slate-700 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 62%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Framework Support -->
+            <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+                <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-certificate text-purple-400 mr-3"></i>
+                    Framework Compliance
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-slate-900/50 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-white font-medium">CIS Benchmark</span>
+                            <span class="text-green-400 font-medium">72%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 72%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/50 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-white font-medium">PCI-DSS</span>
+                            <span class="text-amber-400 font-medium">65%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-amber-500 h-2 rounded-full" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/50 rounded-xl p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-white font-medium">HIPAA</span>
+                            <span class="text-amber-400 font-medium">58%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="bg-amber-500 h-2 rounded-full" style="width: 58%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hardening Recommendations -->
+        <div class="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
+            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+                <i class="fas fa-shield-alt text-indigo-400 mr-3"></i>
+                Hardening Recommendations
+            </h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <!-- Network Hardening -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-2">
+                            <i class="fas fa-network-wired text-cyan-400 text-sm"></i>
+                        </div>
+                        <span class="text-white font-medium">Network</span>
+                    </div>
+                    <ul class="text-slate-400 text-sm space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-cyan-400 text-xs mt-1.5 mr-2"></i>
+                            Enable and configure firewall
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-cyan-400 text-xs mt-1.5 mr-2"></i>
+                            Disable unused network protocols
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-cyan-400 text-xs mt-1.5 mr-2"></i>
+                            Enable SYN cookies
+                        </li>
+                    </ul>
+                </div>
+                <!-- Kernel Hardening -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center mr-2">
+                            <i class="fas fa-cog text-purple-400 text-sm"></i>
+                        </div>
+                        <span class="text-white font-medium">Kernel</span>
+                    </div>
+                    <ul class="text-slate-400 text-sm space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-purple-400 text-xs mt-1.5 mr-2"></i>
+                            Enable ASLR (randomize_va_space=2)
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-purple-400 text-xs mt-1.5 mr-2"></i>
+                            Disable core dumps
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-purple-400 text-xs mt-1.5 mr-2"></i>
+                            Restrict dmesg access
+                        </li>
+                    </ul>
+                </div>
+                <!-- Filesystem Hardening -->
+                <div class="bg-slate-900/50 rounded-xl p-4">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-amber-500/20 rounded-lg flex items-center justify-center mr-2">
+                            <i class="fas fa-folder-open text-amber-400 text-sm"></i>
+                        </div>
+                        <span class="text-white font-medium">Filesystem</span>
+                    </div>
+                    <ul class="text-slate-400 text-sm space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-amber-400 text-xs mt-1.5 mr-2"></i>
+                            Review SUID/SGID binaries
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-amber-400 text-xs mt-1.5 mr-2"></i>
+                            Set noexec on /tmp
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chevron-right text-amber-400 text-xs mt-1.5 mr-2"></i>
+                            Enable file integrity monitoring
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-emerald-400 mt-0.5 mr-2"></i>
+                    <div class="text-sm">
+                        <div class="text-emerald-400 font-medium">Pro Tip</div>
+                        <div class="text-slate-400">Apply hardening changes incrementally and test each change to avoid service disruptions.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-slate-500 text-sm">
+            <p>Report generated: <span id="timestamp"></span></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toUTCString();
+    </script>
+</body>
+</html>
