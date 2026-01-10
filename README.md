@@ -386,6 +386,53 @@ Additional language runtimes and package manager support.
 | `get_gradle_lock` | Parse gradle.lockfile | ✅ | ✅ | ✅ |
 | `get_conda_lock` | Parse conda-lock.yml | ✅ | ✅ | ✅ |
 
+### Phase 1.11: Windows Enterprise Diagnostics 📋 (0/18)
+
+Windows-specific enterprise diagnostics for common troubleshooting scenarios.
+
+#### Active Directory & Domain (5 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_ad_domain_info` | Domain membership, DC, site info | - | - | 📋 |
+| `get_ad_dc_health` | Domain controller connectivity and health | - | - | 📋 |
+| `get_ad_trusts` | Domain trust relationships | - | - | 📋 |
+| `get_ad_site_info` | AD site and subnet configuration | - | - | 📋 |
+| `get_ad_replication_status` | AD replication status and lag | - | - | 📋 |
+
+#### VSS & Shadow Copies (4 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_vss_providers` | VSS provider inventory | - | - | 📋 |
+| `get_vss_writers` | VSS writer status and health | - | - | 📋 |
+| `get_shadow_copies` | Available shadow copies per volume | - | - | 📋 |
+| `get_vss_errors` | Recent VSS errors from event log | - | - | 📋 |
+
+#### WMI Health (3 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_wmi_providers` | WMI provider inventory | - | - | 📋 |
+| `get_wmi_repository_health` | WMI repository consistency check | - | - | 📋 |
+| `get_wmi_errors` | Recent WMI errors from event log | - | - | 📋 |
+
+#### Windows Time Service (3 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_w32time_config` | W32Time service configuration | - | - | 📋 |
+| `get_w32time_peers` | NTP peer list and status | - | - | 📋 |
+| `get_w32time_sync_status` | Time sync status and last sync | - | - | 📋 |
+
+#### Reliability & Crash History (3 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_reliability_history` | Reliability Monitor history and index | - | - | 📋 |
+| `get_recent_crashes` | Recent application/system crashes | - | - | 📋 |
+| `get_wer_reports` | Windows Error Reporting submissions | - | - | 📋 |
+
 ### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
 
 | Query | Description | Linux | macOS | Windows |
@@ -819,6 +866,7 @@ curl http://localhost:8080/metrics
 | **1.8** | Complete IIS Coverage | 📋 Planned | 0/48 |
 | **1.9** | Platform Security Controls | ✅ Complete | 28/28 |
 | **1.10** | Extended Language Ecosystems | ✅ Complete | 21/21 |
+| **1.11** | Windows Enterprise Diagnostics | 📋 Planned | 0/18 |
 | **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
 | **3** | Storage Deep Dive | ✅ Complete | 5/5 |
 | **4** | Network Intelligence | ✅ Complete | 5/5 |
@@ -828,7 +876,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 200/293 queries (68%)**
+**Implemented: 200/311 queries (64%)**
 
 ### Cross-Platform Architecture
 
