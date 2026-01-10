@@ -12,6 +12,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
 	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
 	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
+	"github.com/levantar-ai/mcp-sysinfo/internal/consumer"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -1216,4 +1217,81 @@ func TestSmoke_Windows_GetHardeningRecommendations(t *testing.T) {
 		t.Fatalf("get_hardening_recommendations failed: %v", err)
 	}
 	mustJSON(t, "get_hardening_recommendations", result)
+}
+
+// =============================================================================
+// Phase 1.9: Consumer Diagnostics (4 queries - Windows implementation)
+// =============================================================================
+
+func TestSmoke_Windows_GetBluetoothDevices(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetBluetoothDevices()
+	if err != nil {
+		t.Fatalf("get_bluetooth_devices failed: %v", err)
+	}
+	// On Windows, this should return actual device data (or empty if no BT)
+	if result.Error != "" {
+		t.Logf("get_bluetooth_devices: error/warning: %s", result.Error)
+	}
+	if result.Available {
+		t.Logf("get_bluetooth_devices: found %d devices, %d adapters", len(result.Devices), len(result.Adapters))
+	} else {
+		t.Log("get_bluetooth_devices: no Bluetooth available")
+	}
+	mustJSON(t, "get_bluetooth_devices", result)
+}
+
+func TestSmoke_Windows_GetAudioDevices(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetAudioDevices()
+	if err != nil {
+		t.Fatalf("get_audio_devices failed: %v", err)
+	}
+	// On Windows, this should return actual audio devices
+	if result.Error != "" {
+		t.Logf("get_audio_devices: error/warning: %s", result.Error)
+	}
+	if result.Available {
+		t.Logf("get_audio_devices: found %d devices", len(result.Devices))
+	} else {
+		t.Log("get_audio_devices: no audio devices available")
+	}
+	mustJSON(t, "get_audio_devices", result)
+}
+
+func TestSmoke_Windows_GetPrinters(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetPrinters()
+	if err != nil {
+		t.Fatalf("get_printers failed: %v", err)
+	}
+	// On Windows, this should return printer info and spooler status
+	if result.Error != "" {
+		t.Logf("get_printers: error/warning: %s", result.Error)
+	}
+	t.Logf("get_printers: spooler status=%s, running=%v", result.SpoolerStatus, result.SpoolerRunning)
+	if result.Available {
+		t.Logf("get_printers: found %d printers", len(result.Printers))
+	} else {
+		t.Log("get_printers: no printers available")
+	}
+	mustJSON(t, "get_printers", result)
+}
+
+func TestSmoke_Windows_GetDisplayConfig(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetDisplayConfig()
+	if err != nil {
+		t.Fatalf("get_display_config failed: %v", err)
+	}
+	// On Windows, this should return monitor and video adapter info
+	if result.Error != "" {
+		t.Logf("get_display_config: error/warning: %s", result.Error)
+	}
+	if result.Available {
+		t.Logf("get_display_config: found %d monitors, %d video adapters", len(result.Monitors), len(result.VideoAdapters))
+	} else {
+		t.Log("get_display_config: no display info available")
+	}
+	mustJSON(t, "get_display_config", result)
 }

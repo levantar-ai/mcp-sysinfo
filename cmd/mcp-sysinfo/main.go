@@ -17,6 +17,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
 	"github.com/levantar-ai/mcp-sysinfo/internal/audit"
 	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
+	"github.com/levantar-ai/mcp-sysinfo/internal/consumer"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -1399,6 +1400,23 @@ func runQuery(queryName string, jsonOut bool, pid int32, imageID, lockPath, serv
 	case "get_hardening_recommendations":
 		c := compliance.NewCollector()
 		result, err = c.GetHardeningRecommendations()
+
+	// Phase 1.9: Consumer Diagnostics
+	case "get_bluetooth_devices":
+		c := consumer.NewCollector()
+		result, err = c.GetBluetoothDevices()
+
+	case "get_audio_devices":
+		c := consumer.NewCollector()
+		result, err = c.GetAudioDevices()
+
+	case "get_printers":
+		c := consumer.NewCollector()
+		result, err = c.GetPrinters()
+
+	case "get_display_config":
+		c := consumer.NewCollector()
+		result, err = c.GetDisplayConfig()
 
 	default:
 		fmt.Fprintf(os.Stderr, "Error: unknown query '%s'\n", queryName)

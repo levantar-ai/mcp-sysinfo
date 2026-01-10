@@ -324,23 +324,23 @@ Complete IIS introspection for enterprise web server diagnostics. **Phase 1.6** 
 
 **Total: 8 implemented + 35 (Phase 1.7) + 47 (Phase 1.8) = 90 IIS queries**
 
-### Phase 1.9 - Windows Consumer Diagnostics (Planned 🚧)
+### Phase 1.9 - Windows Consumer Diagnostics (4/27 Implemented 🔄)
 
 Based on analysis of the [Top 50 Windows 10/11 Consumer Problems (2021-2024)](windows-consumer-problems-evaluation.md), these queries address the most common end-user issues.
 
 #### High Priority - Common Consumer Issues
 
-| Query | Description | Source | Problems Addressed | Impact |
-|-------|-------------|--------|-------------------|:------:|
-| `get_windows_update_status` | Current update state, pending updates, history, failed updates | COM `Microsoft.Update.Session`, WMI | Update stuck, failing (#9,10,12) | 🟡 |
-| `get_defender_status` | Windows Defender config, protection status, scan results, threat history | `Get-MpComputerStatus`, WMI `MSFT_MpComputerStatus` | Malware, Defender issues (#16,17) | 🟢 |
-| `get_printers` | Printer list, spooler status, queue, driver info | WMI `Win32_Printer`, spooler service | Network printing, spooler (#26,27) | 🟢 |
-| `get_wifi_status` | Wireless adapter status, signal strength, connected network, available networks | `netsh wlan show interfaces`, WLAN API | Wi-Fi connectivity (#22) | 🟢 |
-| `get_bluetooth_devices` | Paired devices, connection status, adapter info | WMI, Bluetooth APIs | Bluetooth pairing (#23) | 🟢 |
-| `get_audio_devices` | Audio output/input devices, default device, driver status, volume | Core Audio API, WMI | No sound issues (#35) | 🟢 |
-| `get_display_config` | Resolution, refresh rate, multi-monitor layout, HDR, scaling | Windows Display API, WMI `Win32_DesktopMonitor` | Display/graphics issues (#30,36) | 🟢 |
-| `get_minidump_analysis` | Parse BSOD minidumps, extract bugcheck codes, faulting modules | `%SystemRoot%\Minidump\*.dmp` | BSOD crash analysis (#44) | 🟡 |
-| `get_boot_timing` | Boot phase timings, startup app impact | Event Log, `systeminfo` | Slow boot times (#1) | 🟢 |
+| Query | Description | Source | Problems Addressed | Impact | Status |
+|-------|-------------|--------|-------------------|:------:|:------:|
+| `get_windows_update_status` | Current update state, pending updates, history, failed updates | COM `Microsoft.Update.Session`, WMI | Update stuck, failing (#9,10,12) | 🟡 | 📋 |
+| `get_defender_status` | Windows Defender config, protection status, scan results, threat history | `Get-MpComputerStatus`, WMI `MSFT_MpComputerStatus` | Malware, Defender issues (#16,17) | 🟢 | 📋 |
+| `get_printers` | Printer list, spooler status, queue, driver info | WMI `Win32_Printer`, spooler service | Network printing, spooler (#26,27) | 🟢 | ✅ |
+| `get_wifi_status` | Wireless adapter status, signal strength, connected network, available networks | `netsh wlan show interfaces`, WLAN API | Wi-Fi connectivity (#22) | 🟢 | ✅ (via get_wifi_metrics) |
+| `get_bluetooth_devices` | Paired devices, connection status, adapter info | WMI, Bluetooth APIs | Bluetooth pairing (#23) | 🟢 | ✅ |
+| `get_audio_devices` | Audio output/input devices, default device, driver status, volume | Core Audio API, WMI | No sound issues (#35) | 🟢 | ✅ |
+| `get_display_config` | Resolution, refresh rate, multi-monitor layout, HDR, scaling | Windows Display API, WMI `Win32_DesktopMonitor` | Display/graphics issues (#30,36) | 🟢 | ✅ |
+| `get_minidump_analysis` | Parse BSOD minidumps, extract bugcheck codes, faulting modules | `%SystemRoot%\Minidump\*.dmp` | BSOD crash analysis (#44) | 🟡 | 📋 |
+| `get_boot_timing` | Boot phase timings, startup app impact | Event Log, `systeminfo` | Slow boot times (#1) | 🟢 | 📋 |
 
 #### Medium Priority - Improved Diagnostics
 

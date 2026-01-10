@@ -59,7 +59,7 @@ See **[SECURITY.md](SECURITY.md)** for the complete security architecture.
 
 ## Query Reference
 
-**Implemented: 200 queries | Planned: 93 queries | Total: 293 queries**
+**Implemented: 204 queries | Planned: 89 queries | Total: 293 queries**
 
 ### Phase 1.0: Core Metrics (7/7)
 
@@ -432,6 +432,40 @@ Windows-specific enterprise diagnostics for common troubleshooting scenarios.
 | `get_reliability_history` | Reliability Monitor history and index | - | - | 📋 |
 | `get_recent_crashes` | Recent application/system crashes | - | - | 📋 |
 | `get_wer_reports` | Windows Error Reporting submissions | - | - | 📋 |
+
+### Phase 1.12: Windows Consumer Diagnostics 🔄 (4/27)
+
+Common consumer hardware diagnostics addressing [Top 50 Windows 10/11 Consumer Problems](docs/windows-consumer-problems-evaluation.md).
+
+#### Implemented Consumer Queries (4 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_bluetooth_devices` | Bluetooth devices and adapter status | ⚠️ | ⚠️ | ✅ |
+| `get_audio_devices` | Audio playback and recording devices | ⚠️ | ⚠️ | ✅ |
+| `get_printers` | Printers and spooler status | ⚠️ | ⚠️ | ✅ |
+| `get_display_config` | Display/monitor configuration | ⚠️ | ⚠️ | ✅ |
+
+> ⚠️ = Stub returning "not implemented" (future: Linux/macOS support planned)
+
+#### Planned Consumer Queries (23 queries)
+
+| Query | Description | Linux | macOS | Windows |
+|-------|-------------|:-----:|:-----:|:-------:|
+| `get_windows_update_status` | Pending updates, history, failures | - | - | 📋 |
+| `get_defender_status` | Defender protection status | - | - | 📋 |
+| `get_minidump_analysis` | BSOD bugcheck analysis | - | - | 📋 |
+| `get_boot_timing` | Boot phase timings | - | - | 📋 |
+| `get_security_features` | VBS, HVCI, TPM status | - | - | 📋 |
+| `get_driver_details` | Driver versions, signing | - | - | 📋 |
+| `get_shell_extensions` | Explorer extensions | - | - | 📋 |
+| `get_search_index_status` | Windows Search health | - | - | 📋 |
+| `get_vpn_connections` | VPN profiles and status | - | - | 📋 |
+| `get_app_crashes` | Application crash history | - | - | 📋 |
+| `get_activation_status` | Windows license state | - | - | 📋 |
+| `get_system_restore_status` | Restore points status | - | - | 📋 |
+| `get_appx_packages` | UWP/AppX package status | - | - | 📋 |
+| *+ 10 more queries* | | - | - | 📋 |
 
 ### Phase 2.0: Enhanced Diagnostics ✅ (6/6)
 
@@ -867,6 +901,7 @@ curl http://localhost:8080/metrics
 | **1.9** | Platform Security Controls | ✅ Complete | 28/28 |
 | **1.10** | Extended Language Ecosystems | ✅ Complete | 21/21 |
 | **1.11** | Windows Enterprise Diagnostics | 📋 Planned | 0/18 |
+| **1.12** | Windows Consumer Diagnostics | 🔄 Partial | 4/27 |
 | **2.0** | Enhanced Diagnostics | ✅ Complete | 6/6 |
 | **3** | Storage Deep Dive | ✅ Complete | 5/5 |
 | **4** | Network Intelligence | ✅ Complete | 5/5 |
@@ -876,7 +911,7 @@ curl http://localhost:8080/metrics
 | 8 | Integration & Plugins | 📋 Planned | 0/4 |
 | 9 | LLM Features | 📋 Planned | 0/3 |
 
-**Implemented: 200/311 queries (64%)**
+**Implemented: 204/315 queries (65%)**
 
 ### Cross-Platform Architecture
 

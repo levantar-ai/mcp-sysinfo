@@ -7,6 +7,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
 	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
 	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
+	"github.com/levantar-ai/mcp-sysinfo/internal/consumer"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -90,6 +91,9 @@ func RegisterAllTools(s *Server) {
 
 	// Phase 7: Security & Compliance (scope: compliance)
 	registerComplianceTools(s)
+
+	// Phase 1.9: Consumer Diagnostics (scope: consumer)
+	registerConsumerDiagnosticsTools(s)
 }
 
 func registerCoreTools(s *Server) {
@@ -3605,6 +3609,65 @@ func registerComplianceTools(s *Server) {
 	}, "compliance", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
 		c := compliance.NewCollector()
 		result, err := c.GetHardeningRecommendations()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+}
+
+// Phase 1.9: Consumer Diagnostics - Common end-user hardware issues
+func registerConsumerDiagnosticsTools(s *Server) {
+	// Bluetooth Devices
+	s.RegisterTool(Tool{
+		Name:        "get_bluetooth_devices",
+		Description: "Get Bluetooth devices and adapter status (Windows only, stubs on other platforms)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "consumer", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := consumer.NewCollector()
+		result, err := c.GetBluetoothDevices()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Audio Devices
+	s.RegisterTool(Tool{
+		Name:        "get_audio_devices",
+		Description: "Get audio playback and recording devices (Windows only, stubs on other platforms)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "consumer", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := consumer.NewCollector()
+		result, err := c.GetAudioDevices()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Printers
+	s.RegisterTool(Tool{
+		Name:        "get_printers",
+		Description: "Get printer information and spooler status (Windows only, stubs on other platforms)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "consumer", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := consumer.NewCollector()
+		result, err := c.GetPrinters()
+		if err != nil {
+			return nil, err
+		}
+		return &CallToolResult{Content: []Content{NewJSONContent(result)}}, nil
+	})
+
+	// Display Configuration
+	s.RegisterTool(Tool{
+		Name:        "get_display_config",
+		Description: "Get display/monitor configuration and video adapters (Windows only, stubs on other platforms)",
+		InputSchema: InputSchema{Type: "object"},
+	}, "consumer", func(ctx context.Context, args map[string]interface{}) (*CallToolResult, error) {
+		c := consumer.NewCollector()
+		result, err := c.GetDisplayConfig()
 		if err != nil {
 			return nil, err
 		}

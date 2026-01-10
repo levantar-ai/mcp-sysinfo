@@ -13,6 +13,7 @@ import (
 	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
 	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
 	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
+	"github.com/levantar-ai/mcp-sysinfo/internal/consumer"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -1346,4 +1347,68 @@ func TestSmoke_Linux_GetHardeningRecommendations(t *testing.T) {
 		t.Fatalf("get_hardening_recommendations failed: %v", err)
 	}
 	mustJSON(t, "get_hardening_recommendations", result)
+}
+
+// =============================================================================
+// Phase 1.9: Consumer Diagnostics (4 queries - stubs on Linux)
+// =============================================================================
+
+func TestSmoke_Linux_GetBluetoothDevices(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetBluetoothDevices()
+	if err != nil {
+		t.Fatalf("get_bluetooth_devices failed: %v", err)
+	}
+	// On Linux, this returns a stub with "not implemented" error
+	if result.Error == "" {
+		t.Log("get_bluetooth_devices: Linux implementation available")
+	} else {
+		t.Logf("get_bluetooth_devices: stub returned (expected): %s", result.Error)
+	}
+	mustJSON(t, "get_bluetooth_devices", result)
+}
+
+func TestSmoke_Linux_GetAudioDevices(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetAudioDevices()
+	if err != nil {
+		t.Fatalf("get_audio_devices failed: %v", err)
+	}
+	// On Linux, this returns a stub with "not implemented" error
+	if result.Error == "" {
+		t.Log("get_audio_devices: Linux implementation available")
+	} else {
+		t.Logf("get_audio_devices: stub returned (expected): %s", result.Error)
+	}
+	mustJSON(t, "get_audio_devices", result)
+}
+
+func TestSmoke_Linux_GetPrinters(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetPrinters()
+	if err != nil {
+		t.Fatalf("get_printers failed: %v", err)
+	}
+	// On Linux, this returns a stub with "not implemented" error
+	if result.Error == "" {
+		t.Log("get_printers: Linux implementation available")
+	} else {
+		t.Logf("get_printers: stub returned (expected): %s", result.Error)
+	}
+	mustJSON(t, "get_printers", result)
+}
+
+func TestSmoke_Linux_GetDisplayConfig(t *testing.T) {
+	c := consumer.NewCollector()
+	result, err := c.GetDisplayConfig()
+	if err != nil {
+		t.Fatalf("get_display_config failed: %v", err)
+	}
+	// On Linux, this returns a stub with "not implemented" error
+	if result.Error == "" {
+		t.Log("get_display_config: Linux implementation available")
+	} else {
+		t.Logf("get_display_config: stub returned (expected): %s", result.Error)
+	}
+	mustJSON(t, "get_display_config", result)
 }

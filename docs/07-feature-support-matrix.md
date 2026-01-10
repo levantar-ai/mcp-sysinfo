@@ -22,7 +22,7 @@ A summary of feature support across Linux, macOS, and Windows.
 ║  Phase 1.6 (Win)    Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
 ║  Phase 1.7          Deep IIS Configuration                       35   📋 Plan║
 ║  Phase 1.8          Complete IIS Coverage                        47   📋 Plan║
-║  Phase 1.9          Windows Consumer Diagnostics                 27   📋 Plan║
+║  Phase 1.9          Windows Consumer Diagnostics                4/27  🔄 Part║
 ║  Phase 2.0          Enhanced diagnostics (GPU, containers)        6   ✅ Done║
 ║  Phase 3            Storage Deep Dive                             5   📋 Plan║
 ║  Phase 4            Network Intelligence                          5   📋 Plan║
@@ -226,23 +226,23 @@ Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.m
 
 ---
 
-## Phase 1.9 - Windows Consumer Diagnostics (Planned)
+## Phase 1.9 - Windows Consumer Diagnostics (Partial)
 
 Queries addressing the [Top 50 Windows 10/11 Consumer Problems](windows-consumer-problems-evaluation.md). See [11-platform-native-features.md](11-platform-native-features.md#phase-19---windows-consumer-diagnostics-planned-) for full implementation details.
 
 ### High Priority (9 queries)
 
-| Query | Description | Windows | Problems Addressed |
-|-------|-------------|---------|-------------------|
-| `get_windows_update_status` | Pending updates, history, failures | ✅ WMI/COM | Update stuck/failing |
-| `get_defender_status` | Defender config, protection, threats | ✅ Get-MpComputerStatus | Malware, Defender |
-| `get_printers` | Printers, spooler status, queue | ✅ Win32_Printer | Printing issues |
-| `get_wifi_status` | Wi-Fi adapter, signal, networks | ✅ netsh wlan | Wi-Fi problems |
-| `get_bluetooth_devices` | Paired devices, connection status | ✅ WMI/API | Bluetooth pairing |
-| `get_audio_devices` | Audio devices, default, driver | ✅ Core Audio/WMI | No sound issues |
-| `get_display_config` | Resolution, refresh, multi-monitor | ✅ Display API | Display problems |
-| `get_minidump_analysis` | BSOD bugcheck, faulting drivers | ✅ Minidump files | BSOD crashes |
-| `get_boot_timing` | Boot phases, startup impact | ✅ Event Log | Slow boot |
+| Query | Description | Windows | Problems Addressed | Status |
+|-------|-------------|---------|-------------------|--------|
+| `get_windows_update_status` | Pending updates, history, failures | ✅ WMI/COM | Update stuck/failing | 📋 Planned |
+| `get_defender_status` | Defender config, protection, threats | ✅ Get-MpComputerStatus | Malware, Defender | 📋 Planned |
+| `get_printers` | Printers, spooler status, queue | ✅ Win32_Printer | Printing issues | ✅ Done |
+| `get_wifi_status` | Wi-Fi adapter, signal, networks | ✅ netsh wlan | Wi-Fi problems | ✅ Done (via get_wifi_metrics) |
+| `get_bluetooth_devices` | Paired devices, connection status | ✅ WMI/API | Bluetooth pairing | ✅ Done |
+| `get_audio_devices` | Audio devices, default, driver | ✅ Core Audio/WMI | No sound issues | ✅ Done |
+| `get_display_config` | Resolution, refresh, multi-monitor | ✅ Display API | Display problems | ✅ Done |
+| `get_minidump_analysis` | BSOD bugcheck, faulting drivers | ✅ Minidump files | BSOD crashes | 📋 Planned |
+| `get_boot_timing` | Boot phases, startup impact | ✅ Event Log | Slow boot | 📋 Planned |
 
 ### Medium Priority (11 queries)
 
@@ -272,7 +272,7 @@ Queries addressing the [Top 50 Windows 10/11 Consumer Problems](windows-consumer
 | `get_shutdown_blockers` | Apps blocking shutdown | ✅ Event Log | Shutdown hangs |
 | `get_security_providers` | AV/firewall via WSC | ✅ WSC API | AV conflicts |
 
-**Status: 0/27 queries implemented**
+**Status: 4/27 queries implemented** (get_bluetooth_devices, get_audio_devices, get_printers, get_display_config; WiFi covered by get_wifi_metrics)
 
 ---
 

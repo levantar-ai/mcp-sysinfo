@@ -2083,41 +2083,41 @@ type SMARTHealthResult struct {
 
 // SMARTDisk represents SMART health data for a single disk.
 type SMARTDisk struct {
-	Device       string            `json:"device"`
-	Model        string            `json:"model,omitempty"`
-	Serial       string            `json:"serial,omitempty"`
-	Firmware     string            `json:"firmware,omitempty"`
-	Type         string            `json:"type"` // HDD, SSD, NVMe
-	Healthy      bool              `json:"healthy"`
-	Temperature  int               `json:"temperature_celsius,omitempty"`
-	PowerOnHours uint64            `json:"power_on_hours,omitempty"`
-	PowerCycles  uint64            `json:"power_cycles,omitempty"`
-	Attributes   []SMARTAttribute  `json:"attributes,omitempty"`
-	NVMeHealth   *NVMeHealthInfo   `json:"nvme_health,omitempty"`
-	Warnings     []string          `json:"warnings,omitempty"`
-	Error        string            `json:"error,omitempty"`
+	Device       string           `json:"device"`
+	Model        string           `json:"model,omitempty"`
+	Serial       string           `json:"serial,omitempty"`
+	Firmware     string           `json:"firmware,omitempty"`
+	Type         string           `json:"type"` // HDD, SSD, NVMe
+	Healthy      bool             `json:"healthy"`
+	Temperature  int              `json:"temperature_celsius,omitempty"`
+	PowerOnHours uint64           `json:"power_on_hours,omitempty"`
+	PowerCycles  uint64           `json:"power_cycles,omitempty"`
+	Attributes   []SMARTAttribute `json:"attributes,omitempty"`
+	NVMeHealth   *NVMeHealthInfo  `json:"nvme_health,omitempty"`
+	Warnings     []string         `json:"warnings,omitempty"`
+	Error        string           `json:"error,omitempty"`
 }
 
 // SMARTAttribute represents a single SMART attribute.
 type SMARTAttribute struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	Value      int    `json:"value"`
-	Worst      int    `json:"worst"`
-	Threshold  int    `json:"threshold"`
-	RawValue   uint64 `json:"raw_value"`
-	Status     string `json:"status"` // ok, warning, critical
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Value     int    `json:"value"`
+	Worst     int    `json:"worst"`
+	Threshold int    `json:"threshold"`
+	RawValue  uint64 `json:"raw_value"`
+	Status    string `json:"status"` // ok, warning, critical
 }
 
 // NVMeHealthInfo contains NVMe-specific health information.
 type NVMeHealthInfo struct {
-	PercentageUsed    int    `json:"percentage_used"`
-	AvailableSpare    int    `json:"available_spare"`
-	SpareThreshold    int    `json:"spare_threshold"`
-	DataUnitsRead     uint64 `json:"data_units_read"`
-	DataUnitsWritten  uint64 `json:"data_units_written"`
-	MediaErrors       uint64 `json:"media_errors"`
-	CriticalWarning   int    `json:"critical_warning"`
+	PercentageUsed   int    `json:"percentage_used"`
+	AvailableSpare   int    `json:"available_spare"`
+	SpareThreshold   int    `json:"spare_threshold"`
+	DataUnitsRead    uint64 `json:"data_units_read"`
+	DataUnitsWritten uint64 `json:"data_units_written"`
+	MediaErrors      uint64 `json:"media_errors"`
+	CriticalWarning  int    `json:"critical_warning"`
 }
 
 // IOLatencyResult contains disk I/O latency information.
@@ -2129,58 +2129,58 @@ type IOLatencyResult struct {
 
 // IOLatencyDevice represents I/O latency stats for a device.
 type IOLatencyDevice struct {
-	Device         string  `json:"device"`
-	ReadLatencyMs  float64 `json:"read_latency_ms"`
-	WriteLatencyMs float64 `json:"write_latency_ms"`
-	ReadIOPS       float64 `json:"read_iops"`
-	WriteIOPS      float64 `json:"write_iops"`
-	ReadThroughput uint64  `json:"read_throughput_bytes"`
-	WriteThroughput uint64 `json:"write_throughput_bytes"`
-	QueueDepth     uint64  `json:"queue_depth"`
-	Utilization    float64 `json:"utilization_percent"`
+	Device          string  `json:"device"`
+	ReadLatencyMs   float64 `json:"read_latency_ms"`
+	WriteLatencyMs  float64 `json:"write_latency_ms"`
+	ReadIOPS        float64 `json:"read_iops"`
+	WriteIOPS       float64 `json:"write_iops"`
+	ReadThroughput  uint64  `json:"read_throughput_bytes"`
+	WriteThroughput uint64  `json:"write_throughput_bytes"`
+	QueueDepth      uint64  `json:"queue_depth"`
+	Utilization     float64 `json:"utilization_percent"`
 }
 
 // VolumeStatusResult contains volume manager status information.
 type VolumeStatusResult struct {
-	ZFSPools    []ZFSPool    `json:"zfs_pools,omitempty"`
-	LVMGroups   []LVMGroup   `json:"lvm_groups,omitempty"`
-	RAIDArrays  []RAIDArray  `json:"raid_arrays,omitempty"`
+	ZFSPools     []ZFSPool     `json:"zfs_pools,omitempty"`
+	LVMGroups    []LVMGroup    `json:"lvm_groups,omitempty"`
+	RAIDArrays   []RAIDArray   `json:"raid_arrays,omitempty"`
 	StoragePools []StoragePool `json:"storage_pools,omitempty"` // Windows Storage Spaces
-	Count       int          `json:"count"`
-	Timestamp   time.Time    `json:"timestamp"`
+	Count        int           `json:"count"`
+	Timestamp    time.Time     `json:"timestamp"`
 }
 
 // ZFSPool represents a ZFS pool.
 type ZFSPool struct {
-	Name       string     `json:"name"`
-	State      string     `json:"state"` // ONLINE, DEGRADED, FAULTED, etc.
-	Size       uint64     `json:"size_bytes"`
-	Allocated  uint64     `json:"allocated_bytes"`
-	Free       uint64     `json:"free_bytes"`
-	Fragmentation int     `json:"fragmentation_percent"`
-	Health     string     `json:"health"`
-	VDevs      []ZFSVDev  `json:"vdevs,omitempty"`
-	Errors     string     `json:"errors,omitempty"`
+	Name          string    `json:"name"`
+	State         string    `json:"state"` // ONLINE, DEGRADED, FAULTED, etc.
+	Size          uint64    `json:"size_bytes"`
+	Allocated     uint64    `json:"allocated_bytes"`
+	Free          uint64    `json:"free_bytes"`
+	Fragmentation int       `json:"fragmentation_percent"`
+	Health        string    `json:"health"`
+	VDevs         []ZFSVDev `json:"vdevs,omitempty"`
+	Errors        string    `json:"errors,omitempty"`
 }
 
 // ZFSVDev represents a ZFS virtual device.
 type ZFSVDev struct {
-	Name   string `json:"name"`
-	Type   string `json:"type"` // disk, mirror, raidz, etc.
-	State  string `json:"state"`
-	Read   uint64 `json:"read_errors"`
-	Write  uint64 `json:"write_errors"`
-	Cksum  uint64 `json:"checksum_errors"`
+	Name  string `json:"name"`
+	Type  string `json:"type"` // disk, mirror, raidz, etc.
+	State string `json:"state"`
+	Read  uint64 `json:"read_errors"`
+	Write uint64 `json:"write_errors"`
+	Cksum uint64 `json:"checksum_errors"`
 }
 
 // LVMGroup represents an LVM volume group.
 type LVMGroup struct {
-	Name        string      `json:"name"`
-	Size        uint64      `json:"size_bytes"`
-	Free        uint64      `json:"free_bytes"`
-	PVCount     int         `json:"pv_count"`
-	LVCount     int         `json:"lv_count"`
-	Volumes     []LVMVolume `json:"volumes,omitempty"`
+	Name    string      `json:"name"`
+	Size    uint64      `json:"size_bytes"`
+	Free    uint64      `json:"free_bytes"`
+	PVCount int         `json:"pv_count"`
+	LVCount int         `json:"lv_count"`
+	Volumes []LVMVolume `json:"volumes,omitempty"`
 }
 
 // LVMVolume represents an LVM logical volume.
@@ -2193,15 +2193,15 @@ type LVMVolume struct {
 
 // RAIDArray represents a software RAID array.
 type RAIDArray struct {
-	Device      string       `json:"device"`
-	Level       string       `json:"level"` // raid0, raid1, raid5, etc.
-	State       string       `json:"state"` // clean, degraded, rebuilding
-	Size        uint64       `json:"size_bytes"`
-	Disks       int          `json:"disk_count"`
-	ActiveDisks int          `json:"active_disks"`
-	SpareDisks  int          `json:"spare_disks"`
-	SyncProgress string      `json:"sync_progress,omitempty"`
-	Members     []RAIDMember `json:"members,omitempty"`
+	Device       string       `json:"device"`
+	Level        string       `json:"level"` // raid0, raid1, raid5, etc.
+	State        string       `json:"state"` // clean, degraded, rebuilding
+	Size         uint64       `json:"size_bytes"`
+	Disks        int          `json:"disk_count"`
+	ActiveDisks  int          `json:"active_disks"`
+	SpareDisks   int          `json:"spare_disks"`
+	SyncProgress string       `json:"sync_progress,omitempty"`
+	Members      []RAIDMember `json:"members,omitempty"`
 }
 
 // RAIDMember represents a member disk in a RAID array.
@@ -2213,21 +2213,21 @@ type RAIDMember struct {
 
 // StoragePool represents a Windows Storage Space pool.
 type StoragePool struct {
-	Name            string `json:"name"`
-	FriendlyName    string `json:"friendly_name"`
-	HealthStatus    string `json:"health_status"`
+	Name              string `json:"name"`
+	FriendlyName      string `json:"friendly_name"`
+	HealthStatus      string `json:"health_status"`
 	OperationalStatus string `json:"operational_status"`
-	Size            uint64 `json:"size_bytes"`
-	AllocatedSize   uint64 `json:"allocated_bytes"`
-	ResiliencyType  string `json:"resiliency_type"`
+	Size              uint64 `json:"size_bytes"`
+	AllocatedSize     uint64 `json:"allocated_bytes"`
+	ResiliencyType    string `json:"resiliency_type"`
 }
 
 // MountChangesResult contains mount point change information.
 type MountChangesResult struct {
-	CurrentMounts []MountInfo `json:"current_mounts"`
+	CurrentMounts []MountInfo   `json:"current_mounts"`
 	RecentChanges []MountChange `json:"recent_changes,omitempty"`
-	Count         int         `json:"count"`
-	Timestamp     time.Time   `json:"timestamp"`
+	Count         int           `json:"count"`
+	Timestamp     time.Time     `json:"timestamp"`
 }
 
 // MountChange represents a mount/unmount event.
@@ -2241,12 +2241,12 @@ type MountChange struct {
 
 // FSEventsResult contains filesystem event information.
 type FSEventsResult struct {
-	Supported   bool        `json:"supported"`
-	WatchPaths  []string    `json:"watch_paths,omitempty"`
-	Events      []FSEvent   `json:"events,omitempty"`
-	Count       int         `json:"count"`
-	Message     string      `json:"message,omitempty"`
-	Timestamp   time.Time   `json:"timestamp"`
+	Supported  bool      `json:"supported"`
+	WatchPaths []string  `json:"watch_paths,omitempty"`
+	Events     []FSEvent `json:"events,omitempty"`
+	Count      int       `json:"count"`
+	Message    string    `json:"message,omitempty"`
+	Timestamp  time.Time `json:"timestamp"`
 }
 
 // FSEvent represents a filesystem event.
@@ -2291,17 +2291,17 @@ type WindowsFirewallProfiles struct {
 
 // FirewallProfile represents a single Windows Firewall profile.
 type FirewallProfile struct {
-	Name                   string `json:"name"`
-	Enabled                bool   `json:"enabled"`
-	DefaultInboundAction   string `json:"default_inbound_action"`
-	DefaultOutboundAction  string `json:"default_outbound_action"`
-	AllowInboundRules      bool   `json:"allow_inbound_rules"`
-	AllowLocalFirewallRules bool  `json:"allow_local_firewall_rules"`
-	AllowLocalIPsecRules   bool   `json:"allow_local_ipsec_rules"`
-	NotifyOnListen         bool   `json:"notify_on_listen"`
-	LogAllowed             bool   `json:"log_allowed"`
-	LogBlocked             bool   `json:"log_blocked"`
-	LogFilePath            string `json:"log_file_path,omitempty"`
+	Name                    string `json:"name"`
+	Enabled                 bool   `json:"enabled"`
+	DefaultInboundAction    string `json:"default_inbound_action"`
+	DefaultOutboundAction   string `json:"default_outbound_action"`
+	AllowInboundRules       bool   `json:"allow_inbound_rules"`
+	AllowLocalFirewallRules bool   `json:"allow_local_firewall_rules"`
+	AllowLocalIPsecRules    bool   `json:"allow_local_ipsec_rules"`
+	NotifyOnListen          bool   `json:"notify_on_listen"`
+	LogAllowed              bool   `json:"log_allowed"`
+	LogBlocked              bool   `json:"log_blocked"`
+	LogFilePath             string `json:"log_file_path,omitempty"`
 }
 
 // BitLockerStatus represents BitLocker encryption status.
@@ -2314,12 +2314,12 @@ type BitLockerStatus struct {
 
 // BitLockerVolume represents a single volume's BitLocker status.
 type BitLockerVolume struct {
-	DriveLetter       string `json:"drive_letter"`
-	VolumeType        string `json:"volume_type"` // OperatingSystem, FixedData, Removable
-	ProtectionStatus  string `json:"protection_status"`
-	LockStatus        string `json:"lock_status"`
-	EncryptionMethod  string `json:"encryption_method,omitempty"`
-	EncryptionPercent int    `json:"encryption_percent"`
+	DriveLetter       string   `json:"drive_letter"`
+	VolumeType        string   `json:"volume_type"` // OperatingSystem, FixedData, Removable
+	ProtectionStatus  string   `json:"protection_status"`
+	LockStatus        string   `json:"lock_status"`
+	EncryptionMethod  string   `json:"encryption_method,omitempty"`
+	EncryptionPercent int      `json:"encryption_percent"`
 	KeyProtectors     []string `json:"key_protectors,omitempty"`
 }
 
@@ -2333,49 +2333,49 @@ type WindowsSMBShares struct {
 
 // SMBShare represents a single SMB share.
 type SMBShare struct {
-	Name              string   `json:"name"`
-	Path              string   `json:"path"`
-	Description       string   `json:"description,omitempty"`
-	ShareType         string   `json:"share_type"`
-	CurrentUsers      int      `json:"current_users"`
-	ConcurrentUserLimit int    `json:"concurrent_user_limit"`
-	CachingMode       string   `json:"caching_mode,omitempty"`
-	EncryptData       bool     `json:"encrypt_data"`
-	FolderEnumMode    string   `json:"folder_enum_mode,omitempty"`
-	Permissions       []string `json:"permissions,omitempty"`
+	Name                string   `json:"name"`
+	Path                string   `json:"path"`
+	Description         string   `json:"description,omitempty"`
+	ShareType           string   `json:"share_type"`
+	CurrentUsers        int      `json:"current_users"`
+	ConcurrentUserLimit int      `json:"concurrent_user_limit"`
+	CachingMode         string   `json:"caching_mode,omitempty"`
+	EncryptData         bool     `json:"encrypt_data"`
+	FolderEnumMode      string   `json:"folder_enum_mode,omitempty"`
+	Permissions         []string `json:"permissions,omitempty"`
 }
 
 // WindowsRDPConfig represents RDP configuration.
 type WindowsRDPConfig struct {
-	Enabled                bool   `json:"enabled"`
-	Port                   int    `json:"port"`
-	NLARequired            bool   `json:"nla_required"`
-	SecurityLayer          string `json:"security_layer"`
-	UserAuthenticationRequired bool `json:"user_authentication_required"`
-	EncryptionLevel        string `json:"encryption_level"`
-	MaxConnections         int    `json:"max_connections"`
-	AllowedUsers           []string `json:"allowed_users,omitempty"`
-	Error                  string `json:"error,omitempty"`
-	Timestamp              time.Time `json:"timestamp"`
+	Enabled                    bool      `json:"enabled"`
+	Port                       int       `json:"port"`
+	NLARequired                bool      `json:"nla_required"`
+	SecurityLayer              string    `json:"security_layer"`
+	UserAuthenticationRequired bool      `json:"user_authentication_required"`
+	EncryptionLevel            string    `json:"encryption_level"`
+	MaxConnections             int       `json:"max_connections"`
+	AllowedUsers               []string  `json:"allowed_users,omitempty"`
+	Error                      string    `json:"error,omitempty"`
+	Timestamp                  time.Time `json:"timestamp"`
 }
 
 // WindowsWinRMConfig represents WinRM configuration.
 type WindowsWinRMConfig struct {
-	ServiceRunning     bool              `json:"service_running"`
-	HTTPEnabled        bool              `json:"http_enabled"`
-	HTTPSEnabled       bool              `json:"https_enabled"`
-	HTTPPort           int               `json:"http_port"`
-	HTTPSPort          int               `json:"https_port"`
-	AllowUnencrypted   bool              `json:"allow_unencrypted"`
-	BasicAuth          bool              `json:"basic_auth"`
-	KerberosAuth       bool              `json:"kerberos_auth"`
-	NegotiateAuth      bool              `json:"negotiate_auth"`
-	CertificateAuth    bool              `json:"certificate_auth"`
-	CredSSPAuth        bool              `json:"credssp_auth"`
-	Listeners          []WinRMListener   `json:"listeners,omitempty"`
-	TrustedHosts       string            `json:"trusted_hosts,omitempty"`
-	Error              string            `json:"error,omitempty"`
-	Timestamp          time.Time         `json:"timestamp"`
+	ServiceRunning   bool            `json:"service_running"`
+	HTTPEnabled      bool            `json:"http_enabled"`
+	HTTPSEnabled     bool            `json:"https_enabled"`
+	HTTPPort         int             `json:"http_port"`
+	HTTPSPort        int             `json:"https_port"`
+	AllowUnencrypted bool            `json:"allow_unencrypted"`
+	BasicAuth        bool            `json:"basic_auth"`
+	KerberosAuth     bool            `json:"kerberos_auth"`
+	NegotiateAuth    bool            `json:"negotiate_auth"`
+	CertificateAuth  bool            `json:"certificate_auth"`
+	CredSSPAuth      bool            `json:"credssp_auth"`
+	Listeners        []WinRMListener `json:"listeners,omitempty"`
+	TrustedHosts     string          `json:"trusted_hosts,omitempty"`
+	Error            string          `json:"error,omitempty"`
+	Timestamp        time.Time       `json:"timestamp"`
 }
 
 // WinRMListener represents a WinRM listener.
@@ -2390,189 +2390,189 @@ type WinRMListener struct {
 
 // WindowsAppLockerPolicy represents AppLocker policy.
 type WindowsAppLockerPolicy struct {
-	Configured        bool                   `json:"configured"`
-	EnforcementMode   string                 `json:"enforcement_mode"` // NotConfigured, AuditOnly, Enabled
-	RuleCollections   []AppLockerCollection  `json:"rule_collections,omitempty"`
-	Error             string                 `json:"error,omitempty"`
-	Timestamp         time.Time              `json:"timestamp"`
+	Configured      bool                  `json:"configured"`
+	EnforcementMode string                `json:"enforcement_mode"` // NotConfigured, AuditOnly, Enabled
+	RuleCollections []AppLockerCollection `json:"rule_collections,omitempty"`
+	Error           string                `json:"error,omitempty"`
+	Timestamp       time.Time             `json:"timestamp"`
 }
 
 // AppLockerCollection represents an AppLocker rule collection.
 type AppLockerCollection struct {
-	Type              string `json:"type"` // Exe, Msi, Script, Appx, Dll
-	EnforcementMode   string `json:"enforcement_mode"`
-	RuleCount         int    `json:"rule_count"`
+	Type            string `json:"type"` // Exe, Msi, Script, Appx, Dll
+	EnforcementMode string `json:"enforcement_mode"`
+	RuleCount       int    `json:"rule_count"`
 }
 
 // WindowsWDACStatus represents WDAC/Code Integrity status.
 type WindowsWDACStatus struct {
-	Enabled               bool     `json:"enabled"`
-	EnforcementMode       string   `json:"enforcement_mode"` // Audit, Enforced
-	UMCIEnabled           bool     `json:"umci_enabled"` // User Mode Code Integrity
-	KMCIEnabled           bool     `json:"kmci_enabled"` // Kernel Mode Code Integrity
-	PolicyID              string   `json:"policy_id,omitempty"`
-	PolicyVersion         string   `json:"policy_version,omitempty"`
-	ActivePolicies        []string `json:"active_policies,omitempty"`
-	HVCIEnabled           bool     `json:"hvci_enabled"` // Hypervisor-protected Code Integrity
-	Error                 string   `json:"error,omitempty"`
-	Timestamp             time.Time `json:"timestamp"`
+	Enabled         bool      `json:"enabled"`
+	EnforcementMode string    `json:"enforcement_mode"` // Audit, Enforced
+	UMCIEnabled     bool      `json:"umci_enabled"`     // User Mode Code Integrity
+	KMCIEnabled     bool      `json:"kmci_enabled"`     // Kernel Mode Code Integrity
+	PolicyID        string    `json:"policy_id,omitempty"`
+	PolicyVersion   string    `json:"policy_version,omitempty"`
+	ActivePolicies  []string  `json:"active_policies,omitempty"`
+	HVCIEnabled     bool      `json:"hvci_enabled"` // Hypervisor-protected Code Integrity
+	Error           string    `json:"error,omitempty"`
+	Timestamp       time.Time `json:"timestamp"`
 }
 
 // WindowsLocalSecurityPolicy represents local security policy summary.
 type WindowsLocalSecurityPolicy struct {
-	PasswordPolicy        PasswordPolicy    `json:"password_policy"`
-	AccountLockoutPolicy  LockoutPolicy     `json:"account_lockout_policy"`
-	AuditPolicy           AuditPolicies     `json:"audit_policy"`
+	PasswordPolicy        PasswordPolicy      `json:"password_policy"`
+	AccountLockoutPolicy  LockoutPolicy       `json:"account_lockout_policy"`
+	AuditPolicy           AuditPolicies       `json:"audit_policy"`
 	UserRightsAssignments map[string][]string `json:"user_rights_assignments,omitempty"`
-	Error                 string            `json:"error,omitempty"`
-	Timestamp             time.Time         `json:"timestamp"`
+	Error                 string              `json:"error,omitempty"`
+	Timestamp             time.Time           `json:"timestamp"`
 }
 
 // PasswordPolicy represents password policy settings.
 type PasswordPolicy struct {
-	MinimumLength           int  `json:"minimum_length"`
-	ComplexityEnabled       bool `json:"complexity_enabled"`
-	MaximumAge              int  `json:"maximum_age_days"`
-	MinimumAge              int  `json:"minimum_age_days"`
-	HistoryCount            int  `json:"history_count"`
-	ReversibleEncryption    bool `json:"reversible_encryption"`
+	MinimumLength        int  `json:"minimum_length"`
+	ComplexityEnabled    bool `json:"complexity_enabled"`
+	MaximumAge           int  `json:"maximum_age_days"`
+	MinimumAge           int  `json:"minimum_age_days"`
+	HistoryCount         int  `json:"history_count"`
+	ReversibleEncryption bool `json:"reversible_encryption"`
 }
 
 // LockoutPolicy represents account lockout settings.
 type LockoutPolicy struct {
-	LockoutThreshold      int `json:"lockout_threshold"`
-	LockoutDuration       int `json:"lockout_duration_minutes"`
-	ResetCounterAfter     int `json:"reset_counter_after_minutes"`
+	LockoutThreshold  int `json:"lockout_threshold"`
+	LockoutDuration   int `json:"lockout_duration_minutes"`
+	ResetCounterAfter int `json:"reset_counter_after_minutes"`
 }
 
 // AuditPolicies represents audit policy settings.
 type AuditPolicies struct {
-	AccountLogon          string `json:"account_logon"`
-	AccountManagement     string `json:"account_management"`
-	DetailedTracking      string `json:"detailed_tracking"`
-	DSAccess              string `json:"ds_access"`
-	LogonLogoff           string `json:"logon_logoff"`
-	ObjectAccess          string `json:"object_access"`
-	PolicyChange          string `json:"policy_change"`
-	PrivilegeUse          string `json:"privilege_use"`
-	System                string `json:"system"`
+	AccountLogon      string `json:"account_logon"`
+	AccountManagement string `json:"account_management"`
+	DetailedTracking  string `json:"detailed_tracking"`
+	DSAccess          string `json:"ds_access"`
+	LogonLogoff       string `json:"logon_logoff"`
+	ObjectAccess      string `json:"object_access"`
+	PolicyChange      string `json:"policy_change"`
+	PrivilegeUse      string `json:"privilege_use"`
+	System            string `json:"system"`
 }
 
 // WindowsGPOApplied represents applied Group Policy Objects.
 type WindowsGPOApplied struct {
-	ComputerGPOs    []AppliedGPO `json:"computer_gpos"`
-	UserGPOs        []AppliedGPO `json:"user_gpos,omitempty"`
-	LastRefresh     time.Time    `json:"last_refresh"`
-	DomainJoined    bool         `json:"domain_joined"`
-	DomainName      string       `json:"domain_name,omitempty"`
-	Error           string       `json:"error,omitempty"`
-	Timestamp       time.Time    `json:"timestamp"`
+	ComputerGPOs []AppliedGPO `json:"computer_gpos"`
+	UserGPOs     []AppliedGPO `json:"user_gpos,omitempty"`
+	LastRefresh  time.Time    `json:"last_refresh"`
+	DomainJoined bool         `json:"domain_joined"`
+	DomainName   string       `json:"domain_name,omitempty"`
+	Error        string       `json:"error,omitempty"`
+	Timestamp    time.Time    `json:"timestamp"`
 }
 
 // AppliedGPO represents a single applied GPO.
 type AppliedGPO struct {
-	Name            string    `json:"name"`
-	GUID            string    `json:"guid,omitempty"`
-	Link            string    `json:"link,omitempty"`
-	Enabled         bool      `json:"enabled"`
-	AccessDenied    bool      `json:"access_denied"`
-	FilterAllowed   bool      `json:"filter_allowed"`
-	Revision        int       `json:"revision"`
-	Extensions      []string  `json:"extensions,omitempty"`
+	Name          string   `json:"name"`
+	GUID          string   `json:"guid,omitempty"`
+	Link          string   `json:"link,omitempty"`
+	Enabled       bool     `json:"enabled"`
+	AccessDenied  bool     `json:"access_denied"`
+	FilterAllowed bool     `json:"filter_allowed"`
+	Revision      int      `json:"revision"`
+	Extensions    []string `json:"extensions,omitempty"`
 }
 
 // WindowsCredentialGuard represents Credential Guard status.
 type WindowsCredentialGuard struct {
-	CredentialGuardEnabled     bool   `json:"credential_guard_enabled"`
-	LsaCfgFlags                int    `json:"lsa_cfg_flags"`
-	SecurityServicesRunning    []string `json:"security_services_running,omitempty"`
-	SecurityServicesConfigured []string `json:"security_services_configured,omitempty"`
-	VirtualizationBasedSecurity bool  `json:"virtualization_based_security"`
-	RequirePlatformSecurityFeatures string `json:"require_platform_security_features,omitempty"`
-	LsaIsoEnabled              bool   `json:"lsa_iso_enabled"`
-	Error                      string `json:"error,omitempty"`
-	Timestamp                  time.Time `json:"timestamp"`
+	CredentialGuardEnabled          bool      `json:"credential_guard_enabled"`
+	LsaCfgFlags                     int       `json:"lsa_cfg_flags"`
+	SecurityServicesRunning         []string  `json:"security_services_running,omitempty"`
+	SecurityServicesConfigured      []string  `json:"security_services_configured,omitempty"`
+	VirtualizationBasedSecurity     bool      `json:"virtualization_based_security"`
+	RequirePlatformSecurityFeatures string    `json:"require_platform_security_features,omitempty"`
+	LsaIsoEnabled                   bool      `json:"lsa_iso_enabled"`
+	Error                           string    `json:"error,omitempty"`
+	Timestamp                       time.Time `json:"timestamp"`
 }
 
 // WindowsUpdateHealth represents Windows Update status.
 type WindowsUpdateHealth struct {
-	ServiceRunning         bool               `json:"service_running"`
-	LastCheckTime          time.Time          `json:"last_check_time"`
-	LastInstallTime        time.Time          `json:"last_install_time"`
-	PendingUpdates         []PendingUpdate    `json:"pending_updates,omitempty"`
-	PendingCount           int                `json:"pending_count"`
-	RebootRequired         bool               `json:"reboot_required"`
-	UpdateSource           string             `json:"update_source"` // WindowsUpdate, WSUS, WUfB
-	WSUSServer             string             `json:"wsus_server,omitempty"`
-	DeferFeatureUpdates    int                `json:"defer_feature_updates_days"`
-	DeferQualityUpdates    int                `json:"defer_quality_updates_days"`
-	Error                  string             `json:"error,omitempty"`
-	Timestamp              time.Time          `json:"timestamp"`
+	ServiceRunning      bool            `json:"service_running"`
+	LastCheckTime       time.Time       `json:"last_check_time"`
+	LastInstallTime     time.Time       `json:"last_install_time"`
+	PendingUpdates      []PendingUpdate `json:"pending_updates,omitempty"`
+	PendingCount        int             `json:"pending_count"`
+	RebootRequired      bool            `json:"reboot_required"`
+	UpdateSource        string          `json:"update_source"` // WindowsUpdate, WSUS, WUfB
+	WSUSServer          string          `json:"wsus_server,omitempty"`
+	DeferFeatureUpdates int             `json:"defer_feature_updates_days"`
+	DeferQualityUpdates int             `json:"defer_quality_updates_days"`
+	Error               string          `json:"error,omitempty"`
+	Timestamp           time.Time       `json:"timestamp"`
 }
 
 // PendingUpdate represents a pending Windows update.
 type PendingUpdate struct {
-	Title       string `json:"title"`
-	KB          string `json:"kb,omitempty"`
-	Category    string `json:"category"`
-	Severity    string `json:"severity,omitempty"`
-	IsDownloaded bool  `json:"is_downloaded"`
+	Title        string `json:"title"`
+	KB           string `json:"kb,omitempty"`
+	Category     string `json:"category"`
+	Severity     string `json:"severity,omitempty"`
+	IsDownloaded bool   `json:"is_downloaded"`
 }
 
 // MacOSFileVaultStatus represents FileVault status.
 type MacOSFileVaultStatus struct {
-	Enabled           bool      `json:"enabled"`
-	Status            string    `json:"status"` // On, Off, Encrypting, Decrypting
-	EncryptionPercent int       `json:"encryption_percent,omitempty"`
-	EncryptionType    string    `json:"encryption_type,omitempty"`
-	HasRecoveryKey    bool      `json:"has_recovery_key"`
-	HasInstitutionalKey bool    `json:"has_institutional_key"`
-	DeferredEnablement bool     `json:"deferred_enablement"`
-	Users             []string  `json:"users,omitempty"`
-	Error             string    `json:"error,omitempty"`
-	Timestamp         time.Time `json:"timestamp"`
+	Enabled             bool      `json:"enabled"`
+	Status              string    `json:"status"` // On, Off, Encrypting, Decrypting
+	EncryptionPercent   int       `json:"encryption_percent,omitempty"`
+	EncryptionType      string    `json:"encryption_type,omitempty"`
+	HasRecoveryKey      bool      `json:"has_recovery_key"`
+	HasInstitutionalKey bool      `json:"has_institutional_key"`
+	DeferredEnablement  bool      `json:"deferred_enablement"`
+	Users               []string  `json:"users,omitempty"`
+	Error               string    `json:"error,omitempty"`
+	Timestamp           time.Time `json:"timestamp"`
 }
 
 // MacOSGatekeeperStatus represents Gatekeeper status.
 type MacOSGatekeeperStatus struct {
-	Enabled           bool      `json:"enabled"`
-	AssessmentEnabled bool      `json:"assessment_enabled"`
-	DevIDEnabled      bool      `json:"developer_id_enabled"`
-	NotarizationRequired bool   `json:"notarization_required"`
-	Status            string    `json:"status"` // App Store, App Store and identified developers, Anywhere
-	Error             string    `json:"error,omitempty"`
-	Timestamp         time.Time `json:"timestamp"`
+	Enabled              bool      `json:"enabled"`
+	AssessmentEnabled    bool      `json:"assessment_enabled"`
+	DevIDEnabled         bool      `json:"developer_id_enabled"`
+	NotarizationRequired bool      `json:"notarization_required"`
+	Status               string    `json:"status"` // App Store, App Store and identified developers, Anywhere
+	Error                string    `json:"error,omitempty"`
+	Timestamp            time.Time `json:"timestamp"`
 }
 
 // MacOSSIPStatus represents System Integrity Protection status.
 type MacOSSIPStatus struct {
-	Enabled           bool      `json:"enabled"`
-	Status            string    `json:"status"`
-	ConfigurationFlags []string `json:"configuration_flags,omitempty"`
-	Error             string    `json:"error,omitempty"`
-	Timestamp         time.Time `json:"timestamp"`
-}
-
-// MacOSXProtectStatus represents XProtect status.
-type MacOSXProtectStatus struct {
-	XProtectVersion    string    `json:"xprotect_version"`
-	XProtectBundleVersion string `json:"xprotect_bundle_version,omitempty"`
-	MRTVersion         string    `json:"mrt_version,omitempty"`
-	GatekeeperConfigData string  `json:"gatekeeper_config_data,omitempty"`
-	LastUpdate         time.Time `json:"last_update"`
+	Enabled            bool      `json:"enabled"`
+	Status             string    `json:"status"`
+	ConfigurationFlags []string  `json:"configuration_flags,omitempty"`
 	Error              string    `json:"error,omitempty"`
 	Timestamp          time.Time `json:"timestamp"`
 }
 
+// MacOSXProtectStatus represents XProtect status.
+type MacOSXProtectStatus struct {
+	XProtectVersion       string    `json:"xprotect_version"`
+	XProtectBundleVersion string    `json:"xprotect_bundle_version,omitempty"`
+	MRTVersion            string    `json:"mrt_version,omitempty"`
+	GatekeeperConfigData  string    `json:"gatekeeper_config_data,omitempty"`
+	LastUpdate            time.Time `json:"last_update"`
+	Error                 string    `json:"error,omitempty"`
+	Timestamp             time.Time `json:"timestamp"`
+}
+
 // MacOSPFRules represents Packet Filter rules.
 type MacOSPFRules struct {
-	Enabled     bool       `json:"enabled"`
-	Status      string     `json:"status"`
-	RuleCount   int        `json:"rule_count"`
-	Rules       []PFRule   `json:"rules,omitempty"`
-	Anchors     []string   `json:"anchors,omitempty"`
-	Error       string     `json:"error,omitempty"`
-	Timestamp   time.Time  `json:"timestamp"`
+	Enabled   bool      `json:"enabled"`
+	Status    string    `json:"status"`
+	RuleCount int       `json:"rule_count"`
+	Rules     []PFRule  `json:"rules,omitempty"`
+	Anchors   []string  `json:"anchors,omitempty"`
+	Error     string    `json:"error,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // PFRule represents a PF rule.
@@ -2598,13 +2598,13 @@ type MacOSMDMProfiles struct {
 
 // MDMProfile represents an MDM configuration profile.
 type MDMProfile struct {
-	Name             string   `json:"name"`
-	Identifier       string   `json:"identifier"`
-	Organization     string   `json:"organization,omitempty"`
-	InstallDate      string   `json:"install_date,omitempty"`
-	VerificationState string  `json:"verification_state,omitempty"`
-	ProfileType      string   `json:"profile_type"` // Configuration, Provisioning
-	PayloadTypes     []string `json:"payload_types,omitempty"`
+	Name              string   `json:"name"`
+	Identifier        string   `json:"identifier"`
+	Organization      string   `json:"organization,omitempty"`
+	InstallDate       string   `json:"install_date,omitempty"`
+	VerificationState string   `json:"verification_state,omitempty"`
+	ProfileType       string   `json:"profile_type"` // Configuration, Provisioning
+	PayloadTypes      []string `json:"payload_types,omitempty"`
 }
 
 // MacOSTCCPermissions represents TCC permissions.
@@ -2617,11 +2617,11 @@ type MacOSTCCPermissions struct {
 
 // TCCPermission represents a TCC permission entry.
 type TCCPermission struct {
-	Service     string `json:"service"`
-	Client      string `json:"client"`
-	ClientType  string `json:"client_type"` // bundle, path
-	Allowed     bool   `json:"allowed"`
-	Reason      string `json:"reason,omitempty"`
+	Service      string `json:"service"`
+	Client       string `json:"client"`
+	ClientType   string `json:"client_type"` // bundle, path
+	Allowed      bool   `json:"allowed"`
+	Reason       string `json:"reason,omitempty"`
 	LastModified string `json:"last_modified,omitempty"`
 }
 
@@ -2635,45 +2635,45 @@ type MacOSSecurityLogEvents struct {
 
 // SecurityLogEvent represents a security log event.
 type SecurityLogEvent struct {
-	Timestamp   time.Time `json:"timestamp"`
-	EventType   string    `json:"event_type"`
-	Process     string    `json:"process,omitempty"`
-	Message     string    `json:"message"`
-	Subsystem   string    `json:"subsystem,omitempty"`
-	Category    string    `json:"category,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+	EventType string    `json:"event_type"`
+	Process   string    `json:"process,omitempty"`
+	Message   string    `json:"message"`
+	Subsystem string    `json:"subsystem,omitempty"`
+	Category  string    `json:"category,omitempty"`
 }
 
 // LinuxAuditdStatus represents auditd status.
 type LinuxAuditdStatus struct {
-	Running         bool           `json:"running"`
-	Enabled         bool           `json:"enabled"`
-	PID             int            `json:"pid,omitempty"`
-	RuleCount       int            `json:"rule_count"`
-	Rules           []AuditRule    `json:"rules,omitempty"`
-	BacklogLimit    int            `json:"backlog_limit"`
-	BacklogWaitTime int            `json:"backlog_wait_time"`
-	Failure         string         `json:"failure_mode"`
-	RateLimit       int            `json:"rate_limit"`
-	LostEvents      int            `json:"lost_events"`
-	Error           string         `json:"error,omitempty"`
-	Timestamp       time.Time      `json:"timestamp"`
+	Running         bool        `json:"running"`
+	Enabled         bool        `json:"enabled"`
+	PID             int         `json:"pid,omitempty"`
+	RuleCount       int         `json:"rule_count"`
+	Rules           []AuditRule `json:"rules,omitempty"`
+	BacklogLimit    int         `json:"backlog_limit"`
+	BacklogWaitTime int         `json:"backlog_wait_time"`
+	Failure         string      `json:"failure_mode"`
+	RateLimit       int         `json:"rate_limit"`
+	LostEvents      int         `json:"lost_events"`
+	Error           string      `json:"error,omitempty"`
+	Timestamp       time.Time   `json:"timestamp"`
 }
 
 // AuditRule represents an audit rule.
 type AuditRule struct {
-	Type        string   `json:"type"` // syscall, file, exclude
-	Key         string   `json:"key,omitempty"`
-	Rule        string   `json:"rule"`
-	Permissions string   `json:"permissions,omitempty"`
+	Type        string `json:"type"` // syscall, file, exclude
+	Key         string `json:"key,omitempty"`
+	Rule        string `json:"rule"`
+	Permissions string `json:"permissions,omitempty"`
 }
 
 // LinuxKernelLockdown represents kernel lockdown mode.
 type LinuxKernelLockdown struct {
-	Mode        string    `json:"mode"` // none, integrity, confidentiality
-	Supported   bool      `json:"supported"`
-	SecureBoot  bool      `json:"secure_boot"`
-	Error       string    `json:"error,omitempty"`
-	Timestamp   time.Time `json:"timestamp"`
+	Mode       string    `json:"mode"` // none, integrity, confidentiality
+	Supported  bool      `json:"supported"`
+	SecureBoot bool      `json:"secure_boot"`
+	Error      string    `json:"error,omitempty"`
+	Timestamp  time.Time `json:"timestamp"`
 }
 
 // LinuxSysctlSecurity represents security-related sysctl values.
@@ -2687,96 +2687,96 @@ type LinuxSysctlSecurity struct {
 
 // SysctlCheck represents a sysctl security check.
 type SysctlCheck struct {
-	Key           string `json:"key"`
-	CurrentValue  string `json:"current_value"`
+	Key              string `json:"key"`
+	CurrentValue     string `json:"current_value"`
 	RecommendedValue string `json:"recommended_value"`
-	Passed        bool   `json:"passed"`
-	Description   string `json:"description"`
+	Passed           bool   `json:"passed"`
+	Description      string `json:"description"`
 }
 
 // LinuxFirewallBackend represents the active firewall backend.
 type LinuxFirewallBackend struct {
-	Backend       string   `json:"backend"` // nftables, iptables, firewalld, ufw, none
-	Active        bool     `json:"active"`
-	Version       string   `json:"version,omitempty"`
-	DefaultPolicy string   `json:"default_policy,omitempty"`
-	Zones         []string `json:"zones,omitempty"` // For firewalld
-	RuleCount     int      `json:"rule_count"`
-	Error         string   `json:"error,omitempty"`
+	Backend       string    `json:"backend"` // nftables, iptables, firewalld, ufw, none
+	Active        bool      `json:"active"`
+	Version       string    `json:"version,omitempty"`
+	DefaultPolicy string    `json:"default_policy,omitempty"`
+	Zones         []string  `json:"zones,omitempty"` // For firewalld
+	RuleCount     int       `json:"rule_count"`
+	Error         string    `json:"error,omitempty"`
 	Timestamp     time.Time `json:"timestamp"`
 }
 
 // LinuxMACDetailed represents detailed MAC status (SELinux/AppArmor).
 type LinuxMACDetailed struct {
-	Type          string              `json:"type"` // selinux, apparmor, none
-	Enabled       bool                `json:"enabled"`
-	Mode          string              `json:"mode"` // enforcing, permissive, disabled / enforce, complain
-	PolicyVersion string              `json:"policy_version,omitempty"`
-	PolicyType    string              `json:"policy_type,omitempty"` // SELinux: targeted, mls, etc
-	SELinuxStatus *SELinuxDetails     `json:"selinux_status,omitempty"`
-	AppArmorStatus *AppArmorDetails   `json:"apparmor_status,omitempty"`
-	Error         string              `json:"error,omitempty"`
-	Timestamp     time.Time           `json:"timestamp"`
+	Type           string           `json:"type"` // selinux, apparmor, none
+	Enabled        bool             `json:"enabled"`
+	Mode           string           `json:"mode"` // enforcing, permissive, disabled / enforce, complain
+	PolicyVersion  string           `json:"policy_version,omitempty"`
+	PolicyType     string           `json:"policy_type,omitempty"` // SELinux: targeted, mls, etc
+	SELinuxStatus  *SELinuxDetails  `json:"selinux_status,omitempty"`
+	AppArmorStatus *AppArmorDetails `json:"apparmor_status,omitempty"`
+	Error          string           `json:"error,omitempty"`
+	Timestamp      time.Time        `json:"timestamp"`
 }
 
 // SELinuxDetails represents SELinux-specific details.
 type SELinuxDetails struct {
-	CurrentMode    string   `json:"current_mode"`
-	ConfigMode     string   `json:"config_mode"`
-	MLS            bool     `json:"mls_enabled"`
-	LoadedPolicyName string `json:"loaded_policy_name"`
-	Booleans       map[string]bool `json:"booleans,omitempty"`
-	DenialCount    int      `json:"denial_count"`
+	CurrentMode      string          `json:"current_mode"`
+	ConfigMode       string          `json:"config_mode"`
+	MLS              bool            `json:"mls_enabled"`
+	LoadedPolicyName string          `json:"loaded_policy_name"`
+	Booleans         map[string]bool `json:"booleans,omitempty"`
+	DenialCount      int             `json:"denial_count"`
 }
 
 // AppArmorDetails represents AppArmor-specific details.
 type AppArmorDetails struct {
-	ProfilesLoaded   int      `json:"profiles_loaded"`
-	ProfilesEnforce  int      `json:"profiles_enforce"`
-	ProfilesComplain int      `json:"profiles_complain"`
-	ProcessesConfined int     `json:"processes_confined"`
-	ProcessesUnconfined int   `json:"processes_unconfined"`
-	Profiles         []AppArmorProfile `json:"profiles,omitempty"`
+	ProfilesLoaded      int               `json:"profiles_loaded"`
+	ProfilesEnforce     int               `json:"profiles_enforce"`
+	ProfilesComplain    int               `json:"profiles_complain"`
+	ProcessesConfined   int               `json:"processes_confined"`
+	ProcessesUnconfined int               `json:"processes_unconfined"`
+	Profiles            []AppArmorProfile `json:"profiles,omitempty"`
 }
 
 // AppArmorProfile represents an AppArmor profile.
 type AppArmorProfile struct {
-	Name   string `json:"name"`
-	Mode   string `json:"mode"` // enforce, complain, unconfined
+	Name string `json:"name"`
+	Mode string `json:"mode"` // enforce, complain, unconfined
 }
 
 // LinuxPackageRepos represents package repository summary.
 type LinuxPackageRepos struct {
-	PackageManager string         `json:"package_manager"` // apt, dnf, yum, zypper, pacman
-	Repos          []PackageRepo  `json:"repos"`
-	Count          int            `json:"count"`
-	Error          string         `json:"error,omitempty"`
-	Timestamp      time.Time      `json:"timestamp"`
+	PackageManager string        `json:"package_manager"` // apt, dnf, yum, zypper, pacman
+	Repos          []PackageRepo `json:"repos"`
+	Count          int           `json:"count"`
+	Error          string        `json:"error,omitempty"`
+	Timestamp      time.Time     `json:"timestamp"`
 }
 
 // PackageRepo represents a package repository.
 type PackageRepo struct {
-	Name       string `json:"name"`
-	URL        string `json:"url,omitempty"`
-	Enabled    bool   `json:"enabled"`
-	GPGCheck   bool   `json:"gpg_check"`
-	Type       string `json:"type,omitempty"` // deb, rpm, etc
+	Name       string   `json:"name"`
+	URL        string   `json:"url,omitempty"`
+	Enabled    bool     `json:"enabled"`
+	GPGCheck   bool     `json:"gpg_check"`
+	Type       string   `json:"type,omitempty"`       // deb, rpm, etc
 	Components []string `json:"components,omitempty"` // For apt: main, universe, etc
 }
 
 // LinuxAutoUpdates represents automatic update configuration.
 type LinuxAutoUpdates struct {
-	Enabled          bool      `json:"enabled"`
-	Service          string    `json:"service"` // unattended-upgrades, dnf-automatic, etc
-	AutoReboot       bool      `json:"auto_reboot"`
-	RebootTime       string    `json:"reboot_time,omitempty"`
-	SecurityOnly     bool      `json:"security_only"`
-	MailOnError      bool      `json:"mail_on_error"`
-	MailTo           string    `json:"mail_to,omitempty"`
-	UpdateInterval   string    `json:"update_interval,omitempty"`
-	LastRun          time.Time `json:"last_run"`
-	Error            string    `json:"error,omitempty"`
-	Timestamp        time.Time `json:"timestamp"`
+	Enabled        bool      `json:"enabled"`
+	Service        string    `json:"service"` // unattended-upgrades, dnf-automatic, etc
+	AutoReboot     bool      `json:"auto_reboot"`
+	RebootTime     string    `json:"reboot_time,omitempty"`
+	SecurityOnly   bool      `json:"security_only"`
+	MailOnError    bool      `json:"mail_on_error"`
+	MailTo         string    `json:"mail_to,omitempty"`
+	UpdateInterval string    `json:"update_interval,omitempty"`
+	LastRun        time.Time `json:"last_run"`
+	Error          string    `json:"error,omitempty"`
+	Timestamp      time.Time `json:"timestamp"`
 }
 
 // VendorServicesResult represents OS vendor services inventory.
@@ -2795,7 +2795,7 @@ type VendorService struct {
 	Description string `json:"description,omitempty"`
 	Status      string `json:"status"` // running, stopped, etc
 	StartType   string `json:"start_type,omitempty"`
-	Vendor      string `json:"vendor"` // Microsoft, Apple, Linux distro
+	Vendor      string `json:"vendor"`             // Microsoft, Apple, Linux distro
 	Category    string `json:"category,omitempty"` // security, networking, system, etc
 }
 
@@ -2881,16 +2881,16 @@ type DNSQueryStats struct {
 
 // FirewallDeepResult represents comprehensive firewall analysis.
 type FirewallDeepResult struct {
-	Backend      string              `json:"backend"` // iptables, nftables, pf, netfilter
-	Enabled      bool                `json:"enabled"`
-	DefaultInput string              `json:"default_input,omitempty"`  // accept, drop, reject
-	DefaultOutput string             `json:"default_output,omitempty"`
-	DefaultForward string            `json:"default_forward,omitempty"`
-	Tables       []FirewallTable     `json:"tables,omitempty"`
-	Zones        []FirewallZone      `json:"zones,omitempty"`
-	Statistics   FirewallStatistics  `json:"statistics"`
-	Warnings     []string            `json:"warnings,omitempty"`
-	Timestamp    time.Time           `json:"timestamp"`
+	Backend        string             `json:"backend"` // iptables, nftables, pf, netfilter
+	Enabled        bool               `json:"enabled"`
+	DefaultInput   string             `json:"default_input,omitempty"` // accept, drop, reject
+	DefaultOutput  string             `json:"default_output,omitempty"`
+	DefaultForward string             `json:"default_forward,omitempty"`
+	Tables         []FirewallTable    `json:"tables,omitempty"`
+	Zones          []FirewallZone     `json:"zones,omitempty"`
+	Statistics     FirewallStatistics `json:"statistics"`
+	Warnings       []string           `json:"warnings,omitempty"`
+	Timestamp      time.Time          `json:"timestamp"`
 }
 
 // FirewallTable represents a firewall table (iptables/nftables).
@@ -2912,20 +2912,20 @@ type FirewallChain struct {
 
 // FirewallRuleDeep represents a detailed firewall rule.
 type FirewallRuleDeep struct {
-	Number      int      `json:"number"`
-	Action      string   `json:"action"`
-	Protocol    string   `json:"protocol,omitempty"`
-	Source      string   `json:"source,omitempty"`
-	Destination string   `json:"destination,omitempty"`
-	SrcPort     string   `json:"src_port,omitempty"`
-	DstPort     string   `json:"dst_port,omitempty"`
-	Interface   string   `json:"interface,omitempty"`
-	Direction   string   `json:"direction,omitempty"` // in, out
-	State       string   `json:"state,omitempty"`     // new, established, related
-	Comment     string   `json:"comment,omitempty"`
-	Packets     uint64   `json:"packets,omitempty"`
-	Bytes       uint64   `json:"bytes,omitempty"`
-	Enabled     bool     `json:"enabled"`
+	Number      int    `json:"number"`
+	Action      string `json:"action"`
+	Protocol    string `json:"protocol,omitempty"`
+	Source      string `json:"source,omitempty"`
+	Destination string `json:"destination,omitempty"`
+	SrcPort     string `json:"src_port,omitempty"`
+	DstPort     string `json:"dst_port,omitempty"`
+	Interface   string `json:"interface,omitempty"`
+	Direction   string `json:"direction,omitempty"` // in, out
+	State       string `json:"state,omitempty"`     // new, established, related
+	Comment     string `json:"comment,omitempty"`
+	Packets     uint64 `json:"packets,omitempty"`
+	Bytes       uint64 `json:"bytes,omitempty"`
+	Enabled     bool   `json:"enabled"`
 }
 
 // FirewallZone represents a firewall zone (firewalld/ufw).
@@ -2960,20 +2960,20 @@ type WiFiMetricsResult struct {
 
 // WiFiInterface represents a WiFi network interface.
 type WiFiInterface struct {
-	Name         string  `json:"name"`
-	SSID         string  `json:"ssid,omitempty"`
-	BSSID        string  `json:"bssid,omitempty"`
-	Frequency    float64 `json:"frequency_mhz,omitempty"`
-	Channel      int     `json:"channel,omitempty"`
-	SignalLevel  int     `json:"signal_level_dbm,omitempty"`
-	SignalQuality int    `json:"signal_quality_percent,omitempty"`
-	NoiseLevel   int     `json:"noise_level_dbm,omitempty"`
-	BitRate      float64 `json:"bit_rate_mbps,omitempty"`
-	TxPower      int     `json:"tx_power_dbm,omitempty"`
-	LinkQuality  string  `json:"link_quality,omitempty"`
-	Mode         string  `json:"mode,omitempty"` // managed, ad-hoc, monitor
-	Security     string  `json:"security,omitempty"` // WPA2, WPA3, etc
-	Connected    bool    `json:"connected"`
+	Name          string  `json:"name"`
+	SSID          string  `json:"ssid,omitempty"`
+	BSSID         string  `json:"bssid,omitempty"`
+	Frequency     float64 `json:"frequency_mhz,omitempty"`
+	Channel       int     `json:"channel,omitempty"`
+	SignalLevel   int     `json:"signal_level_dbm,omitempty"`
+	SignalQuality int     `json:"signal_quality_percent,omitempty"`
+	NoiseLevel    int     `json:"noise_level_dbm,omitempty"`
+	BitRate       float64 `json:"bit_rate_mbps,omitempty"`
+	TxPower       int     `json:"tx_power_dbm,omitempty"`
+	LinkQuality   string  `json:"link_quality,omitempty"`
+	Mode          string  `json:"mode,omitempty"`     // managed, ad-hoc, monitor
+	Security      string  `json:"security,omitempty"` // WPA2, WPA3, etc
+	Connected     bool    `json:"connected"`
 }
 
 // NetworkLatencyResult represents network latency probe results.
@@ -3002,12 +3002,12 @@ type LatencyProbe struct {
 
 // LatencySummary provides overall latency statistics.
 type LatencySummary struct {
-	TotalProbes    int     `json:"total_probes"`
-	SuccessProbes  int     `json:"success_probes"`
-	FailedProbes   int     `json:"failed_probes"`
-	AvgLatencyMs   float64 `json:"avg_latency_ms"`
-	MinLatencyMs   float64 `json:"min_latency_ms"`
-	MaxLatencyMs   float64 `json:"max_latency_ms"`
+	TotalProbes   int     `json:"total_probes"`
+	SuccessProbes int     `json:"success_probes"`
+	FailedProbes  int     `json:"failed_probes"`
+	AvgLatencyMs  float64 `json:"avg_latency_ms"`
+	MinLatencyMs  float64 `json:"min_latency_ms"`
+	MaxLatencyMs  float64 `json:"max_latency_ms"`
 }
 
 // ============================================================================
@@ -3016,13 +3016,13 @@ type LatencySummary struct {
 
 // HistoricalMetricsResult represents historical system metrics.
 type HistoricalMetricsResult struct {
-	TimeRange  TimeRange           `json:"time_range"`
-	CPU        []MetricDataPoint   `json:"cpu,omitempty"`
-	Memory     []MetricDataPoint   `json:"memory,omitempty"`
-	Disk       []MetricDataPoint   `json:"disk,omitempty"`
-	Network    []MetricDataPoint   `json:"network,omitempty"`
-	DataSource string              `json:"data_source"` // sar, journal, wtmp, etc
-	Timestamp  time.Time           `json:"timestamp"`
+	TimeRange  TimeRange         `json:"time_range"`
+	CPU        []MetricDataPoint `json:"cpu,omitempty"`
+	Memory     []MetricDataPoint `json:"memory,omitempty"`
+	Disk       []MetricDataPoint `json:"disk,omitempty"`
+	Network    []MetricDataPoint `json:"network,omitempty"`
+	DataSource string            `json:"data_source"` // sar, journal, wtmp, etc
+	Timestamp  time.Time         `json:"timestamp"`
 }
 
 // TimeRange represents a time range for historical data.
@@ -3041,11 +3041,11 @@ type MetricDataPoint struct {
 
 // AnomalyDetectionResult represents detected anomalies.
 type AnomalyDetectionResult struct {
-	Anomalies  []Anomaly `json:"anomalies"`
-	Count      int       `json:"count"`
-	TimeRange  TimeRange `json:"time_range"`
+	Anomalies  []Anomaly          `json:"anomalies"`
+	Count      int                `json:"count"`
+	TimeRange  TimeRange          `json:"time_range"`
 	Thresholds map[string]float64 `json:"thresholds"`
-	Timestamp  time.Time `json:"timestamp"`
+	Timestamp  time.Time          `json:"timestamp"`
 }
 
 // Anomaly represents a detected anomaly.
@@ -3110,17 +3110,17 @@ type AlertStatusResult struct {
 
 // SystemAlert represents a system alert.
 type SystemAlert struct {
-	ID          string    `json:"id"`
-	Severity    string    `json:"severity"` // critical, warning, info
-	Category    string    `json:"category"` // cpu, memory, disk, network, security
-	Message     string    `json:"message"`
-	Source      string    `json:"source"`
-	Value       float64   `json:"value,omitempty"`
-	Threshold   float64   `json:"threshold,omitempty"`
-	FirstSeen   time.Time `json:"first_seen"`
-	LastSeen    time.Time `json:"last_seen"`
-	Count       int       `json:"count"`
-	Acknowledged bool     `json:"acknowledged"`
+	ID           string    `json:"id"`
+	Severity     string    `json:"severity"` // critical, warning, info
+	Category     string    `json:"category"` // cpu, memory, disk, network, security
+	Message      string    `json:"message"`
+	Source       string    `json:"source"`
+	Value        float64   `json:"value,omitempty"`
+	Threshold    float64   `json:"threshold,omitempty"`
+	FirstSeen    time.Time `json:"first_seen"`
+	LastSeen     time.Time `json:"last_seen"`
+	Count        int       `json:"count"`
+	Acknowledged bool      `json:"acknowledged"`
 }
 
 // RemediationSuggestionsResult represents suggested remediation actions.
@@ -3132,14 +3132,14 @@ type RemediationSuggestionsResult struct {
 
 // RemediationSuggestion represents a remediation suggestion.
 type RemediationSuggestion struct {
-	Issue       string   `json:"issue"`
-	Severity    string   `json:"severity"`
-	Category    string   `json:"category"`
-	Suggestion  string   `json:"suggestion"`
-	Commands    []string `json:"commands,omitempty"`
-	Risk        string   `json:"risk"` // low, medium, high
-	Automated   bool     `json:"automated_available"`
-	References  []string `json:"references,omitempty"`
+	Issue      string   `json:"issue"`
+	Severity   string   `json:"severity"`
+	Category   string   `json:"category"`
+	Suggestion string   `json:"suggestion"`
+	Commands   []string `json:"commands,omitempty"`
+	Risk       string   `json:"risk"` // low, medium, high
+	Automated  bool     `json:"automated_available"`
+	References []string `json:"references,omitempty"`
 }
 
 // RunbookRecommendationsResult represents runbook recommendations.
@@ -3151,12 +3151,12 @@ type RunbookRecommendationsResult struct {
 
 // RunbookRecommendation represents a runbook recommendation.
 type RunbookRecommendation struct {
-	Title       string   `json:"title"`
-	Category    string   `json:"category"`
-	Priority    string   `json:"priority"` // high, medium, low
-	Reason      string   `json:"reason"`
-	Steps       []string `json:"steps"`
-	References  []string `json:"references,omitempty"`
+	Title      string   `json:"title"`
+	Category   string   `json:"category"`
+	Priority   string   `json:"priority"` // high, medium, low
+	Reason     string   `json:"reason"`
+	Steps      []string `json:"steps"`
+	References []string `json:"references,omitempty"`
 }
 
 // ============================================================================
@@ -3165,11 +3165,11 @@ type RunbookRecommendation struct {
 
 // SecurityScanResult represents a security vulnerability scan.
 type SecurityScanResult struct {
-	Findings  []SecurityFinding  `json:"findings"`
-	Summary   SecuritySummary    `json:"summary"`
-	Score     int                `json:"score"` // 0-100
-	Grade     string             `json:"grade"` // A, B, C, D, F
-	Timestamp time.Time          `json:"timestamp"`
+	Findings  []SecurityFinding `json:"findings"`
+	Summary   SecuritySummary   `json:"summary"`
+	Score     int               `json:"score"` // 0-100
+	Grade     string            `json:"grade"` // A, B, C, D, F
+	Timestamp time.Time         `json:"timestamp"`
 }
 
 // SecurityFinding represents a security finding.
@@ -3201,13 +3201,13 @@ type SecuritySummary struct {
 
 // ComplianceCheckResult represents compliance check results.
 type ComplianceCheckResult struct {
-	Framework   string            `json:"framework"` // CIS, STIG, PCI-DSS
-	Version     string            `json:"version"`
-	Profile     string            `json:"profile,omitempty"` // Level 1, Level 2
-	Checks      []ComplianceCheck `json:"checks"`
-	Summary     ComplianceSummary `json:"summary"`
-	Score       float64           `json:"score_percent"`
-	Timestamp   time.Time         `json:"timestamp"`
+	Framework string            `json:"framework"` // CIS, STIG, PCI-DSS
+	Version   string            `json:"version"`
+	Profile   string            `json:"profile,omitempty"` // Level 1, Level 2
+	Checks    []ComplianceCheck `json:"checks"`
+	Summary   ComplianceSummary `json:"summary"`
+	Score     float64           `json:"score_percent"`
+	Timestamp time.Time         `json:"timestamp"`
 }
 
 // ComplianceCheck represents a single compliance check.
@@ -3225,25 +3225,25 @@ type ComplianceCheck struct {
 
 // ComplianceSummary provides compliance summary.
 type ComplianceSummary struct {
-	TotalChecks  int `json:"total_checks"`
-	Passed       int `json:"passed"`
-	Failed       int `json:"failed"`
-	Skipped      int `json:"skipped"`
-	Manual       int `json:"manual"`
+	TotalChecks int `json:"total_checks"`
+	Passed      int `json:"passed"`
+	Failed      int `json:"failed"`
+	Skipped     int `json:"skipped"`
+	Manual      int `json:"manual"`
 }
 
 // ForensicSnapshotResult represents a forensic data snapshot.
 type ForensicSnapshotResult struct {
-	SnapshotID     string                 `json:"snapshot_id"`
-	CollectedAt    time.Time              `json:"collected_at"`
-	System         ForensicSystem         `json:"system"`
-	Users          []ForensicUser         `json:"users"`
-	Processes      []ForensicProcess      `json:"processes"`
-	NetworkConns   []ForensicConnection   `json:"network_connections"`
-	OpenFiles      []ForensicOpenFile     `json:"open_files"`
-	RecentLogins   []ForensicLogin        `json:"recent_logins"`
-	ModifiedFiles  []ForensicModifiedFile `json:"recently_modified_files,omitempty"`
-	Timestamp      time.Time              `json:"timestamp"`
+	SnapshotID    string                 `json:"snapshot_id"`
+	CollectedAt   time.Time              `json:"collected_at"`
+	System        ForensicSystem         `json:"system"`
+	Users         []ForensicUser         `json:"users"`
+	Processes     []ForensicProcess      `json:"processes"`
+	NetworkConns  []ForensicConnection   `json:"network_connections"`
+	OpenFiles     []ForensicOpenFile     `json:"open_files"`
+	RecentLogins  []ForensicLogin        `json:"recent_logins"`
+	ModifiedFiles []ForensicModifiedFile `json:"recently_modified_files,omitempty"`
+	Timestamp     time.Time              `json:"timestamp"`
 }
 
 // ForensicSystem represents system forensic data.
@@ -3259,14 +3259,14 @@ type ForensicSystem struct {
 
 // ForensicUser represents user forensic data.
 type ForensicUser struct {
-	Username     string    `json:"username"`
-	UID          int       `json:"uid"`
-	Groups       []string  `json:"groups"`
-	Shell        string    `json:"shell"`
-	HomeDir      string    `json:"home_dir"`
-	LastLogin    time.Time `json:"last_login,omitempty"`
-	IsAdmin      bool      `json:"is_admin"`
-	IsLocked     bool      `json:"is_locked"`
+	Username  string    `json:"username"`
+	UID       int       `json:"uid"`
+	Groups    []string  `json:"groups"`
+	Shell     string    `json:"shell"`
+	HomeDir   string    `json:"home_dir"`
+	LastLogin time.Time `json:"last_login,omitempty"`
+	IsAdmin   bool      `json:"is_admin"`
+	IsLocked  bool      `json:"is_locked"`
 }
 
 // ForensicProcess represents process forensic data.
@@ -3325,24 +3325,24 @@ type ForensicModifiedFile struct {
 
 // AuditTrailResult represents security audit trail.
 type AuditTrailResult struct {
-	Events     []AuditEvent `json:"events"`
-	Count      int          `json:"count"`
-	TimeRange  TimeRange    `json:"time_range"`
-	Sources    []string     `json:"sources"`
-	Timestamp  time.Time    `json:"timestamp"`
+	Events    []AuditEvent `json:"events"`
+	Count     int          `json:"count"`
+	TimeRange TimeRange    `json:"time_range"`
+	Sources   []string     `json:"sources"`
+	Timestamp time.Time    `json:"timestamp"`
 }
 
 // AuditEvent represents a security audit event.
 type AuditEvent struct {
-	Timestamp   time.Time `json:"timestamp"`
-	Type        string    `json:"type"` // auth, exec, file, network, privilege
-	Action      string    `json:"action"`
-	Subject     string    `json:"subject"` // user or process
-	Object      string    `json:"object"`  // file, service, etc
-	Result      string    `json:"result"`  // success, failure
-	Source      string    `json:"source"`  // auth.log, audit.log, syslog
-	Details     string    `json:"details,omitempty"`
-	Severity    string    `json:"severity,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+	Type      string    `json:"type"` // auth, exec, file, network, privilege
+	Action    string    `json:"action"`
+	Subject   string    `json:"subject"` // user or process
+	Object    string    `json:"object"`  // file, service, etc
+	Result    string    `json:"result"`  // success, failure
+	Source    string    `json:"source"`  // auth.log, audit.log, syslog
+	Details   string    `json:"details,omitempty"`
+	Severity  string    `json:"severity,omitempty"`
 }
 
 // HardeningRecommendationsResult represents security hardening recommendations.
@@ -3355,15 +3355,130 @@ type HardeningRecommendationsResult struct {
 
 // HardeningRecommendation represents a security hardening recommendation.
 type HardeningRecommendation struct {
-	ID          string   `json:"id"`
-	Category    string   `json:"category"` // authentication, network, filesystem, kernel
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Priority    string   `json:"priority"` // critical, high, medium, low
-	CurrentState string  `json:"current_state"`
-	TargetState string   `json:"target_state"`
-	Remediation string   `json:"remediation"`
-	Commands    []string `json:"commands,omitempty"`
-	References  []string `json:"references,omitempty"`
-	Impact      string   `json:"impact,omitempty"`
+	ID           string   `json:"id"`
+	Category     string   `json:"category"` // authentication, network, filesystem, kernel
+	Title        string   `json:"title"`
+	Description  string   `json:"description"`
+	Priority     string   `json:"priority"` // critical, high, medium, low
+	CurrentState string   `json:"current_state"`
+	TargetState  string   `json:"target_state"`
+	Remediation  string   `json:"remediation"`
+	Commands     []string `json:"commands,omitempty"`
+	References   []string `json:"references,omitempty"`
+	Impact       string   `json:"impact,omitempty"`
+}
+
+// ============================================================================
+// Phase 1.9: Consumer Diagnostics Types
+// ============================================================================
+
+// BluetoothDevicesResult represents Bluetooth device information.
+type BluetoothDevicesResult struct {
+	Devices   []BluetoothDevice  `json:"devices"`
+	Adapters  []BluetoothAdapter `json:"adapters,omitempty"`
+	Available bool               `json:"available"`
+	Error     string             `json:"error,omitempty"`
+	Timestamp time.Time          `json:"timestamp"`
+}
+
+// BluetoothDevice represents a Bluetooth device.
+type BluetoothDevice struct {
+	Name       string `json:"name"`
+	InstanceID string `json:"instance_id,omitempty"`
+	Status     string `json:"status"`                // OK, Error, Degraded, Unknown
+	DeviceType string `json:"device_type,omitempty"` // Audio, Input, etc.
+	Connected  bool   `json:"connected"`
+	Paired     bool   `json:"paired,omitempty"`
+	Address    string `json:"address,omitempty"`
+}
+
+// BluetoothAdapter represents a Bluetooth adapter/radio.
+type BluetoothAdapter struct {
+	Name         string `json:"name"`
+	Manufacturer string `json:"manufacturer,omitempty"`
+	Status       string `json:"status"`
+	Enabled      bool   `json:"enabled"`
+}
+
+// AudioDevicesResult represents audio device information.
+type AudioDevicesResult struct {
+	Devices   []AudioDevice `json:"devices"`
+	Available bool          `json:"available"`
+	Error     string        `json:"error,omitempty"`
+	Timestamp time.Time     `json:"timestamp"`
+}
+
+// AudioDevice represents an audio device.
+type AudioDevice struct {
+	Name         string `json:"name"`
+	DeviceID     string `json:"device_id,omitempty"`
+	Manufacturer string `json:"manufacturer,omitempty"`
+	Status       string `json:"status"`                // OK, Error, Degraded, Unknown
+	DeviceType   string `json:"device_type,omitempty"` // Playback, Recording
+	IsDefault    bool   `json:"is_default,omitempty"`
+	Driver       string `json:"driver,omitempty"`
+}
+
+// PrintersResult represents printer information.
+type PrintersResult struct {
+	Printers       []PrinterInfo `json:"printers"`
+	SpoolerStatus  string        `json:"spooler_status"` // Running, Stopped, etc.
+	SpoolerRunning bool          `json:"spooler_running"`
+	Available      bool          `json:"available"`
+	Error          string        `json:"error,omitempty"`
+	Timestamp      time.Time     `json:"timestamp"`
+}
+
+// PrinterInfo represents a printer.
+type PrinterInfo struct {
+	Name         string `json:"name"`
+	PortName     string `json:"port_name,omitempty"`
+	DriverName   string `json:"driver_name,omitempty"`
+	Status       string `json:"status"` // Ready, Printing, Error, Offline
+	StatusCode   int    `json:"status_code,omitempty"`
+	IsDefault    bool   `json:"is_default"`
+	IsNetwork    bool   `json:"is_network"`
+	IsShared     bool   `json:"is_shared"`
+	JobCount     int    `json:"job_count,omitempty"`
+	PrinterState string `json:"printer_state,omitempty"` // Idle, Printing, etc.
+	Location     string `json:"location,omitempty"`
+}
+
+// DisplayConfigResult represents display configuration information.
+type DisplayConfigResult struct {
+	Monitors      []MonitorInfo  `json:"monitors"`
+	VideoAdapters []VideoAdapter `json:"video_adapters"`
+	Available     bool           `json:"available"`
+	Error         string         `json:"error,omitempty"`
+	Timestamp     time.Time      `json:"timestamp"`
+}
+
+// MonitorInfo represents a display monitor.
+type MonitorInfo struct {
+	Name           string `json:"name"`
+	DeviceID       string `json:"device_id,omitempty"`
+	ScreenWidth    int    `json:"screen_width"`
+	ScreenHeight   int    `json:"screen_height"`
+	BitsPerPixel   int    `json:"bits_per_pixel,omitempty"`
+	RefreshRate    int    `json:"refresh_rate_hz,omitempty"`
+	IsPrimary      bool   `json:"is_primary"`
+	Status         string `json:"status,omitempty"`
+	MonitorType    string `json:"monitor_type,omitempty"`
+	PixelsPerXInch int    `json:"pixels_per_x_inch,omitempty"`
+	PixelsPerYInch int    `json:"pixels_per_y_inch,omitempty"`
+}
+
+// VideoAdapter represents a video/graphics adapter.
+type VideoAdapter struct {
+	Name                string `json:"name"`
+	DeviceID            string `json:"device_id,omitempty"`
+	AdapterRAM          uint64 `json:"adapter_ram_bytes,omitempty"`
+	DriverVersion       string `json:"driver_version,omitempty"`
+	DriverDate          string `json:"driver_date,omitempty"`
+	VideoProcessor      string `json:"video_processor,omitempty"`
+	CurrentRefreshRate  int    `json:"current_refresh_rate_hz,omitempty"`
+	CurrentResolutionH  int    `json:"current_resolution_horizontal,omitempty"`
+	CurrentResolutionV  int    `json:"current_resolution_vertical,omitempty"`
+	CurrentBitsPerPixel int    `json:"current_bits_per_pixel,omitempty"`
+	Status              string `json:"status,omitempty"`
 }
