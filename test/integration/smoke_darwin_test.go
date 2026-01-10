@@ -10,6 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/levantar-ai/mcp-sysinfo/internal/alerts"
+	"github.com/levantar-ai/mcp-sysinfo/internal/analytics"
+	"github.com/levantar-ai/mcp-sysinfo/internal/compliance"
 	"github.com/levantar-ai/mcp-sysinfo/internal/container"
 	"github.com/levantar-ai/mcp-sysinfo/internal/cpu"
 	"github.com/levantar-ai/mcp-sysinfo/internal/disk"
@@ -1114,4 +1117,176 @@ func TestSmoke_Darwin_GetFSEvents(t *testing.T) {
 		t.Fatalf("get_fs_events failed: %v", err)
 	}
 	mustJSON(t, "get_fs_events", result)
+}
+
+// =============================================================================
+// Phase 4: Network Intelligence (5 queries)
+// =============================================================================
+
+func TestSmoke_Darwin_GetConnectionTracking(t *testing.T) {
+	c := netconfig.NewCollector()
+	result, err := c.GetConnectionTracking()
+	if err != nil {
+		t.Fatalf("get_connection_tracking failed: %v", err)
+	}
+	mustJSON(t, "get_connection_tracking", result)
+}
+
+func TestSmoke_Darwin_GetDNSStats(t *testing.T) {
+	c := netconfig.NewCollector()
+	result, err := c.GetDNSStats()
+	if err != nil {
+		t.Fatalf("get_dns_stats failed: %v", err)
+	}
+	mustJSON(t, "get_dns_stats", result)
+}
+
+func TestSmoke_Darwin_GetFirewallDeep(t *testing.T) {
+	c := netconfig.NewCollector()
+	result, err := c.GetFirewallDeep()
+	if err != nil {
+		t.Logf("get_firewall_deep returned error (may require elevated permissions): %v", err)
+		return
+	}
+	mustJSON(t, "get_firewall_deep", result)
+}
+
+func TestSmoke_Darwin_GetWiFiMetrics(t *testing.T) {
+	c := netconfig.NewCollector()
+	result, err := c.GetWiFiMetrics()
+	if err != nil {
+		t.Logf("get_wifi_metrics returned error (WiFi may not be available): %v", err)
+		return
+	}
+	mustJSON(t, "get_wifi_metrics", result)
+}
+
+func TestSmoke_Darwin_GetNetworkLatency(t *testing.T) {
+	c := netconfig.NewCollector()
+	result, err := c.GetNetworkLatency([]string{"8.8.8.8", "1.1.1.1"})
+	if err != nil {
+		t.Logf("get_network_latency returned error: %v", err)
+		return
+	}
+	mustJSON(t, "get_network_latency", result)
+}
+
+// =============================================================================
+// Phase 5: Analytics & Trends (4 queries)
+// =============================================================================
+
+func TestSmoke_Darwin_GetHistoricalMetrics(t *testing.T) {
+	c := analytics.NewCollector()
+	result, err := c.GetHistoricalMetrics("1h")
+	if err != nil {
+		t.Fatalf("get_historical_metrics failed: %v", err)
+	}
+	mustJSON(t, "get_historical_metrics", result)
+}
+
+func TestSmoke_Darwin_GetAnomalyDetection(t *testing.T) {
+	c := analytics.NewCollector()
+	result, err := c.GetAnomalyDetection()
+	if err != nil {
+		t.Fatalf("get_anomaly_detection failed: %v", err)
+	}
+	mustJSON(t, "get_anomaly_detection", result)
+}
+
+func TestSmoke_Darwin_GetCapacityForecast(t *testing.T) {
+	c := analytics.NewCollector()
+	result, err := c.GetCapacityForecast()
+	if err != nil {
+		t.Fatalf("get_capacity_forecast failed: %v", err)
+	}
+	mustJSON(t, "get_capacity_forecast", result)
+}
+
+func TestSmoke_Darwin_GetTrendAnalysis(t *testing.T) {
+	c := analytics.NewCollector()
+	result, err := c.GetTrendAnalysis("1h")
+	if err != nil {
+		t.Fatalf("get_trend_analysis failed: %v", err)
+	}
+	mustJSON(t, "get_trend_analysis", result)
+}
+
+// =============================================================================
+// Phase 6: Automation & Alerting (3 queries)
+// =============================================================================
+
+func TestSmoke_Darwin_GetAlertStatus(t *testing.T) {
+	c := alerts.NewCollector()
+	result, err := c.GetAlertStatus()
+	if err != nil {
+		t.Fatalf("get_alert_status failed: %v", err)
+	}
+	mustJSON(t, "get_alert_status", result)
+}
+
+func TestSmoke_Darwin_GetRemediationSuggestions(t *testing.T) {
+	c := alerts.NewCollector()
+	result, err := c.GetRemediationSuggestions()
+	if err != nil {
+		t.Fatalf("get_remediation_suggestions failed: %v", err)
+	}
+	mustJSON(t, "get_remediation_suggestions", result)
+}
+
+func TestSmoke_Darwin_GetRunbookRecommendations(t *testing.T) {
+	c := alerts.NewCollector()
+	result, err := c.GetRunbookRecommendations()
+	if err != nil {
+		t.Fatalf("get_runbook_recommendations failed: %v", err)
+	}
+	mustJSON(t, "get_runbook_recommendations", result)
+}
+
+// =============================================================================
+// Phase 7: Security & Compliance (5 queries)
+// =============================================================================
+
+func TestSmoke_Darwin_GetSecurityScan(t *testing.T) {
+	c := compliance.NewCollector()
+	result, err := c.GetSecurityScan()
+	if err != nil {
+		t.Fatalf("get_security_scan failed: %v", err)
+	}
+	mustJSON(t, "get_security_scan", result)
+}
+
+func TestSmoke_Darwin_GetComplianceCheck(t *testing.T) {
+	c := compliance.NewCollector()
+	result, err := c.GetComplianceCheck("cis")
+	if err != nil {
+		t.Fatalf("get_compliance_check failed: %v", err)
+	}
+	mustJSON(t, "get_compliance_check", result)
+}
+
+func TestSmoke_Darwin_GetForensicSnapshot(t *testing.T) {
+	c := compliance.NewCollector()
+	result, err := c.GetForensicSnapshot()
+	if err != nil {
+		t.Fatalf("get_forensic_snapshot failed: %v", err)
+	}
+	mustJSON(t, "get_forensic_snapshot", result)
+}
+
+func TestSmoke_Darwin_GetAuditTrail(t *testing.T) {
+	c := compliance.NewCollector()
+	result, err := c.GetAuditTrail(24)
+	if err != nil {
+		t.Fatalf("get_audit_trail failed: %v", err)
+	}
+	mustJSON(t, "get_audit_trail", result)
+}
+
+func TestSmoke_Darwin_GetHardeningRecommendations(t *testing.T) {
+	c := compliance.NewCollector()
+	result, err := c.GetHardeningRecommendations()
+	if err != nil {
+		t.Fatalf("get_hardening_recommendations failed: %v", err)
+	}
+	mustJSON(t, "get_hardening_recommendations", result)
 }
