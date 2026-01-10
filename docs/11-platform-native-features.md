@@ -324,6 +324,120 @@ Complete IIS introspection for enterprise web server diagnostics. **Phase 1.6** 
 
 **Total: 8 implemented + 35 (Phase 1.7) + 47 (Phase 1.8) = 90 IIS queries**
 
+### Phase 1.9 - Windows Consumer Diagnostics (Planned 🚧)
+
+Based on analysis of the [Top 50 Windows 10/11 Consumer Problems (2021-2024)](windows-consumer-problems-evaluation.md), these queries address the most common end-user issues.
+
+#### High Priority - Common Consumer Issues
+
+| Query | Description | Source | Problems Addressed | Impact |
+|-------|-------------|--------|-------------------|:------:|
+| `get_windows_update_status` | Current update state, pending updates, history, failed updates | COM `Microsoft.Update.Session`, WMI | Update stuck, failing (#9,10,12) | 🟡 |
+| `get_defender_status` | Windows Defender config, protection status, scan results, threat history | `Get-MpComputerStatus`, WMI `MSFT_MpComputerStatus` | Malware, Defender issues (#16,17) | 🟢 |
+| `get_printers` | Printer list, spooler status, queue, driver info | WMI `Win32_Printer`, spooler service | Network printing, spooler (#26,27) | 🟢 |
+| `get_wifi_status` | Wireless adapter status, signal strength, connected network, available networks | `netsh wlan show interfaces`, WLAN API | Wi-Fi connectivity (#22) | 🟢 |
+| `get_bluetooth_devices` | Paired devices, connection status, adapter info | WMI, Bluetooth APIs | Bluetooth pairing (#23) | 🟢 |
+| `get_audio_devices` | Audio output/input devices, default device, driver status, volume | Core Audio API, WMI | No sound issues (#35) | 🟢 |
+| `get_display_config` | Resolution, refresh rate, multi-monitor layout, HDR, scaling | Windows Display API, WMI `Win32_DesktopMonitor` | Display/graphics issues (#30,36) | 🟢 |
+| `get_minidump_analysis` | Parse BSOD minidumps, extract bugcheck codes, faulting modules | `%SystemRoot%\Minidump\*.dmp` | BSOD crash analysis (#44) | 🟡 |
+| `get_boot_timing` | Boot phase timings, startup app impact | Event Log, `systeminfo` | Slow boot times (#1) | 🟢 |
+
+#### Medium Priority - Improved Diagnostics
+
+| Query | Description | Source | Problems Addressed | Impact |
+|-------|-------------|--------|-------------------|:------:|
+| `get_security_features` | VBS, HVCI, Secure Boot, kernel isolation, TPM status | Registry, `msinfo32`, WMI TPM | Gaming perf, upgrade blocks (#8,11,31) | 🟢 |
+| `get_driver_details` | Driver versions, signing status, INF info, compatibility | `driverquery /v`, WMI | BSOD from drivers (#29) | 🟢 |
+| `get_shell_extensions` | Third-party Explorer extensions, COM handlers | Registry ShellEx keys | Explorer crashes (#34) | 🟢 |
+| `get_search_index_status` | Windows Search index health, item count, indexing status | WMI, Search service | Start menu/Search (#33) | 🟢 |
+| `get_vpn_connections` | VPN profiles, connection status, adapters | `rasdial`, WMI | VPN issues (#24) | 🟢 |
+| `get_app_crashes` | Application crash history from WER | `%LocalAppData%\CrashDumps`, WER | App incompatibilities (#28) | 🟡 |
+| `get_activation_status` | Windows license type, activation state, hardware hash | `slmgr.vbs /dli`, Registry | Activation issues (#49) | 🟢 |
+| `get_system_restore_status` | System Protection config, restore points, disk allocation | `vssadmin`, WMI | System Restore (#48) | 🟢 |
+| `get_appx_packages` | UWP/AppX package status, registration state | `Get-AppxPackage` | Built-in apps failing (#42) | 🟢 |
+| `get_fan_speeds` | Fan RPM sensors (where available via WMI/ACPI) | WMI, OEM providers | Overheating (#6) | 🟢 |
+| `get_power_usage` | Power consumption by component (if available) | `powercfg /energy`, ETW | Battery drain (#7) | 🟡 |
+
+#### Low Priority - Nice to Have
+
+| Query | Description | Source | Problems Addressed | Impact |
+|-------|-------------|--------|-------------------|:------:|
+| `get_default_apps` | File associations, protocol handlers | Registry, `assoc` | Default apps reset (#37) | 🟢 |
+| `get_store_status` | Microsoft Store health, cache status | Store service, `wsreset` | Store issues (#41) | 🟢 |
+| `get_recovery_environment` | WinRE status, recovery partition health | `reagentc /info` | Reset PC fails (#47) | 🟢 |
+| `get_ncsi_status` | Network connectivity status indicator config | Registry NCSI keys | "No Internet" error (#25) | 🟢 |
+| `get_telemetry_settings` | Diagnostic data level, privacy settings | Registry, Group Policy | Privacy concerns (#19) | 🟢 |
+| `get_shutdown_blockers` | Apps preventing shutdown, Fast Startup config | Event Log, Registry | Shutdown hangs (#51) | 🟢 |
+| `get_security_providers` | Registered AV/firewall products via WSC | Windows Security Center API | AV conflicts (#21) | 🟢 |
+
+#### Implementation Notes
+
+**Windows Update Status** (High Priority):
+```powershell
+# Pending updates via COM
+$Session = New-Object -ComObject Microsoft.Update.Session
+$Searcher = $Session.CreateUpdateSearcher()
+$Updates = $Searcher.Search("IsInstalled=0")
+
+# Update history
+Get-HotFix | Sort-Object InstalledOn -Descending
+wmic qfe list full
+```
+
+**Windows Defender Status** (High Priority):
+```powershell
+Get-MpComputerStatus | Select-Object `
+    AntivirusEnabled, RealTimeProtectionEnabled, `
+    AntivirusSignatureLastUpdated, QuickScanAge, FullScanAge
+Get-MpThreatDetection  # Recent threats
+```
+
+**Printer/Spooler Status** (High Priority):
+```powershell
+Get-Printer | Select-Object Name, PrinterStatus, DriverName, PortName
+Get-PrintJob -PrinterName *  # Print queue
+Get-Service Spooler | Select-Object Status, StartType
+```
+
+**Wi-Fi Status** (High Priority):
+```cmd
+netsh wlan show interfaces
+netsh wlan show networks mode=bssid
+```
+
+**Bluetooth Devices** (High Priority):
+```powershell
+Get-PnpDevice -Class Bluetooth | Select-Object FriendlyName, Status, InstanceId
+```
+
+**Audio Devices** (High Priority):
+```powershell
+Get-PnpDevice -Class AudioEndpoint | Select-Object FriendlyName, Status
+Get-AudioDevice -List  # Requires AudioDeviceCmdlets module
+# Or via WMI:
+Get-CimInstance Win32_SoundDevice
+```
+
+**Display Configuration** (High Priority):
+```powershell
+Get-CimInstance Win32_DesktopMonitor
+Get-CimInstance Win32_VideoController
+# Resolution, refresh, multi-monitor via Display API
+```
+
+**Boot Timing** (High Priority):
+```powershell
+# Event Log boot events
+Get-WinEvent -FilterHashtable @{LogName='System';Id=12,13} -MaxEvents 10
+
+# Or systemd-analyze equivalent:
+(Get-CimInstance Win32_OperatingSystem).LastBootUpTime
+```
+
+**Total Phase 1.9: 9 high-priority + 11 medium-priority + 7 low-priority = 27 consumer diagnostic queries**
+
+See [Windows Consumer Problems Evaluation](windows-consumer-problems-evaluation.md) for full analysis of problem coverage.
+
 ---
 
 ## Linux-Specific Features

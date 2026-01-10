@@ -115,3 +115,53 @@ All major items have been completed:
 - 📋 Grafana dashboard for metrics visualization
 - 📋 Publish Docker image to container registry
 - 📋 Publish Helm chart to Helm repository
+
+---
+
+## Phase 1.9: Windows Consumer Diagnostics (Planned)
+
+Based on analysis of the [Top 50 Windows 10/11 Consumer Problems (2021-2024)](windows-consumer-problems-evaluation.md), these queries would address the most common end-user support issues. Current coverage is 76% (24% full + 52% partial). Adding these queries would increase meaningful diagnostic coverage to ~90%.
+
+### High Priority (Addresses High-Severity Consumer Issues)
+
+| Query | Purpose | Problems Addressed |
+|-------|---------|-------------------|
+| `get_windows_update_status` | Current update state, pending updates, history, failed updates | Update stuck/failing (#9,10,12) |
+| `get_defender_status` | Windows Defender config, protection status, threat history | Malware, Defender issues (#16,17) |
+| `get_printers` | Printer list, spooler status, queue, driver info | Network printing, spooler (#26,27) |
+| `get_wifi_status` | Wireless adapter status, signal, connected/available networks | Wi-Fi connectivity (#22) |
+| `get_bluetooth_devices` | Paired devices, connection status, adapter info | Bluetooth pairing (#23) |
+| `get_audio_devices` | Audio devices, default device, driver status | No sound issues (#35) |
+| `get_display_config` | Resolution, refresh rate, multi-monitor, HDR, scaling | Display/graphics issues (#30,36) |
+| `get_minidump_analysis` | Parse BSOD minidumps, bugcheck codes, faulting modules | BSOD crash analysis (#44) |
+| `get_boot_timing` | Boot phase timings, startup app impact | Slow boot times (#1) |
+
+### Medium Priority (Improves Partial Coverage)
+
+| Query | Purpose | Problems Addressed |
+|-------|---------|-------------------|
+| `get_security_features` | VBS, HVCI, Secure Boot, TPM status | Gaming perf, upgrade blocks (#8,11,31) |
+| `get_driver_details` | Driver versions, signing status, compatibility | BSOD from drivers (#29) |
+| `get_shell_extensions` | Third-party Explorer extensions, COM handlers | Explorer crashes (#34) |
+| `get_search_index_status` | Windows Search index health, item count | Start menu/Search (#33) |
+| `get_vpn_connections` | VPN profiles, connection status | VPN issues (#24) |
+| `get_app_crashes` | Application crash history from WER | App incompatibilities (#28) |
+| `get_activation_status` | Windows license type, activation state | Activation issues (#49) |
+| `get_system_restore_status` | System Protection config, restore points | System Restore (#48) |
+| `get_appx_packages` | UWP/AppX package status, registration | Built-in apps failing (#42) |
+
+### Low Priority (Nice to Have)
+
+| Query | Purpose | Problems Addressed |
+|-------|---------|-------------------|
+| `get_default_apps` | File associations, protocol handlers | Default apps reset (#37) |
+| `get_store_status` | Microsoft Store health, cache status | Store issues (#41) |
+| `get_recovery_environment` | WinRE status, recovery partition | Reset PC fails (#47) |
+| `get_ncsi_status` | Network connectivity status indicator | "No Internet" error (#25) |
+| `get_telemetry_settings` | Diagnostic data level, privacy settings | Privacy concerns (#19) |
+| `get_shutdown_blockers` | Apps preventing shutdown, Fast Startup | Shutdown hangs (#51) |
+| `get_security_providers` | Registered AV/firewall via WSC | AV conflicts (#21) |
+
+**Total: 27 new queries across 3 priority tiers**
+
+See [11-platform-native-features.md](11-platform-native-features.md#phase-19---windows-consumer-diagnostics-planned-) for implementation details and PowerShell/WMI examples

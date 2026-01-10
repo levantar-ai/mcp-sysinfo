@@ -22,6 +22,7 @@ A summary of feature support across Linux, macOS, and Windows.
 ║  Phase 1.6 (Win)    Windows Enterprise (Registry/DCOM/IIS)       15   ✅ Done║
 ║  Phase 1.7          Deep IIS Configuration                       35   📋 Plan║
 ║  Phase 1.8          Complete IIS Coverage                        47   📋 Plan║
+║  Phase 1.9          Windows Consumer Diagnostics                 27   📋 Plan║
 ║  Phase 2.0          Enhanced diagnostics (GPU, containers)        6   ✅ Done║
 ║  Phase 3            Storage Deep Dive                             5   📋 Plan║
 ║  Phase 4            Network Intelligence                          5   📋 Plan║
@@ -31,7 +32,7 @@ A summary of feature support across Linux, macOS, and Windows.
 ║  Phase 8            Integration & Plugins                         4   📋 Plan║
 ║  Phase 9            LLM Features                                  3   📋 Plan║
 ║  ─────────────────────────────────────────────────────────────────────────   ║
-║  IMPLEMENTED: 129 queries    PLANNED: 113 queries    TOTAL: 242             ║
+║  IMPLEMENTED: 129 queries    PLANNED: 140 queries    TOTAL: 269             ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
@@ -222,6 +223,56 @@ Software Bill of Materials for vulnerability detection. See [09-sbom-inventory.m
 | `check_nvd_vulns` | NVD database (network) | ✅ | ✅ | ✅ | 🟠 |
 
 **Status: 31/31 queries implemented** ✅
+
+---
+
+## Phase 1.9 - Windows Consumer Diagnostics (Planned)
+
+Queries addressing the [Top 50 Windows 10/11 Consumer Problems](windows-consumer-problems-evaluation.md). See [11-platform-native-features.md](11-platform-native-features.md#phase-19---windows-consumer-diagnostics-planned-) for full implementation details.
+
+### High Priority (9 queries)
+
+| Query | Description | Windows | Problems Addressed |
+|-------|-------------|---------|-------------------|
+| `get_windows_update_status` | Pending updates, history, failures | ✅ WMI/COM | Update stuck/failing |
+| `get_defender_status` | Defender config, protection, threats | ✅ Get-MpComputerStatus | Malware, Defender |
+| `get_printers` | Printers, spooler status, queue | ✅ Win32_Printer | Printing issues |
+| `get_wifi_status` | Wi-Fi adapter, signal, networks | ✅ netsh wlan | Wi-Fi problems |
+| `get_bluetooth_devices` | Paired devices, connection status | ✅ WMI/API | Bluetooth pairing |
+| `get_audio_devices` | Audio devices, default, driver | ✅ Core Audio/WMI | No sound issues |
+| `get_display_config` | Resolution, refresh, multi-monitor | ✅ Display API | Display problems |
+| `get_minidump_analysis` | BSOD bugcheck, faulting drivers | ✅ Minidump files | BSOD crashes |
+| `get_boot_timing` | Boot phases, startup impact | ✅ Event Log | Slow boot |
+
+### Medium Priority (11 queries)
+
+| Query | Description | Windows | Problems Addressed |
+|-------|-------------|---------|-------------------|
+| `get_security_features` | VBS, HVCI, TPM, Secure Boot | ✅ Registry/WMI | Gaming perf, upgrades |
+| `get_driver_details` | Versions, signing, compatibility | ✅ driverquery | Driver BSODs |
+| `get_shell_extensions` | Explorer extensions, COM handlers | ✅ Registry | Explorer crashes |
+| `get_search_index_status` | Search index health, status | ✅ WMI/Service | Start menu/Search |
+| `get_vpn_connections` | VPN profiles, connection status | ✅ rasdial/WMI | VPN issues |
+| `get_app_crashes` | WER crash history | ✅ CrashDumps | App crashes |
+| `get_activation_status` | License type, activation state | ✅ slmgr/Registry | Activation |
+| `get_system_restore_status` | Restore points, protection | ✅ vssadmin/WMI | System Restore |
+| `get_appx_packages` | UWP/AppX package status | ✅ Get-AppxPackage | Built-in apps |
+| `get_fan_speeds` | Fan RPM sensors | ⚠️ OEM-dependent | Overheating |
+| `get_power_usage` | Power consumption | ⚠️ powercfg | Battery drain |
+
+### Low Priority (7 queries)
+
+| Query | Description | Windows | Problems Addressed |
+|-------|-------------|---------|-------------------|
+| `get_default_apps` | File associations | ✅ Registry/assoc | Default apps reset |
+| `get_store_status` | Microsoft Store health | ✅ Store service | Store issues |
+| `get_recovery_environment` | WinRE status | ✅ reagentc | Reset PC fails |
+| `get_ncsi_status` | Network status indicator | ✅ Registry | "No Internet" error |
+| `get_telemetry_settings` | Diagnostic data level | ✅ Registry/GP | Privacy concerns |
+| `get_shutdown_blockers` | Apps blocking shutdown | ✅ Event Log | Shutdown hangs |
+| `get_security_providers` | AV/firewall via WSC | ✅ WSC API | AV conflicts |
+
+**Status: 0/27 queries implemented**
 
 ---
 
